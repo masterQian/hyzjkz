@@ -99,6 +99,7 @@
     <x:String x:Key="TemplatePage.TemplateList.Text">模板列表</x:String>
     <x:String x:Key="TemplatePage.Bar.Add">创建</x:String>
     <x:String x:Key="TemplatePage.Bar.Delete">删除</x:String>
+    <x:String x:Key="TemplatePage.Bar.Rename">重命名</x:String>
     <x:String x:Key="TemplatePage.Bar.Preview">预览</x:String>
     <x:String x:Key="TemplatePage.Bar.Save">保存</x:String>
     <x:String x:Key="TemplatePage.Bar.AddItem">添加项</x:String>

@@ -20,9 +20,9 @@
                    Style="{StaticResource Style.NumberBox.Spin}" />
         <Button x:Name="Button_ResetMonth" Grid.Row="1" Grid.Column="1" Content="{StaticResource SettingsPage.Set.Text}" />
     </Grid>
-    <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto" Style="{StaticResource Style.Grid.Settings}">
+    <Grid RowDefinitions="Auto, Auto" Style="{StaticResource Style.Grid.Settings}">
         <InfoBar Title="{StaticResource BusinessSubPage.ShowTurnover.Text}"
-                 Grid.Row="0" Grid.ColumnSpan="2"
+                 Grid.Row="0"
                  Message="{StaticResource BusinessSubPage.ShowTurnover.Message}"
                  Style="{StaticResource Style.InfoBar.SettingsInfo}" />
         <ToggleSwitch x:Name="Switch_ShowTurnover" Grid.Row="1"

@@ -197,105 +197,27 @@ namespace winrt::hyzjkz::implementation {
             static_cast<mqui32>(util::RDValue<mqf64>(L"PhotoPreviewWidth")),
             static_cast<mqui32>(util::RDValue<mqf64>(L"PhotoPreviewHeight")) };
 
+        Global.c_printCanvasSize = {
+            static_cast<mqui32>(util::RDValue<mqf64>(L"CanvasWidth")),
+            static_cast<mqui32>(util::RDValue<mqf64>(L"CanvasHeight")) };
+
         Global.c_IDCardPreviewSize = {
             static_cast<mqui32>(util::RDValue<mqf64>(L"IDCardPreviewWidth")),
             static_cast<mqui32>(util::RDValue<mqf64>(L"IDCardPreviewHeight")) };
     }
 
-    // 初始化全局
-    static void InitializeGlobal() noexcept {
-        // 开启GDI
-        MasterQian::Media::GDI::StartupGDI();
-        // 创建文件监控事件
-        Global.file_spy_event = CreateEventW(nullptr, true, false, nullptr);
-        // 照片转储
-        auto date_str{ MasterQian::Timestamp{ }.local().formatDate() };
-        auto photo_path{ Global.c_photoPath / date_str };
-        auto thumb_path{ Global.c_thumbPath / date_str };
-        for (auto& file : Global.c_cameraPhotoPath.EnumFolder(L"*.jpg")) {
-            MasterQian::Media::GDI::Image thumb_image(file);
-            thumb_image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path / file.Name(), MasterQian::Media::ImageFormat::JPG);
-            file.Move(photo_path);
-        }
-    }
-
-    // 清理全局
-    static void ClearGlobal() noexcept {
-        // 发送停止文件监控事件
-        SetEvent(Global.file_spy_event);
-        // 关闭GDI
-        MasterQian::Media::GDI::ShutdownGDI();
-    }
-
-    // [异步] 照片清理
-    static Windows::Foundation::IAsyncAction ClearPhotos() noexcept {
-        using namespace MasterQian::Storage;
-
-        co_await winrt::resume_background();
-
-        wchar_t clear_month[3]{ L'0', L'0', L'\0' };
-        auto month{ static_cast<mqui32>(MasterQian::Timestamp().local().month) };
-        auto resetMonth{ Global.cfg.get<GlobalType::RESET_MONTH>(GlobalConfig::RESET_MONTH, 1U) };
-        
-        if (resetMonth == 0U || resetMonth >= 12U) resetMonth = 1U;
-        if (month <= resetMonth) {
-            month = month + 12U - resetMonth;
-        }
-        else {
-            month = month - resetMonth;
-        }
-        if (month < 10) {
-            clear_month[1] = L'0' + month;
-        }
-        else {
-            clear_month[0] = L'1';
-            clear_month[1] = L'0' + month - 10U;
-        }
-
-        for (auto& folder : Global.c_photoPath.EnumFolder()) {
-            auto name{ folder.Name() };
-            if (name.size() == 8ULL && name.substr(4ULL, 2ULL) == clear_month) { // 如20231231 -> 12
-                // 删除照片文件夹及对应缩略图文件夹
-                folder.Delete();
-                Global.c_thumbPath.Concat(name).Delete();
-            }
-        }
-    }
-
     void App::OnLaunched(LaunchActivatedEventArgs const& e) {
-        using namespace MasterQian::System;
-        if (Process::SingleProcessLock()) { // 防止多开
+        if (MasterQian::System::Process::SingleProcessLock()) { // 防止多开
             // 初始化
             InitializePath();
             InitializeResource();
             InitializeConfig();
             InitializeData();
-            InitializeGlobal();
 
             // 显示主窗口
             window = make<MainWindow>();
-            window.Activate();
-            window.Closed([ ] (auto, auto) {
-                ClearGlobal(); // 清理全局
-                });
-
-            // 调整窗口大小
-            auto appWindow{ window.AppWindow() };
-            auto width{ static_cast<mqi32>(Info::GetScreenWidth()) };
-            auto height{ static_cast<mqi32>(Info::GetScreenHeight()) };
-            auto scale{ util::RDValue<mqf64>(L"MainWindow.Scale.Value") };
-            auto actualWidth{ static_cast<mqi32>(width * scale) };
-            auto actualHeight{ static_cast<mqi32>(height * scale) };
-            auto actualLeft{ static_cast<mqi32>((1.0 - scale) * width / 2) };
-            auto actualTop{ static_cast<mqi32>((1.0 - scale) * height / 2) };
-            appWindow.MoveAndResize({ actualLeft, actualTop, actualWidth, actualHeight });
-
-            // 获取窗口句柄
-            Global.ui_hwnd = reinterpret_cast<HWND>(appWindow.Id().Value);
             Global.ui_window = &window;
-
-            // 异步任务
-            ClearPhotos();
+            window.Activate();
         }
         else {
             Exit(); // 结束程序

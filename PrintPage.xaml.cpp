@@ -77,7 +77,7 @@ namespace winrt::hyzjkz::implementation {
 		auto border{ page->Border_Main() };
 		auto canvas_width{ border.ActualWidth() };
 		auto canvas_height{ border.ActualHeight() };
-		auto canvas_scale{ util::RDValue<mqf64>(L"CanvasHeight") / canvas_height };
+		auto canvas_scale{ Global.c_printCanvasSize.height / canvas_height };
 
 		// 照片
 		GDI::Image photo{ page->photo_path };
@@ -142,15 +142,12 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 生成保存模板
-	static MasterQian::Media::GDI::Image MakeSaveImage(PrintTemplate& pt, hstring const& photo_path) noexcept {
+	static MasterQian::Media::GDI::Image MakeSaveImage(PrintTemplate& pt, hstring const& photo_path, MasterQian::Media::ImageSize canvas_size) noexcept {
 		// 照片
 		MasterQian::Media::GDI::Image photo{ photo_path };
 		photo.DPI({ 300U, 300U });
 		// 画布
-		MasterQian::Media::GDI::Image canvas({ 
-			static_cast<mqui32>(util::RDValue<mqf64>(L"CanvasWidth")),
-			static_cast<mqui32>(util::RDValue<mqf64>(L"CanvasHeight")) },
-			MasterQian::Media::Colors::White);
+		MasterQian::Media::GDI::Image canvas(canvas_size, MasterQian::Media::Colors::White);
 		canvas.DPI({ 300U, 300U });
 
 		// 同宽高项分类
@@ -185,11 +182,12 @@ namespace winrt::hyzjkz::implementation {
 				winrt::apartment_context ui_thread;
 				co_await winrt::resume_background();
 
-				auto& pt{ Global.templateList[template_name] };
-				printer.DrawImage(MakeSaveImage(pt, photo_path), { }, { }, MasterQian::Media::QUALITY_MODE);
-				failed = false;
+				printer.DrawImage(MakeSaveImage(Global.templateList[template_name],
+					photo_path, Global.c_printCanvasSize), { }, { }, MasterQian::Media::QUALITY_MODE);
 
 				co_await ui_thread;
+
+				failed = false;
 			}
 		}
 		if (failed) {
@@ -211,8 +209,8 @@ namespace winrt::hyzjkz::implementation {
 			winrt::apartment_context ui_thread;
 			co_await winrt::resume_background();
 
-			auto& pt{ Global.templateList[template_name] };
-			MakeSaveImage(pt, photo_path).Save(file.Path(), MasterQian::Media::ImageFormat::JPG);
+			MakeSaveImage(Global.templateList[template_name], photo_path, Global.c_printCanvasSize)
+				.Save(file.Path(), MasterQian::Media::ImageFormat::JPG);
 
 			co_await ui_thread;
 		}

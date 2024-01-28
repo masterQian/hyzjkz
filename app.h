@@ -117,6 +117,10 @@ struct TemplateList : private std::unordered_map<std::wstring, MasterQian::Bin, 
 		}
 	}
 
+	MasterQian::Bin& get(std::wstring_view name) noexcept {
+		return BaseT::find(name)->second;
+	}
+
 	PrintTemplate& operator [] (std::wstring_view name) noexcept {
 		return *reinterpret_cast<PrintTemplate*>(BaseT::find(name)->second.data());
 	}
@@ -216,6 +220,7 @@ inline struct GlobalStruct {
 
 	MasterQian::Media::ImageSize c_photoThumbSize; // 缩略图尺寸
 	MasterQian::Media::ImageSize c_photoPreviewSize; // 预览图尺寸
+	MasterQian::Media::ImageSize c_printCanvasSize; // 打印画布尺寸
 	MasterQian::Media::ImageSize c_IDCardPreviewSize; // 身份证拼接预览尺寸
 
 	// 全局资源
@@ -266,7 +271,7 @@ namespace util {
 	}
 
 	template<typename T>
-	inline T RDObject(winrt::hstring const& key) noexcept {
+	inline T RDStyle(winrt::hstring const& key) noexcept {
 		return RD<T, 3U>(key);
 	}
 }

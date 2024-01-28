@@ -32,6 +32,7 @@
                         DefaultLabelPosition="Right" IsOpen="False">
                 <AppBarButton Click="AppBarButton_Click" Icon="Add" Label="{StaticResource TemplatePage.Bar.Add}" />
                 <AppBarButton Click="AppBarButton_Click" Icon="Delete" Label="{StaticResource TemplatePage.Bar.Delete}" />
+                <AppBarButton Click="AppBarButton_Click" Icon="Edit" Label="{StaticResource TemplatePage.Bar.Rename}" />
                 <AppBarButton Click="AppBarButton_Click" Icon="Preview" Label="{StaticResource TemplatePage.Bar.Preview}" />
                 <AppBarButton Click="AppBarButton_Click" Icon="Save" Label="{StaticResource TemplatePage.Bar.Save}" />
             </CommandBar>

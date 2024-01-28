@@ -14,7 +14,7 @@ namespace winrt::hyzjkz::implementation {
 		auto image{ page->CanvasImage() };
 		auto canvas_width{ image.ActualWidth() };
 		auto canvas_height{ image.ActualHeight() };
-		auto canvas_scale{ util::RDValue<mqf64>(L"CanvasHeight") / canvas_height };
+		auto canvas_scale{ Global.c_printCanvasSize.height / canvas_height };
 		// 画布
 		GDI::Image canvas({ static_cast<mqui32>(canvas_width), static_cast<mqui32>(canvas_height) }, Colors::Pink);
 		// 画矩形
@@ -110,7 +110,7 @@ namespace winrt::hyzjkz::implementation {
 		pt.flag.canDelete = true;
 		pt.flag.isRotate = false;
 		pt.flag.isAutoCut = false;
-		lstrcpyW(pt.name, name.data());
+		(void)lstrcpynW(pt.name, name.data(), 31);
 		pt.order = 0U;
 
 		// 更新文件
@@ -159,6 +159,48 @@ namespace winrt::hyzjkz::implementation {
 			items.RemoveAt(index);
 			SelectFirstTemplate(page);
 		}
+	}
+
+	// 重命名模板
+	static Windows::Foundation::IAsyncAction RenameTemplate(TemplatePage* page) noexcept {
+		auto item{ page->LV_Templates().SelectedItem() };
+		if (item == nullptr) {
+			co_return;
+		}
+		std::wstring old_name{ item.as<hstring>() };
+		std::wstring new_name{ co_await Global.ui_window->as<hyzjkz::MainWindow>()
+			.ShowInputDialog(util::RDString<hstring>(L"TemplatePage.Tip.InputNewTemplateName")) };
+		if (new_name.empty()) {
+			co_return;
+		}
+		if (Global.templateList.contains(new_name)) { // 检查模板是否已存在
+			co_return co_await Global.ui_window->as<hyzjkz::MainWindow>()
+				.ShowTipDialog(util::RDString<hstring>(L"TemplatePage.Tip.TemplateNameExists"));
+		}
+
+		// 获得模板数据
+		MasterQian::Bin bin{ std::move(Global.templateList.get(old_name)) };
+
+		// 修改名称
+		auto& pt{ *reinterpret_cast<PrintTemplate*>(bin.data()) };
+		(void)lstrcpynW(pt.name, new_name.data(), 31);
+		
+		// 更新文件
+		Global.c_templatePath.Concat(old_name + L".template").Delete();
+		Global.c_templatePath.Concat(new_name + L".template").Write(bin);
+
+		// 更新变量
+		Global.templateList.erase(old_name);
+		Global.templateList.add(new_name, std::move(bin));
+
+		// 更新UI
+		auto lv_templates{ page->LV_Templates() };
+		auto items{ lv_templates.Items() };
+		mqui32 index{ };
+		items.IndexOf(box_value(old_name), index);
+		auto new_item{ box_value(new_name) };
+		lv_templates.Items().SetAt(index, new_item);
+		lv_templates.SelectedItem(new_item);
 	}
 
 	// 保存模板
@@ -242,6 +284,9 @@ namespace winrt::hyzjkz::implementation {
 		else if (label == util::RDString<hstring>(L"TemplatePage.Bar.Delete")) {
 			co_await DeleteTemplate(this);
 		}
+		else if (label == util::RDString<hstring>(L"TemplatePage.Bar.Rename")) {
+			co_await RenameTemplate(this);
+		}
 		else if (label == util::RDString<hstring>(L"TemplatePage.Bar.Preview")) {
 			PreviewTemplate(this);
 		}
@@ -268,9 +313,7 @@ namespace winrt::hyzjkz::implementation {
 	// 获取画布尺寸
 	F_RT hstring TemplatePage::CanvasSizeString() const {
 		mqchar canvas_size_string[32]{ };
-		wsprintfW(canvas_size_string, L"画布大小: %u × %u",
-			static_cast<mqui32>(util::RDValue<mqf64>(L"CanvasWidth")),
-			static_cast<mqui32>(util::RDValue<mqf64>(L"CanvasHeight")));
+		wsprintfW(canvas_size_string, L"画布大小: %u × %u", Global.c_printCanvasSize.width, Global.c_printCanvasSize.height);
 		return canvas_size_string;
 	}
 }
