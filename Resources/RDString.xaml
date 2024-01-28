@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="using:hyzjkz">
     <x:String x:Key="App.Name">鸿宇证件快照</x:String>
+    <x:String x:Key="App.Version">2024012900</x:String>
 
     <!--  MainWindow  -->
     <x:String x:Key="MainWindow.AttachCamera.Text">连接相机</x:String>
+    <x:String x:Key="MainWindow.CheckUpdate.Text">检查更新</x:String>
+
     <x:String x:Key="MainWindow.NVI_History.Text">历史记录</x:String>
     <x:String x:Key="MainWindow.NVI_Template.Text">模板</x:String>
     <x:String x:Key="MainWindow.NVI_Tools.Text">工具箱</x:String>
@@ -61,7 +64,7 @@
 
     <x:String x:Key="SettingsPage.Set.Text">设置</x:String>
 
-    <x:String x:Key="AboutSubPage.About.Text">关于此应用</x:String>
+    <x:String x:Key="AboutSubPage.About.Text">客户端版本</x:String>
     <x:String x:Key="AboutSubPage.Version1.Text">证件快照       1.0    二〇二〇年七月三十日</x:String>
     <x:String x:Key="AboutSubPage.Version2.Text">证件快照       2.0    二〇二四年一月八日</x:String>
     <x:String x:Key="AboutSubPage.Copyright.Text">© 2024 钱浩宇 保留所有权利</x:String>

@@ -14,6 +14,7 @@ namespace winrt::hyzjkz::implementation {
 
         F_EVENT void NV_Main_ItemInvoked(Controls::NavigationView const&, Controls::NavigationViewItemInvokedEventArgs const&);
         F_EVENT Windows::Foundation::IAsyncAction AttachCamera_Click(IInspectable const&, RoutedEventArgs const&);
+        F_EVENT void CheckUpdate_Click(IInspectable const&, RoutedEventArgs const&);
 
         F_RT Windows::Foundation::IAsyncAction ShowTipDialog(hstring const&);
         F_RT Windows::Foundation::IAsyncOperation<bool> ShowConfirmDialog(hstring const&);

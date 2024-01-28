@@ -10,7 +10,8 @@
                Margin="0,0,20,0" Stretch="Fill" />
         <TextBlock Margin="20,0,0,0" FontWeight="Bold" Style="{StaticResource Style.Text.Largest}" Text="{StaticResource App.Name}" />
     </StackPanel>
-    <TextBlock Margin="0,10,0,10" HorizontalAlignment="Left" Style="{StaticResource Style.Text.Large}" Text="{StaticResource AboutSubPage.About.Text}" />
+    <TextBlock Margin="0,20,0,0" Style="{StaticResource Style.Text.Large}" Text="{StaticResource AboutSubPage.About.Text}" />
+    <TextBlock Margin="0,0,0,20" Style="{StaticResource Style.Text.Large}" Text="{StaticResource App.Version}" />
     <TextBlock Margin="0,10,0,10" Style="{StaticResource Style.Text.Middle}" Text="{StaticResource AboutSubPage.Version1.Text}" />
     <TextBlock Margin="0,10,0,10" Style="{StaticResource Style.Text.Middle}" Text="{StaticResource AboutSubPage.Version2.Text}" />
     <TextBlock Margin="0,10,0,10" Style="{StaticResource Style.Text.Middle}" Text="{StaticResource AboutSubPage.Copyright.Text}" />

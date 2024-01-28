@@ -279,6 +279,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="version.ini" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="hyzjkz.rc" />

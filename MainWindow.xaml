@@ -35,6 +35,12 @@
                             <TextBlock Text="{StaticResource MainWindow.AttachCamera.Text}" />
                         </StackPanel>
                     </HyperlinkButton>
+                    <HyperlinkButton Click="CheckUpdate_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <FontIcon Margin="8,0,8,0" Glyph="&#xE781;" />
+                            <TextBlock Text="{StaticResource MainWindow.CheckUpdate.Text}" />
+                        </StackPanel>
+                    </HyperlinkButton>
                 </StackPanel>
             </NavigationView.PaneFooter>
             <Frame x:Name="Frame_Main" />

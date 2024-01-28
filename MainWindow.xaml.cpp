@@ -131,6 +131,15 @@ namespace winrt::hyzjkz::implementation {
             co_await ShowTipDialog(util::RDString<hstring>(L"MainWindow.Tip.NoEOSPath"));
         }
     }
+
+    // 检查更新
+    F_EVENT void MainWindow::CheckUpdate_Click(IInspectable const&, RoutedEventArgs const&) {
+        auto CurrentVersion{ util::RDString<hstring>(L"App.Version") };
+        // 结束程序
+        Close();
+        // 唤起更新程序
+        MasterQian::System::Process::Execute(L"AutoUpdate.exe", CurrentVersion, false, true);
+    }
 }
 
 namespace winrt::hyzjkz::implementation {
