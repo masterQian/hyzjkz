@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page x:Class="hyzjkz.HistoryPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="using:hyzjkz"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      NavigationCacheMode="Required" mc:Ignorable="d">
+    <Page.Resources>
+        <!--  菜单  -->
+        <MenuFlyout x:Name="GV_Photos_Menu">
+            <MenuFlyoutSubItem x:Name="GV_Photos_Menu_Link" Icon="Repair" IsEnabled="{x:Bind NotAtExternalLink, Mode=OneWay}" Text="{StaticResource HistoryPage.Menu.Link}" />
+            <MenuFlyoutSubItem Icon="Edit" IsEnabled="{x:Bind NotAtExternalLink, Mode=OneWay}" Text="{StaticResource HistoryPage.Menu.AIEdit}">
+                <MenuFlyoutSubItem Icon="Rotate" Text="旋转">
+                    <MenuFlyoutItem Click="MenuItem_Click" Icon="Rotate" Tag="Auto|RotateLeft" Text="{StaticResource HistoryPage.Menu.RotateLeft}" />
+                    <MenuFlyoutItem Click="MenuItem_Click" Icon="Rotate" Tag="Auto|RotateRight" Text="{StaticResource HistoryPage.Menu.RotateRight}" />
+                    <MenuFlyoutItem Click="MenuItem_Click" Icon="Rotate" Tag="Auto|RotateFlipX" Text="{StaticResource HistoryPage.Menu.FlipX}" />
+                    <MenuFlyoutItem Click="MenuItem_Click" Icon="Rotate" Tag="Auto|RotateFlipY" Text="{StaticResource HistoryPage.Menu.FlipY}" />
+                </MenuFlyoutSubItem>
+                <MenuFlyoutItem Click="MenuItem_Click" Icon="FullScreen" Tag="Auto|DPI" Text="{StaticResource HistoryPage.Menu.DPI}" />
+                <MenuFlyoutItem Click="MenuItem_Click" Icon="Stop" Tag="Auto|Border" Text="{StaticResource HistoryPage.Menu.Border}" />
+                <MenuFlyoutItem Click="MenuItem_Click" Icon="Target" Tag="Auto|BWPhoto" Text="{StaticResource HistoryPage.Menu.BWPhoto}" />
+                <MenuFlyoutItem Click="MenuItem_Click" Icon="People" Tag="Auto|IDCard" Text="{StaticResource HistoryPage.Menu.IDCard}" />
+            </MenuFlyoutSubItem>
+            <MenuFlyoutSeparator />
+            <MenuFlyoutItem Click="MenuItem_Click" Icon="Save" Tag="Main|Save" Text="{StaticResource HistoryPage.Menu.Save}" />
+            <MenuFlyoutItem Click="MenuItem_Click" Icon="Copy" Tag="Main|Copy" Text="{StaticResource HistoryPage.Menu.Copy}" />
+            <MenuFlyoutItem Click="MenuItem_Click" Icon="Delete"
+                            IsEnabled="{x:Bind NotAtExternalLink, Mode=OneWay}"
+                            Tag="Main|Delete"
+                            Text="{StaticResource HistoryPage.Menu.Delete}" />
+            <MenuFlyoutItem Click="MenuItem_Click" Icon="Print"
+                            IsEnabled="{x:Bind NotAtExternalLink, Mode=OneWay}"
+                            Tag="Main|Print"
+                            Text="{StaticResource HistoryPage.Menu.Print}" />
+            <MenuFlyoutSeparator />
+        </MenuFlyout>
+    </Page.Resources>
+    <Grid RowDefinitions="Auto, *">
+        <!--  工具栏  -->
+        <StackPanel Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Orientation="Horizontal">
+            <CalendarDatePicker x:Name="CDP_Main" Width="150" Margin="8,0,8,0"
+                                DateChanged="CDP_Main_DateChanged"
+                                DateFormat="{}{year.full}年{month.integer}月{day.integer}日"
+                                IsEnabled="{x:Bind NotAtExternalLink, Mode=OneWay}"
+                                IsTodayHighlighted="False" PlaceholderText="" />
+            <AppBarToggleButton Icon="View" IsChecked="{x:Bind CoverTurnover, Mode=TwoWay}" LabelPosition="Collapsed" />
+            <FontIcon Margin="8,0,8,0" Glyph="&#xE91B;" />
+            <Canvas Width="54" Height="24" Background="Transparent">
+                <Rectangle Width="54" Height="24" Canvas.ZIndex="4"
+                           Fill="White"
+                           Visibility="{x:Bind CoverTurnover, Mode=OneWay}" />
+                <Image Canvas.Left="0" Width="18" Height="24"
+                       Source="{x:Bind GetPVBSource(PhotoNum, 1, x:True), Mode=OneWay}"
+                       Visibility="{x:Bind GetPVBVisibility(PhotoNum, 1, x:True), Mode=OneWay}" />
+                <Image Canvas.Left="18" Width="18" Height="24"
+                       Source="{x:Bind GetPVBSource(PhotoNum, 2, x:True), Mode=OneWay}"
+                       Visibility="{x:Bind GetPVBVisibility(PhotoNum, 2, x:True), Mode=OneWay}" />
+                <Image Canvas.Left="36" Width="18" Height="24"
+                       Source="{x:Bind GetPVBSource(PhotoNum, 3, x:True), Mode=OneWay}"
+                       Visibility="{x:Bind GetPVBVisibility(PhotoNum, 3, x:True), Mode=OneWay}" />
+            </Canvas>
+            <FontIcon Margin="8,0,8,0" Glyph="&#xE825;" />
+            <Canvas Width="72" Height="24" Background="Transparent">
+                <Rectangle Width="72" Height="24" Canvas.ZIndex="5"
+                           Fill="White"
+                           Visibility="{x:Bind CoverTurnover, Mode=OneWay}" />
+                <Image Canvas.Left="0" Width="18" Height="24"
+                       Source="{x:Bind GetPVBSource(PhotoNum, 1, x:False), Mode=OneWay}"
+                       Visibility="{x:Bind GetPVBVisibility(PhotoNum, 1, x:False), Mode=OneWay}" />
+                <Image Canvas.Left="18" Width="18" Height="24"
+                       Source="{x:Bind GetPVBSource(PhotoNum, 2, x:False), Mode=OneWay}"
+                       Visibility="{x:Bind GetPVBVisibility(PhotoNum, 2, x:False), Mode=OneWay}" />
+                <Image Canvas.Left="36" Width="18" Height="24"
+                       Source="{x:Bind GetPVBSource(PhotoNum, 3, x:False), Mode=OneWay}"
+                       Visibility="{x:Bind GetPVBVisibility(PhotoNum, 3, x:False), Mode=OneWay}" />
+                <Image Canvas.Left="54" Width="18" Height="24"
+                       Source="{x:Bind GetPVBSource(PhotoNum, 4, x:False), Mode=OneWay}"
+                       Visibility="{x:Bind GetPVBVisibility(PhotoNum, 4, x:False), Mode=OneWay}" />
+            </Canvas>
+            <!--  命令组  -->
+            <CommandBar Margin="8,0,8,0" Background="Transparent" DefaultLabelPosition="Right" IsOpen="False">
+                <AppBarSeparator />
+                <AppBarButton Click="Refresh_Click" Icon="Refresh" Label="{StaticResource HistoryPage.Bar.Refresh}">
+                    <AppBarButton.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="F5" />
+                    </AppBarButton.KeyboardAccelerators>
+                </AppBarButton>
+                <AppBarButton Click="AddDefault_Click" Icon="Add" Label="{StaticResource HistoryPage.Bar.AddDefault}" />
+                <AppBarButton Click="Import_Click" Icon="Upload" Label="{StaticResource HistoryPage.Bar.Import}" />
+            </CommandBar>
+        </StackPanel>
+        <!--  列表框  -->
+        <GridView x:Name="GV_Photos" Grid.Row="1" Margin="8,0,8,0"
+                  DoubleTapped="GV_Photos_DoubleClick"
+                  IsItemClickEnabled="True" IsSwipeEnabled="False"
+                  SelectionMode="Single">
+            <GridView.ItemTemplate>
+                <DataTemplate x:DataType="local:ModelPhoto">
+                    <Image Width="{StaticResource PhotoThumbWidth}"
+                           Height="{StaticResource PhotoThumbHeight}"
+                           RightTapped="ModelPhoto_RightClick"
+                           Source="{x:Bind PhotoSource}"
+                           Stretch="Fill"
+                           Tag="{x:Bind PhotoPath}" />
+                </DataTemplate>
+            </GridView.ItemTemplate>
+        </GridView>
+        <!--  查看大图对话框  -->
+        <ContentDialog x:Name="ShowPictureDialog" CloseButtonText="{StaticResource Dialog.Close.Text}" DefaultButton="Close">
+            <Grid ColumnDefinitions="*, *" RowDefinitions="*, Auto, Auto">
+                <Image x:Name="SPD_Image" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" />
+                <Border Grid.Row="1" Grid.Column="0" Margin="1"
+                        Padding="1" Background="AliceBlue">
+                    <TextBlock x:Name="SPD_Text1" Style="{StaticResource Style.Text.Small}" />
+                </Border>
+                <Border Grid.Row="1" Grid.Column="1" Margin="1"
+                        Padding="1" Background="LightGreen">
+                    <TextBlock x:Name="SPD_Text2" Style="{StaticResource Style.Text.Small}" />
+                </Border>
+                <Border Grid.Row="2" Grid.Column="0" Margin="1"
+                        Padding="1" Background="LightPink">
+                    <TextBlock x:Name="SPD_Text3" Style="{StaticResource Style.Text.Small}" />
+                </Border>
+                <Border Grid.Row="2" Grid.Column="1" Margin="1"
+                        Padding="1" Background="LightYellow">
+                    <TextBlock x:Name="SPD_Text4" Style="{StaticResource Style.Text.Small}" />
+                </Border>
+            </Grid>
+        </ContentDialog>
+        <!--  预览对话框  -->
+        <ContentDialog x:Name="PreviewDialog" CloseButtonText="{StaticResource Dialog.Cancel.Text}" DefaultButton="Primary" PrimaryButtonText="{StaticResource Dialog.Save.Text}">
+            <Image Width="{StaticResource PhotoPreviewWidth}" Height="{StaticResource PhotoPreviewHeight}" Stretch="Fill" />
+        </ContentDialog>
+        <!--  边框对话框  -->
+        <ContentDialog x:Name="MenuBorderDialog"
+                       CloseButtonText="{StaticResource Dialog.Cancel.Text}"
+                       DefaultButton="Secondary"
+                       PrimaryButtonText="{StaticResource Dialog.Preview.Text}"
+                       SecondaryButtonText="{StaticResource Dialog.Save.Text}">
+            <StackPanel Orientation="Horizontal">
+                <Image x:Name="MBD_Image"
+                       Width="{StaticResource PhotoPreviewWidth}"
+                       Height="{StaticResource PhotoPreviewHeight}"
+                       Margin="0,0,5,0" Stretch="Fill" />
+                <StackPanel Margin="5,0,0,0" Orientation="Vertical">
+                    <NumberBox x:Name="MBD_BorderWidth" Margin="0,0,0,5"
+                               Header="{StaticResource BorderDialog.BorderWidth.Text}"
+                               Maximum="10" Minimum="1"
+                               Style="{StaticResource Style.NumberBox.Spin}" />
+                    <Viewbox MaxWidth="{StaticResource PhotoPreviewWidth}" Margin="0,5,0,0" Stretch="Fill">
+                        <ColorPicker x:Name="MBD_BorderColor" ColorSpectrumShape="Box"
+                                     IsAlphaEnabled="False"
+                                     IsAlphaSliderVisible="False"
+                                     IsAlphaTextInputVisible="False"
+                                     IsColorChannelTextInputVisible="False"
+                                     IsColorSliderVisible="True"
+                                     IsHexInputVisible="True" />
+                    </Viewbox>
+                </StackPanel>
+            </StackPanel>
+        </ContentDialog>
+        <!--  身份证对话框  -->
+        <ContentDialog x:Name="MenuIDCardDialog"
+                       CloseButtonText="{StaticResource Dialog.Cancel.Text}"
+                       DefaultButton="Secondary"
+                       PrimaryButtonText="{StaticResource Dialog.Preview.Text}"
+                       SecondaryButtonText="{StaticResource Dialog.Save.Text}">
+            <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto">
+                <Grid Grid.Row="0" Grid.Column="0" Margin="0,0,2,2" ColumnDefinitions="*, Auto">
+                    <TextBox x:Name="MIDD_IDCardNumber" Grid.Column="0"
+                             Margin="0,0,2,0"
+                             Header="{StaticResource IDCardDialog.IDCardNumber.Text}"
+                             MaxLength="18" />
+                    <Button x:Name="MIDD_IDCardPlusX" Grid.Column="1"
+                            VerticalAlignment="Bottom"
+                            Content="{StaticResource IDCardDialog.IDCardPlusX.Text}"
+                            Style="{StaticResource AccentButtonStyle}" />
+                </Grid>
+                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                    <NumberBox x:Name="MIDD_IDCardBottom" Margin="5,0,5,0" Header="{StaticResource IDCardDialog.IDCardBottom.Text}" Style="{StaticResource Style.NumberBox.Normal}" />
+                    <NumberBox x:Name="MIDD_IDCardFontSize" Margin="5,0,5,0" Header="{StaticResource IDCardDialog.IDCardFontSize.Text}" Style="{StaticResource Style.NumberBox.Normal}" />
+                    <ToggleSwitch x:Name="MIDD_IDCardMode" Margin="5,0,5,0"
+                                  Header="{StaticResource IDCardDialog.IDCardMode.Text}"
+                                  IsOn="False"
+                                  OffContent="{StaticResource IDCardDialog.IDCardMode.Off}"
+                                  OnContent="{StaticResource IDCardDialog.IDCardMode.On}" />
+                </StackPanel>
+                <Image x:Name="MIDD_Image" Grid.Row="1" Grid.Column="0"
+                       Width="{StaticResource PhotoPreviewWidth}"
+                       Height="{StaticResource PhotoPreviewHeight}"
+                       Margin="0,2,2,0" Stretch="Fill" />
+                <Viewbox Grid.Row="1" Grid.Column="1"
+                         MaxWidth="{StaticResource PhotoPreviewWidth}"
+                         Margin="5,5,0,0" HorizontalAlignment="Left"
+                         Stretch="Fill">
+                    <ColorPicker x:Name="MIDD_IDCardColor" ColorSpectrumShape="Box"
+                                 IsAlphaEnabled="False"
+                                 IsAlphaSliderVisible="False"
+                                 IsAlphaTextInputVisible="False"
+                                 IsColorChannelTextInputVisible="False"
+                                 IsColorSliderVisible="True"
+                                 IsHexInputVisible="True" />
+                </Viewbox>
+            </Grid>
+        </ContentDialog>
+    </Grid>
+</Page>

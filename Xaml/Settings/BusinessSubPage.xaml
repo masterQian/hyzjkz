@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<StackPanel xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Orientation="Vertical">
+    <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto" Style="{StaticResource Style.Grid.Settings}">
+        <InfoBar Title="{StaticResource BusinessSubPage.UnitPrice.Text}"
+                 Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                 Message="{StaticResource BusinessSubPage.UnitPrice.Message}"
+                 Style="{StaticResource Style.InfoBar.SettingsInfo}" />
+        <NumberBox x:Name="Input_UnitPrice" Grid.Row="1"
+                   Grid.Column="0" Maximum="100" Minimum="1"
+                   Style="{StaticResource Style.NumberBox.Normal}" />
+        <Button x:Name="Button_UnitPrice" Grid.Row="1" Grid.Column="1" Content="{StaticResource SettingsPage.Set.Text}" />
+    </Grid>
+    <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto" Style="{StaticResource Style.Grid.Settings}">
+        <InfoBar Title="{StaticResource BusinessSubPage.ResetMonth.Text}"
+                 Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                 Message="{StaticResource BusinessSubPage.ResetMonth.Message}"
+                 Style="{StaticResource Style.InfoBar.SettingsWarning}" />
+        <NumberBox x:Name="Input_ResetMonth" Grid.Row="1"
+                   Grid.Column="0" Maximum="11" Minimum="1"
+                   Style="{StaticResource Style.NumberBox.Spin}" />
+        <Button x:Name="Button_ResetMonth" Grid.Row="1" Grid.Column="1" Content="{StaticResource SettingsPage.Set.Text}" />
+    </Grid>
+    <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto" Style="{StaticResource Style.Grid.Settings}">
+        <InfoBar Title="{StaticResource BusinessSubPage.ShowTurnover.Text}"
+                 Grid.Row="0" Grid.ColumnSpan="2"
+                 Message="{StaticResource BusinessSubPage.ShowTurnover.Message}"
+                 Style="{StaticResource Style.InfoBar.SettingsInfo}" />
+        <ToggleSwitch x:Name="Switch_ShowTurnover" Grid.Row="1"
+                      Margin="10,0,0,0"
+                      OffContent="{StaticResource BusinessSubPage.ShowTurnover.Off}"
+                      OnContent="{StaticResource BusinessSubPage.ShowTurnover.On}" />
+    </Grid>
+    <Grid ColumnDefinitions="Auto, *, Auto" RowDefinitions="Auto, Auto" Style="{StaticResource Style.Grid.Settings}">
+        <InfoBar Title="{StaticResource BusinessSubPage.Password.Text}"
+                 Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                 Message="{StaticResource BusinessSubPage.Password.Message}"
+                 Style="{StaticResource Style.InfoBar.SettingsWarning}" />
+        <ToggleSwitch x:Name="Switch_Password" Grid.Row="1"
+                      Grid.Column="0" Margin="10,0,0,0"
+                      OffContent="{StaticResource BusinessSubPage.Password.Off}"
+                      OnContent="{StaticResource BusinessSubPage.Password.On}" />
+        <TextBox x:Name="Input_Password" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" />
+        <Button x:Name="Button_Password" Grid.Row="1" Grid.Column="2" Content="{StaticResource SettingsPage.Set.Text}" />
+    </Grid>
+</StackPanel>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<StackPanel xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Orientation="Vertical">
+    <Grid ColumnDefinitions="*, Auto, Auto" RowDefinitions="Auto, Auto" Style="{StaticResource Style.Grid.Settings}">
+        <InfoBar x:Name="InfoBar_EOSPath"
+                 Title="{StaticResource PathSubPage.EOSPath.Text}"
+                 Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3"
+                 Message="{StaticResource PathSubPage.EOSPath.Message}"
+                 Style="{StaticResource Style.InfoBar.SettingsInfo}" />
+        <TextBox x:Name="Input_EOSPath" Grid.Row="1" Grid.Column="0" IsReadOnly="True" />
+        <Button x:Name="Button_EOSPath_Set" Grid.Row="1" Grid.Column="1">
+            <FontIcon Glyph="&#xF89A;" />
+        </Button>
+        <Button x:Name="Button_EOSPath_Clear" Grid.Row="1" Grid.Column="2">
+            <FontIcon Glyph="&#xE74D;" />
+        </Button>
+    </Grid>
+    <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto" Style="{StaticResource Style.Grid.Settings}">
+        <InfoBar Title="{StaticResource PathSubPage.Link.Text}"
+                 Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                 Message="{StaticResource PathSubPage.Link.Message}"
+                 Style="{StaticResource Style.InfoBar.SettingsInfo}" />
+        <ListView x:Name="List_Tools" Grid.Row="1" Grid.Column="0"
+                  VerticalAlignment="Stretch"
+                  Background="AliceBlue"
+                  IsItemClickEnabled="False" />
+        <Button x:Name="Button_Tools_Add" Grid.Row="1"
+                Grid.Column="1" Margin="10,0,0,0"
+                VerticalAlignment="Stretch">
+            <FontIcon Glyph="&#xF8AA;" />
+        </Button>
+    </Grid>
+</StackPanel>

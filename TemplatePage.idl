@@ -1,0 +1,8 @@
+namespace hyzjkz {
+    [default_interface]
+    runtimeclass TemplatePage : Microsoft.UI.Xaml.Controls.Page {
+        TemplatePage();
+
+        String CanvasSizeString { get; };
+    }
+}

@@ -1,0 +1,9 @@
+namespace hyzjkz {
+    runtimeclass ModelTemplateData : Microsoft.UI.Xaml.Data.INotifyPropertyChanged {
+        ModelTemplateData(Double t_left, Double t_top, Double t_width, Double t_height);
+        Double TLeft{ set; get; };
+        Double TTop{ set; get; };
+        Double TWidth{ set; get; };
+        Double THeight{ set; get; };
+    }
+}

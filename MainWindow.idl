@@ -1,0 +1,15 @@
+namespace hyzjkz{
+    [default_interface]
+    runtimeclass MainWindow : Microsoft.UI.Xaml.Window{
+        MainWindow();
+
+        Windows.Foundation.IAsyncAction ShowTipDialog(String msg);
+        Windows.Foundation.IAsyncOperation<Boolean> ShowConfirmDialog(String msg);
+        Windows.Foundation.IAsyncOperation<String> ShowInputDialog(String msg);
+        Windows.Foundation.IAsyncAction ShowPasswordDialog();
+
+        void NavigateToPublicPage(UInt64 flagID);
+        void NavigateToPrivatePage(UInt64 flagID, IInspectable args);
+        void UpdateFlags(UInt64 page_index, UInt64 flag_index);
+    }
+}

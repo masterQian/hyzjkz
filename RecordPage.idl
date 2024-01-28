@@ -1,0 +1,6 @@
+namespace hyzjkz {
+    [default_interface]
+    runtimeclass RecordPage : Microsoft.UI.Xaml.Controls.Page {
+        RecordPage();
+    }
+}

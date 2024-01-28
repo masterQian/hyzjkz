@@ -1,0 +1,13 @@
+namespace hyzjkz {
+    [default_interface]
+    runtimeclass HistoryPage : Microsoft.UI.Xaml.Controls.Page, Microsoft.UI.Xaml.Data.INotifyPropertyChanged {
+        HistoryPage();
+
+        Boolean NotAtExternalLink { get; set; };
+        Boolean CoverTurnover { get; set; };
+        UInt32 PhotoNum { get; set; };
+
+        Microsoft.UI.Xaml.Visibility GetPVBVisibility(UInt32 photo_num, UInt32 index, Boolean is_photo_num);
+        Microsoft.UI.Xaml.Media.Imaging.BitmapImage GetPVBSource(UInt32 photo_num, UInt32 index, Boolean is_photo_num);
+    }
+}

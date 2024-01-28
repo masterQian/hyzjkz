@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="using:hyzjkz">
+    <!--  TextBlock  -->
+    <Style x:Key="Style.Text.Normal" TargetType="TextBlock">
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="LineStackingStrategy" Value="MaxHeight" />
+        <Setter Property="TextLineBounds" Value="Full" />
+        <Setter Property="OpticalMarginAlignment" Value="TrimSideBearings" />
+        <Setter Property="FontFamily" Value="微软雅黑" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style x:Key="Style.Text.Bold" BasedOn="{StaticResource Style.Text.Normal}" TargetType="TextBlock">
+        <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+    <Style x:Key="Style.Text.TitleBar" BasedOn="{StaticResource Style.Text.Bold}" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="Foreground" Value="White" />
+    </Style>
+    <Style x:Key="Style.Text.Small" BasedOn="{StaticResource Style.Text.Normal}" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+    <Style x:Key="Style.Text.Middle" BasedOn="{StaticResource Style.Text.Normal}" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+    <Style x:Key="Style.Text.Large" BasedOn="{StaticResource Style.Text.Normal}" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+    <Style x:Key="Style.Text.Huge" BasedOn="{StaticResource Style.Text.Normal}" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="36" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+    <Style x:Key="Style.Text.Largest" BasedOn="{StaticResource Style.Text.Normal}" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="48" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+    </Style>
+
+    <!--  NumberBox  -->
+    <Style x:Key="Style.NumberBox.Normal" TargetType="NumberBox">
+        <Setter Property="LargeChange" Value="0" />
+        <Setter Property="SmallChange" Value="0" />
+        <Setter Property="AcceptsExpression" Value="False" />
+        <Setter Property="SpinButtonPlacementMode" Value="Hidden" />
+    </Style>
+    <Style x:Key="Style.NumberBox.Spin" TargetType="NumberBox">
+        <Setter Property="LargeChange" Value="3" />
+        <Setter Property="SmallChange" Value="1" />
+        <Setter Property="AcceptsExpression" Value="False" />
+        <Setter Property="SpinButtonPlacementMode" Value="Inline" />
+    </Style>
+
+    <!--  Button  -->
+    <Style x:Key="Style.Button.Normal" BasedOn="{StaticResource DefaultButtonStyle}" TargetType="Button">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="Width" Value="150" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Margin" Value="0,20,0,0" />
+    </Style>
+    <Style x:Key="Style.Button.Accent" BasedOn="{StaticResource AccentButtonStyle}" TargetType="Button">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="Width" Value="150" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Margin" Value="0,20,0,0" />
+    </Style>
+
+    <!--  Grid  -->
+    <Style x:Key="Style.Grid.Settings" TargetType="Grid">
+        <Setter Property="Margin" Value="10,5,10,5" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="BorderBrush">
+            <Setter.Value>
+                <SolidColorBrush Color="AliceBlue" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="BorderThickness" Value="2" />
+    </Style>
+
+    <!--  InfoBar  -->
+    <Style x:Key="Style.InfoBar.SettingsInfo" TargetType="InfoBar">
+        <Setter Property="IsClosable" Value="False" />
+        <Setter Property="IsIconVisible" Value="True" />
+        <Setter Property="IsOpen" Value="True" />
+    </Style>
+    <Style x:Key="Style.InfoBar.SettingsWarning" BasedOn="{StaticResource Style.InfoBar.SettingsInfo}" TargetType="InfoBar">
+        <Setter Property="Severity" Value="Warning" />
+    </Style>
+    <Style x:Key="Style.InfoBar.SettingsSuccess" BasedOn="{StaticResource Style.InfoBar.SettingsInfo}" TargetType="InfoBar">
+        <Setter Property="Severity" Value="Success" />
+    </Style>
+    <Style x:Key="Style.InfoBar.SettingsError" BasedOn="{StaticResource Style.InfoBar.SettingsInfo}" TargetType="InfoBar">
+        <Setter Property="Severity" Value="Error" />
+    </Style>
+</ResourceDictionary>

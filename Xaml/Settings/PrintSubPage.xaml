@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<StackPanel xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Orientation="Vertical">
+    <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto" Style="{StaticResource Style.Grid.Settings}">
+        <InfoBar x:Name="InfoBar_PrinterName"
+                 Title="{StaticResource PrintSubPage.PrinterName.Text}"
+                 Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                 Message="{StaticResource PrintSubPage.PrinterName.Message}"
+                 Style="{StaticResource Style.InfoBar.SettingsInfo}" />
+        <TextBox x:Name="Input_PrinterName" Grid.Row="1" Grid.Column="0" MaxLength="24" />
+        <Button x:Name="Button_PrinterName" Grid.Row="1" Grid.Column="1" Content="{StaticResource SettingsPage.Set.Text}" />
+    </Grid>
+    <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto" Style="{StaticResource Style.Grid.Settings}">
+        <InfoBar Title="{StaticResource PrintSubPage.AutoCutEPS.Text}"
+                 Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
+                 Message="{StaticResource PrintSubPage.AutoCutEPS.Message}"
+                 Style="{StaticResource Style.InfoBar.SettingsInfo}" />
+        <NumberBox x:Name="Input_AutoCutEPS" Grid.Row="1"
+                   Grid.Column="0" Maximum="0.1" Minimum="0.01"
+                   Style="{StaticResource Style.NumberBox.Normal}" />
+        <Button x:Name="Button_AutoCutEPS" Grid.Row="1" Grid.Column="1" Content="{StaticResource SettingsPage.Set.Text}" />
+    </Grid>
+</StackPanel>

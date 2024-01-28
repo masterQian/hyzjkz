@@ -1,0 +1,8 @@
+namespace hyzjkz {
+    runtimeclass ModelPhoto {
+        ModelPhoto(String date_str, String filename);
+        String ThumbPath { get; };
+        String PhotoPath { get; };
+        Microsoft.UI.Xaml.Media.Imaging.BitmapImage PhotoSource { get; };
+    }
+}

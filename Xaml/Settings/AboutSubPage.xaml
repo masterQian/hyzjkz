@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<StackPanel xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center" Orientation="Vertical">
+    <StackPanel Margin="0,0,0,20" HorizontalAlignment="Center" VerticalAlignment="Center" Orientation="Horizontal">
+        <Image x:Name="Image_Icon"
+               Width="{StaticResource About.Icon.Width}"
+               Height="{StaticResource About.Icon.Height}"
+               Margin="0,0,20,0" Stretch="Fill" />
+        <TextBlock Margin="20,0,0,0" FontWeight="Bold" Style="{StaticResource Style.Text.Largest}" Text="{StaticResource App.Name}" />
+    </StackPanel>
+    <TextBlock Margin="0,10,0,10" HorizontalAlignment="Left" Style="{StaticResource Style.Text.Large}" Text="{StaticResource AboutSubPage.About.Text}" />
+    <TextBlock Margin="0,10,0,10" Style="{StaticResource Style.Text.Middle}" Text="{StaticResource AboutSubPage.Version1.Text}" />
+    <TextBlock Margin="0,10,0,10" Style="{StaticResource Style.Text.Middle}" Text="{StaticResource AboutSubPage.Version2.Text}" />
+    <TextBlock Margin="0,10,0,10" Style="{StaticResource Style.Text.Middle}" Text="{StaticResource AboutSubPage.Copyright.Text}" />
+    <HyperlinkButton Margin="0,10,0,10" HorizontalAlignment="Center" Content="{StaticResource AboutSubPage.HyperLink.Text}" NavigateUri="https://github.com/masterQian" />
+</StackPanel>

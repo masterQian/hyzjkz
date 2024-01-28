@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Grid xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      HorizontalAlignment="Center"
+      VerticalAlignment="Center"
+      ColumnDefinitions="Auto,Auto,Auto"
+      RowDefinitions="Auto,Auto,Auto">
+    <Button x:Name="Button_Front" Grid.Row="0" Grid.Column="0"
+            Width="{StaticResource IDCardPreviewWidth}"
+            Height="{StaticResource IDCardPreviewHeight}"
+            Padding="0,0,0,0" Tag="false">
+        <SymbolIcon Symbol="Add" />
+    </Button>
+    <Button x:Name="Button_Back" Grid.Row="0" Grid.Column="1"
+            Width="{StaticResource IDCardPreviewWidth}"
+            Height="{StaticResource IDCardPreviewHeight}"
+            Padding="0,0,0,0" Tag="false">
+        <SymbolIcon Symbol="Add" />
+    </Button>
+    <Image x:Name="Image_Preview" Grid.Row="0"
+           Grid.Column="2"
+           Width="{StaticResource IDCardPreviewWidth}"
+           Height="{StaticResource IDCardPreviewHeight}"
+           Stretch="Fill" />
+    <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Style.Text.Large}" Text="{StaticResource IDCardSubPage.Front.Text}" />
+    <TextBlock Grid.Row="1" Grid.Column="1" Style="{StaticResource Style.Text.Large}" Text="{StaticResource IDCardSubPage.Back.Text}" />
+    <TextBlock x:Name="Preview_Text" Grid.Row="1" Grid.Column="2"
+               Style="{StaticResource Style.Text.Large}"
+               Text="{StaticResource IDCardSubPage.Preview.Text}" />
+    <Button x:Name="Button_Clear" Grid.Row="2" Grid.Column="1"
+            Content="{StaticResource IDCardSubPage.Clear.Text}"
+            Style="{StaticResource Style.Button.Normal}" />
+    <Button x:Name="Button_Work" Grid.Row="2" Grid.Column="2"
+            Content="{StaticResource IDCardSubPage.Work.Text}"
+            Style="{StaticResource Style.Button.Accent}" />
+</Grid>

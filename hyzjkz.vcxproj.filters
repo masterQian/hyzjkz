@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="MainWindow.xaml" />
+    <Page Include="HistoryPage.xaml">
+      <Filter>Pages</Filter>
+    </Page>
+    <Page Include="ToolsPage.xaml">
+      <Filter>Pages</Filter>
+    </Page>
+    <Page Include="RecordPage.xaml">
+      <Filter>Pages</Filter>
+    </Page>
+    <Page Include="SettingsPage.xaml">
+      <Filter>Pages</Filter>
+    </Page>
+    <Page Include="TemplatePage.xaml">
+      <Filter>Pages</Filter>
+    </Page>
+    <Page Include="PrintPage.xaml">
+      <Filter>Pages</Filter>
+    </Page>
+    <Page Include="Xaml\Settings\AboutSubPage.xaml">
+      <Filter>Pages\Xaml\Settings</Filter>
+    </Page>
+    <Page Include="Xaml\Settings\BusinessSubPage.xaml">
+      <Filter>Pages\Xaml\Settings</Filter>
+    </Page>
+    <Page Include="Xaml\Settings\PathSubPage.xaml">
+      <Filter>Pages\Xaml\Settings</Filter>
+    </Page>
+    <Page Include="Xaml\Settings\PathSubPagePathItem.xaml">
+      <Filter>Pages\Xaml\Settings</Filter>
+    </Page>
+    <Page Include="Xaml\Settings\PrintSubPage.xaml">
+      <Filter>Pages\Xaml\Settings</Filter>
+    </Page>
+    <Page Include="Xaml\Tools\IDCardSubPage.xaml">
+      <Filter>Pages\Xaml\Tools</Filter>
+    </Page>
+    <Page Include="Xaml\RecordMonthItem.xaml">
+      <Filter>Pages\Xaml</Filter>
+    </Page>
+    <Page Include="Xaml\RecordDayItem.xaml">
+      <Filter>Pages\Xaml</Filter>
+    </Page>
+    <Page Include="Resources\RDString.xaml">
+      <Filter>Resources</Filter>
+    </Page>
+    <Page Include="Resources\RDValue.xaml">
+      <Filter>Resources</Filter>
+    </Page>
+    <Page Include="Resources\RDStyle.xaml">
+      <Filter>Resources</Filter>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="MainWindow.idl" />
+    <Midl Include="ModelPhoto.idl">
+      <Filter>Models</Filter>
+    </Midl>
+    <Midl Include="ModelTemplateData.idl">
+      <Filter>Models</Filter>
+    </Midl>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <Filter>Others</Filter>
+    </ClCompile>
+    <ClCompile Include="$(GeneratedFilesDir)module.g.cpp">
+      <Filter>Others</Filter>
+    </ClCompile>
+    <ClCompile Include="app.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Pages">
+      <UniqueIdentifier>{510a001f-8bb9-4274-ba4f-ace2a7e82d11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Models">
+      <UniqueIdentifier>{a1cd4f31-f343-4041-be2e-e83dc2a21dee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Others">
+      <UniqueIdentifier>{c9027b48-adc2-47ab-b99e-c53141d97811}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pages\Xaml">
+      <UniqueIdentifier>{9fba3e06-b237-4bad-912e-6e0bc9e59e29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pages\Xaml\Settings">
+      <UniqueIdentifier>{3cbb798e-520c-447b-a6c4-afb69bf60d16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Pages\Xaml\Tools">
+      <UniqueIdentifier>{e9ceb314-2aed-47a4-b477-478746261d60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{289ea7b8-60cb-4887-9960-5c03bcf9e8e7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis">
+      <Filter>Others</Filter>
+    </Natvis>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h">
+      <Filter>Others</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="app.manifest">
+      <Filter>Others</Filter>
+    </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config">
+      <Filter>Others</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="hyzjkz.rc" />
+  </ItemGroup>
+</Project>

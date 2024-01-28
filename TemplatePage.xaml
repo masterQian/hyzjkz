@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page x:Class="hyzjkz.TemplatePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="using:hyzjkz"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      NavigationCacheMode="Required" mc:Ignorable="d">
+    <Grid x:Name="Grid_Main" RowDefinitions="*, Auto, Auto">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{StaticResource TemplateListView.Width}" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Border Grid.Row="0" Grid.Column="0" Background="AntiqueWhite">
+            <TextBlock Style="{StaticResource Style.Text.Middle}" Text="{StaticResource TemplatePage.TemplateList.Text}" />
+        </Border>
+        <Grid Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+              Background="AliceBlue"
+              ColumnDefinitions="Auto, Auto, Auto, *">
+            <FontIcon x:Name="Icon_Lock" Grid.Column="0"
+                      Margin="20,0,10,0" Glyph="&#xE72E;"
+                      Visibility="Collapsed" />
+            <FontIcon x:Name="Icon_UnLock" Grid.Column="0"
+                      Margin="20,0,10,0" Glyph="&#xE785;"
+                      Visibility="Collapsed" />
+            <TextBlock x:Name="TB_TemplateName" Grid.Column="1" Margin="10,0,20,0" Style="{StaticResource Style.Text.Middle}" />
+            <TextBlock Grid.Column="2" Margin="10,0,10,0" Style="{StaticResource Style.Text.Small}" Text="{x:Bind CanvasSizeString}" />
+            <CommandBar Grid.Column="3" HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        DefaultLabelPosition="Right" IsOpen="False">
+                <AppBarButton Click="AppBarButton_Click" Icon="Add" Label="{StaticResource TemplatePage.Bar.Add}" />
+                <AppBarButton Click="AppBarButton_Click" Icon="Delete" Label="{StaticResource TemplatePage.Bar.Delete}" />
+                <AppBarButton Click="AppBarButton_Click" Icon="Preview" Label="{StaticResource TemplatePage.Bar.Preview}" />
+                <AppBarButton Click="AppBarButton_Click" Icon="Save" Label="{StaticResource TemplatePage.Bar.Save}" />
+            </CommandBar>
+        </Grid>
+        <ListView x:Name="LV_Templates" Grid.Row="1"
+                  Grid.RowSpan="2" Grid.Column="0"
+                  VerticalAlignment="Stretch"
+                  Background="AntiqueWhite"
+                  IsItemClickEnabled="True" IsSwipeEnabled="False"
+                  SelectionChanged="LV_Templates_SelectionChanged"
+                  SelectionMode="Single" />
+        <Grid Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"
+              Padding="20,0,0,0"
+              ColumnDefinitions="Auto, Auto, Auto, *">
+            <StackPanel Grid.Column="0" Margin="0,10,20,10" Orientation="Horizontal">
+                <TextBlock Margin="0,0,10,0" Style="{StaticResource Style.Text.Small}" Text="{StaticResource TemplatePage.Level}" />
+                <NumberBox x:Name="TA_Order" Minimum="0" Style="{StaticResource Style.NumberBox.Normal}" />
+            </StackPanel>
+            <CheckBox x:Name="TA_Rotate" Grid.Column="1" Content="{StaticResource TemplatePage.Rotate}" />
+            <CheckBox x:Name="TA_AutoCut" Grid.Column="2" Content="{StaticResource TemplatePage.AutoCut}" />
+            <CommandBar Grid.Column="3" HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Background="Transparent"
+                        DefaultLabelPosition="Right" IsOpen="False">
+                <AppBarButton Click="AppBarButton_Click" Icon="Add" Label="{StaticResource TemplatePage.Bar.AddItem}" />
+                <AppBarButton Click="AppBarButton_Click" Icon="Delete" Label="{StaticResource TemplatePage.Bar.DeleteItem}" />
+            </CommandBar>
+        </Grid>
+        <Image x:Name="CanvasImage" Grid.Row="2" Grid.Column="1"
+               Width="{StaticResource CanvasPreviewWidth}"
+               Height="{StaticResource CanvasPreviewHeight}" />
+        <ListView x:Name="LV_TemplateData" Grid.Row="2"
+                  Grid.Column="2"
+                  Height="{StaticResource CanvasPreviewHeight}"
+                  VerticalAlignment="Stretch" AllowDrop="True"
+                  CanReorderItems="True" IsItemClickEnabled="True"
+                  IsSwipeEnabled="False" SelectionMode="Single">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="local:ModelTemplateData">
+                    <Grid Margin="0,5,0,5" BorderBrush="LightSeaGreen"
+                          BorderThickness="1" ColumnDefinitions="Auto, *, *"
+                          RowDefinitions="*, *">
+                        <TextBlock Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
+                                   Margin="5,2,5,2"
+                                   Style="{StaticResource Style.Text.Small}"
+                                   Text="{StaticResource TemplatePage.ItemInfo}" />
+                        <NumberBox Grid.Row="0" Grid.Column="1" Margin="2,2,1,2"
+                                   Maximum="2000" Minimum="0"
+                                   Style="{StaticResource Style.NumberBox.Normal}"
+                                   Value="{x:Bind TLeft, Mode=TwoWay}" />
+                        <NumberBox Grid.Row="0" Grid.Column="2" Margin="1,2,2,2"
+                                   Maximum="2000" Minimum="0"
+                                   Style="{StaticResource Style.NumberBox.Normal}"
+                                   Value="{x:Bind TTop, Mode=TwoWay}" />
+                        <NumberBox Grid.Row="1" Grid.Column="1" Margin="2,2,1,2"
+                                   Maximum="2000" Minimum="1"
+                                   Style="{StaticResource Style.NumberBox.Normal}"
+                                   Value="{x:Bind TWidth, Mode=TwoWay}" />
+                        <NumberBox Grid.Row="1" Grid.Column="2" Margin="1,2,2,2"
+                                   Maximum="2000" Minimum="1"
+                                   Style="{StaticResource Style.NumberBox.Normal}"
+                                   Value="{x:Bind THeight, Mode=TwoWay}" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Page>

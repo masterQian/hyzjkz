@@ -1,0 +1,7 @@
+# VS临时文件
+.vs/
+Generated Files/
+OutputDebug/
+OutputRelease/
+packages/
+Temp/

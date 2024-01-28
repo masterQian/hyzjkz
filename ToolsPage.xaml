@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Page x:Class="hyzjkz.ToolsPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="using:hyzjkz"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      NavigationCacheMode="Required" mc:Ignorable="d">
+    <NavigationView x:Name="NV_Main" IsBackButtonVisible="Collapsed"
+                    IsSettingsVisible="False" PaneDisplayMode="Left"
+                    PaneTitle="{StaticResource MainWindow.NVI_Tools.Text}"
+                    SelectionChanged="NV_Main_SelectionChanged">
+        <NavigationView.MenuItems>
+            <NavigationViewItem x:Name="NVI_Home" Content="{StaticResource ToolsPage.NVI_Home.Text}" Icon="Home" />
+            <NavigationViewItem Content="{StaticResource ToolsPage.NVI_Picture.Text}" Icon="BrowsePhotos">
+                <NavigationViewItem.MenuItems>
+                    <NavigationViewItem x:Name="NVI_IDCard" Content="{StaticResource ToolsPage.NVI_IDCard.Text}" Icon="People" />
+                </NavigationViewItem.MenuItems>
+            </NavigationViewItem>
+        </NavigationView.MenuItems>
+        <Frame x:Name="Frame_Main" />
+    </NavigationView>
+</Page>

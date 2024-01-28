@@ -1,0 +1,6 @@
+namespace hyzjkz {
+    [default_interface]
+    runtimeclass PrintPage : Microsoft.UI.Xaml.Controls.Page {
+        PrintPage();
+    }
+}
