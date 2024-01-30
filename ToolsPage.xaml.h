@@ -8,17 +8,26 @@ using namespace winrt::Microsoft::UI::Xaml;
 
 namespace winrt::hyzjkz::implementation {
     struct ToolsPage : ToolsPageT<ToolsPage> {
-        using HomeSubPage = SubPage<Controls::Image>;
-        HomeSubPage Home;
+        struct HomeSubPage : MasterQian::WinRT::SubPage<Controls::Image, HomeSubPage> {
 
-        struct IDCardSubPage : SubPage<Controls::Grid> {
-            Controls::Button button_front;
-            Controls::Button button_back;
-            Controls::Image image_preview;
-            Controls::TextBlock preview_text;
-            Controls::Button button_clear;
-            Controls::Button button_work;
+        }Home;
+
+        struct IDCardSubPage : MasterQian::WinRT::SubPage<Controls::Grid, IDCardSubPage> {
+            Controls::Button button_front{ nullptr };
+            Controls::Button button_back{ nullptr };
+            Controls::Image image_preview{ nullptr };
+            Controls::TextBlock preview_text{ nullptr };
+            Controls::Button button_clear{ nullptr };
+            Controls::Button button_work{ nullptr };
         }IDCard;
+
+        struct JigsawSubPage : MasterQian::WinRT::SubPage<Controls::Grid, JigsawSubPage> {
+            Controls::ToggleSwitch switch_mode{ nullptr };
+            Controls::AppBarButton button_import{ nullptr };
+            Controls::AppBarButton button_clear{ nullptr };
+            Controls::AppBarButton button_save{ nullptr };
+            Controls::Canvas canvas{ nullptr };
+        }Jigsaw;
 
         ToolsPage();
         F_EVENT void NV_Main_SelectionChanged(Controls::NavigationView const&, Controls::NavigationViewSelectionChangedEventArgs const&);

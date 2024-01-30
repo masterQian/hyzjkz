@@ -257,7 +257,7 @@ namespace winrt::hyzjkz::implementation {
 		InitializeComponent();
 		
 		Loaded([this] (auto, auto) -> Windows::Foundation::IAsyncAction {
-			if (Global.cfg.get<GlobalType::USE_PASSWORD>(GlobalConfig::USE_PASSWORD, GlobalDefault::USE_PASSWORD)) {
+			if (Global.cfg.Get<GlobalConfig::USE_PASSWORD>()) {
 				auto grid_main{ Grid_Main() };
 				grid_main.Visibility(Visibility::Collapsed);
 				co_await Global.ui_window->as<hyzjkz::MainWindow>().ShowPasswordDialog();

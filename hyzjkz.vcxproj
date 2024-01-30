@@ -186,6 +186,7 @@
     <Page Include="ToolsPage.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Xaml\PathSubPagePathItem.xaml" />
     <Page Include="Xaml\RecordDayItem.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -193,9 +194,11 @@
     <Page Include="Xaml\Settings\AboutSubPage.xaml" />
     <Page Include="Xaml\Settings\BusinessSubPage.xaml" />
     <Page Include="Xaml\Settings\PathSubPage.xaml" />
-    <Page Include="Xaml\Settings\PathSubPagePathItem.xaml" />
     <Page Include="Xaml\Settings\PrintSubPage.xaml" />
     <Page Include="Xaml\Tools\IDCardSubPage.xaml" />
+    <Page Include="Xaml\Tools\JigsawSubPage.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="app.cpp" />

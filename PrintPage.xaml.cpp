@@ -23,7 +23,7 @@ namespace winrt::hyzjkz::implementation {
 				auto src_height{ src.Height() }; // 源高度
 				auto src_scale{ static_cast<mqf64>(src_height) / src_width }; // 源高宽比
 				auto actual_scale{ static_cast<mqf64>(actual_height) / actual_width }; // 实际高宽比
-				auto eps{ Global.cfg.get<GlobalType::AUTOCUT_EPS>(GlobalConfig::AUTOCUT_EPS) }; // 容忍范围
+				auto eps{ Global.cfg.Get<GlobalConfig::AUTOCUT_EPS>() }; // 容忍范围
 				if (src_scale + eps < actual_scale) { // 说明源太宽, 选择左右裁剪
 					auto correct_width{ static_cast<mqui32>(src_height / actual_scale) }; // 计算修正宽度
 					crop_rect = { (src_width - correct_width) / 2U, 0U, correct_width, src_height }; // 两侧碎片长度均分
@@ -174,7 +174,7 @@ namespace winrt::hyzjkz::implementation {
 
 	// 打印照片
 	static Windows::Foundation::IAsyncAction PrintPhoto(PrintPage* page, hstring template_name, hstring photo_path) noexcept {
-		auto printer_name{ Global.cfg.get(GlobalConfig::PRINTER_NAME, GlobalDefault::PRINTER_NAME) };
+		auto printer_name{ Global.cfg.Get<GlobalConfig::PRINTER_NAME>() };
 		bool failed{ true };
 		if (!printer_name.empty()) {
 			MasterQian::Media::GDI::Printer printer(printer_name);

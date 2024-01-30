@@ -23,16 +23,17 @@
                 <MenuFlyoutItem Click="MenuItem_Click" Icon="People" Tag="Auto|IDCard" Text="{StaticResource HistoryPage.Menu.IDCard}" />
             </MenuFlyoutSubItem>
             <MenuFlyoutSeparator />
+            <MenuFlyoutItem Click="MenuItem_Click" Icon="Print"
+                            IsEnabled="{x:Bind NotAtExternalLink, Mode=OneWay}"
+                            Tag="Main|Print"
+                            Text="{StaticResource HistoryPage.Menu.Print}" />
+            <MenuFlyoutSeparator />
             <MenuFlyoutItem Click="MenuItem_Click" Icon="Save" Tag="Main|Save" Text="{StaticResource HistoryPage.Menu.Save}" />
             <MenuFlyoutItem Click="MenuItem_Click" Icon="Copy" Tag="Main|Copy" Text="{StaticResource HistoryPage.Menu.Copy}" />
             <MenuFlyoutItem Click="MenuItem_Click" Icon="Delete"
                             IsEnabled="{x:Bind NotAtExternalLink, Mode=OneWay}"
                             Tag="Main|Delete"
                             Text="{StaticResource HistoryPage.Menu.Delete}" />
-            <MenuFlyoutItem Click="MenuItem_Click" Icon="Print"
-                            IsEnabled="{x:Bind NotAtExternalLink, Mode=OneWay}"
-                            Tag="Main|Print"
-                            Text="{StaticResource HistoryPage.Menu.Print}" />
             <MenuFlyoutSeparator />
         </MenuFlyout>
     </Page.Resources>
@@ -88,6 +89,11 @@
                 </AppBarButton>
                 <AppBarButton Click="AddDefault_Click" Icon="Add" Label="{StaticResource HistoryPage.Bar.AddDefault}" />
                 <AppBarButton Click="Import_Click" Icon="Upload" Label="{StaticResource HistoryPage.Bar.Import}" />
+                <AppBarButton Click="AddCopyData_Click" Label="{StaticResource HistoryPage.Bar.AddCopyData}">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xED0E;" />
+                    </AppBarButton.Icon>
+                </AppBarButton>
             </CommandBar>
         </StackPanel>
         <!--  列表框  -->
@@ -106,6 +112,63 @@
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>
+        <!--  添加复印数据对话框  -->
+        <ContentDialog x:Name="AddCopyDataDialog" CloseButtonText="{StaticResource Dialog.Cancel.Text}" DefaultButton="Close">
+            <Grid ColumnDefinitions="*, *, *, *" RowDefinitions="*, *, *">
+                <Button Grid.Row="0" Grid.Column="0" Width="80"
+                        Height="40" Margin="2,2,2,2"
+                        Background="AliceBlue"
+                        Click="AddCopyData_Plus_Click"
+                        Content="{StaticResource HistoryPage.AddCopyData.Plus1}" />
+                <Button Grid.Row="0" Grid.Column="1" Width="80"
+                        Height="40" Margin="2,2,2,2"
+                        Background="LightGreen"
+                        Click="AddCopyData_Plus_Click"
+                        Content="{StaticResource HistoryPage.AddCopyData.Plus2}" />
+                <Button Grid.Row="0" Grid.Column="2" Width="80"
+                        Height="40" Margin="2,2,2,2"
+                        Background="LightCoral"
+                        Click="AddCopyData_Plus_Click"
+                        Content="{StaticResource HistoryPage.AddCopyData.Plus3}" />
+                <Button Grid.Row="0" Grid.Column="3" Width="80"
+                        Height="40" Margin="2,2,2,2"
+                        Background="LightYellow"
+                        Click="AddCopyData_Plus_Click"
+                        Content="{StaticResource HistoryPage.AddCopyData.Plus4}" />
+                <Button Grid.Row="1" Grid.Column="0" Width="80"
+                        Height="40" Margin="2,2,2,2"
+                        Background="LightPink"
+                        Click="AddCopyData_Plus_Click"
+                        Content="{StaticResource HistoryPage.AddCopyData.Plus5}" />
+                <Button Grid.Row="1" Grid.Column="1" Width="80"
+                        Height="40" Margin="2,2,2,2"
+                        Background="LightSalmon"
+                        Click="AddCopyData_Plus_Click"
+                        Content="{StaticResource HistoryPage.AddCopyData.Plus6}" />
+                <Button Grid.Row="1" Grid.Column="2" Width="80"
+                        Height="40" Margin="2,2,2,2"
+                        Background="LightGray"
+                        Click="AddCopyData_Plus_Click"
+                        Content="{StaticResource HistoryPage.AddCopyData.Plus7}" />
+                <Button Grid.Row="1" Grid.Column="3" Width="80"
+                        Height="40" Margin="2,2,2,2"
+                        Background="LightSeaGreen"
+                        Click="AddCopyData_Plus_Click"
+                        Content="{StaticResource HistoryPage.AddCopyData.Plus8}" />
+                <TextBlock Grid.Row="2" Grid.Column="0" Margin="5,5,5,0"
+                           Style="{StaticResource Style.Text.Small}"
+                           Text="{StaticResource HistoryPage.AddCopyData.UserText}" />
+                <NumberBox x:Name="NB_AddCopyData" Grid.Row="2"
+                           Grid.Column="1" Grid.ColumnSpan="2"
+                           Margin="5,5,5,0"
+                           Style="{StaticResource Style.NumberBox.Normal}" />
+                <Button Grid.Row="2" Grid.Column="3" Width="80"
+                        Height="40" Margin="5,5,5,0"
+                        VerticalAlignment="Center"
+                        Click="AddCopyData_Set_Click"
+                        Content="{StaticResource HistoryPage.AddCopyData.OKText}" />
+            </Grid>
+        </ContentDialog>
         <!--  查看大图对话框  -->
         <ContentDialog x:Name="ShowPictureDialog" CloseButtonText="{StaticResource Dialog.Close.Text}" DefaultButton="Close">
             <Grid ColumnDefinitions="*, *" RowDefinitions="*, Auto, Auto">

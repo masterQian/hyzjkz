@@ -28,4 +28,7 @@
     <x:Double x:Key="CanvasPreviewWidth">756</x:Double>
     <x:Double x:Key="CanvasPreviewHeight">495</x:Double>
 
+    <x:Double x:Key="A4PrinterCanvasWidth">2479</x:Double>
+    <x:Double x:Key="A4PrinterCanvasHeight">3508</x:Double>
+
 </ResourceDictionary>

@@ -8,11 +8,11 @@ namespace winrt::hyzjkz::implementation {
 	/*  关于页面  */
 
 	// 初始化
-	static void InitializeAboutSubPage(SubPageBase* subPage) noexcept {
-		auto sp{ subPage->to<SettingsPage::AboutSubPage>() };
+	static void InitializeAboutSubPage(IInspectable* subPage) noexcept {
+		auto sp{ SettingsPage::AboutSubPage::From(subPage) };
 		Application::LoadComponent(*sp, Windows::Foundation::Uri{ L"ms-appx:///Xaml/Settings/AboutSubPage.xaml" });
-		sp->image_icon = sp->content().FindName(L"Image_Icon").as<Controls::Image>();
-		sp->image_icon.Source(util::BinToBMP(Global.res_icon, { 
+		sp->Bind(sp->image_icon, L"Image_Icon");
+		sp->image_icon.Source(util::BinToBMP(Global.res_icon, {
 			static_cast<mqui32>(util::RDValue<mqf64>(L"About.Icon.Width")),
 			static_cast<mqui32>(util::RDValue<mqf64>(L"About.Icon.Height")) }, true));
 	}
@@ -28,9 +28,9 @@ namespace winrt::hyzjkz::implementation {
 			.ShowConfirmDialog(util::RDString<hstring>(L"PathSubPage.Tip.ConfirmDeleleLink") + tool_name) };
 		if (result) {
 			// 更新变量与文件
-			auto tools{ Global.cfg.get_config(GlobalConfig::TOOLS) };
+			auto tools{ Global.cfg.Get(GlobalConfig::TOOLS) };
 			tools.remove(tool_name);
-			Global.cfg.set(GlobalConfig::TOOLS, tools);
+			Global.cfg.Set(GlobalConfig::TOOLS, tools);
 			Global.c_configFilePath.Write(Global.cfg.save());
 
 			// 更新UI
@@ -54,13 +54,13 @@ namespace winrt::hyzjkz::implementation {
 		hstring tool_name{ co_await Global.ui_window->as<hyzjkz::MainWindow>()
 			.ShowInputDialog(util::RDString<hstring>(L"PathSubPage.Tip.InputLinkName")) };
 		if (!tool_name.empty() && old_tool_name != tool_name) {
-			auto tools{ Global.cfg.get_config(GlobalConfig::TOOLS) };
+			auto tools{ Global.cfg.Get(GlobalConfig::TOOLS) };
 			if (!tools.contains(tool_name)) {
 				// 更新变量与文件
 				auto tool_path{ tools.get(old_tool_name) };
 				tools.set(tool_name, tool_path);
 				tools.remove(old_tool_name);
-				Global.cfg.set(GlobalConfig::TOOLS, tools);
+				Global.cfg.Set(GlobalConfig::TOOLS, tools);
 				Global.c_configFilePath.Write(Global.cfg.save());
 				// 更新UI
 				button_name.Content(box_value(tool_name));
@@ -88,9 +88,9 @@ namespace winrt::hyzjkz::implementation {
 			// 更新变量与文件
 			std::wstring tool_name{ button_name.Content().as<hstring>() };
 			std::wstring tool_path{ file.Path() };
-			auto tools{ Global.cfg.get_config(GlobalConfig::TOOLS) };
+			auto tools{ Global.cfg.Get(GlobalConfig::TOOLS) };
 			tools.set(tool_name, tool_path);
-			Global.cfg.set(GlobalConfig::TOOLS, tools);
+			Global.cfg.Set(GlobalConfig::TOOLS, tools);
 			Global.c_configFilePath.Write(Global.cfg.save());
 			// 更新UI
 			button_path.Content(box_value(tool_path));
@@ -102,7 +102,7 @@ namespace winrt::hyzjkz::implementation {
 	// 生成外链项
 	static Controls::Grid MakeToolItemGrid(std::wstring_view tool_name, std::wstring_view tool_path) noexcept {
 		Controls::Grid grid;
-		Application::LoadComponent(grid, Windows::Foundation::Uri{ L"ms-appx:///Xaml/Settings/PathSubPagePathItem.xaml" });
+		Application::LoadComponent(grid, Windows::Foundation::Uri{ L"ms-appx:///Xaml/PathSubPagePathItem.xaml" });
 		auto button_delete{ grid.FindName(L"Button_Delete").as<Controls::Button>() };
 		button_delete.Click(&ToolsDelete);
 		auto button_name{ grid.FindName(L"Button_Name").as<Controls::Button>() };
@@ -125,11 +125,11 @@ namespace winrt::hyzjkz::implementation {
 			std::wstring tool_name{ file.Name() };
 			std::wstring tool_path{ file.Path() };
 
-			auto tools{ Global.cfg.get_config(GlobalConfig::TOOLS) };
+			auto tools{ Global.cfg.Get(GlobalConfig::TOOLS) };
 			if (!tools.contains(tool_name)) {
 				// 更新变量与文件
 				tools.set(tool_name, tool_path);
-				Global.cfg.set(GlobalConfig::TOOLS, tools);
+				Global.cfg.Set(GlobalConfig::TOOLS, tools);
 				Global.c_configFilePath.Write(Global.cfg.save());
 				// 更新UI
 				sp->list_tools.Items().Append(MakeToolItemGrid(tool_name, tool_path));
@@ -144,15 +144,14 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 初始化
-	static void InitializePathSubPage(SubPageBase* subPage) noexcept {
-		auto sp{ subPage->to<SettingsPage::PathSubPage>() };
+	static void InitializePathSubPage(IInspectable* subPage) noexcept {
+		auto sp{ SettingsPage::PathSubPage::From(subPage) };
 		Application::LoadComponent(*sp, Windows::Foundation::Uri{ L"ms-appx:///Xaml/Settings/PathSubPage.xaml" });
-		auto panel{ sp->content() };
 		// EOS路径
-		sp->button_eospath_set = panel.FindName(L"Button_EOSPath_Set").as<Controls::Button>();
-		sp->button_eospath_clear = panel.FindName(L"Button_EOSPath_Clear").as<Controls::Button>();
-		sp->infobar_eospath = panel.FindName(L"InfoBar_EOSPath").as<Controls::InfoBar>();
-		sp->input_eospath = panel.FindName(L"Input_EOSPath").as<Controls::TextBox>();
+		sp->Bind(sp->button_eospath_set, L"Button_EOSPath_Set");
+		sp->Bind(sp->button_eospath_clear, L"Button_EOSPath_Clear");
+		sp->Bind(sp->infobar_eospath, L"InfoBar_EOSPath");
+		sp->Bind(sp->input_eospath, L"Input_EOSPath");
 		sp->button_eospath_set.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
 			Windows::Storage::Pickers::FileOpenPicker openPicker;
 			openPicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
@@ -162,7 +161,7 @@ namespace winrt::hyzjkz::implementation {
 			if (Windows::Storage::StorageFile file{ co_await openPicker.PickSingleFileAsync() }; file != nullptr) {
 				sp->input_eospath.Text(file.Path());
 				sp->infobar_eospath.Severity(Controls::InfoBarSeverity::Warning);
-				Global.cfg.set(GlobalConfig::EOS_PATH, file.Path());
+				Global.cfg.Set<GlobalConfig::EOS_PATH>(file.Path());
 				Global.c_configFilePath.Write(Global.cfg.save());
 			}
 			});
@@ -170,28 +169,28 @@ namespace winrt::hyzjkz::implementation {
 			if (!sp->input_eospath.Text().empty()) {
 				sp->input_eospath.Text(L"");
 				sp->infobar_eospath.Severity(Controls::InfoBarSeverity::Error);
-				Global.cfg.set(GlobalConfig::EOS_PATH, L"");
+				Global.cfg.Set<GlobalConfig::EOS_PATH>();
 				Global.c_configFilePath.Write(Global.cfg.save());
 			}
 			});
 		// 工具链
-		sp->button_tools_add = panel.FindName(L"Button_Tools_Add").as<Controls::Button>();
-		sp->list_tools = panel.FindName(L"List_Tools").as<Controls::ListView>();
+		sp->Bind(sp->button_tools_add, L"Button_Tools_Add");
+		sp->Bind(sp->list_tools, L"List_Tools");
 		sp->button_tools_add.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
 			co_await ToolsAdd(sp);
 			});
 		auto tool_items{ sp->list_tools.Items() };
-		auto tools{ Global.cfg.get_config(GlobalConfig::TOOLS) };
+		auto tools{ Global.cfg.Get(GlobalConfig::TOOLS) };
 		for (auto& [tool_name, _] : tools) {
 			tool_items.Append(MakeToolItemGrid(tool_name, tools.get(tool_name)));
 		}
 	}
 
 	// 更新
-	static void UpdatePathSubPage(SubPageBase* subPage) noexcept {
-		auto sp{ subPage->to<SettingsPage::PathSubPage>() };
+	static void UpdatePathSubPage(IInspectable* subPage) noexcept {
+		auto sp{ SettingsPage::PathSubPage::From(subPage) };
 		// EOS路径
-		auto eos_path{ Global.cfg.get(GlobalConfig::EOS_PATH, GlobalDefault::EOS_PATH) };
+		auto eos_path{ Global.cfg.Get<GlobalConfig::EOS_PATH>() };
 		sp->input_eospath.Text(eos_path);
 		sp->infobar_eospath.Severity(eos_path.empty() ? Controls::InfoBarSeverity::Error : Controls::InfoBarSeverity::Warning);
 	}
@@ -199,52 +198,51 @@ namespace winrt::hyzjkz::implementation {
 	/*  营业页面  */
 
 	// 初始化
-	static void InitializeBusinessSubPage(SubPageBase* subPage) noexcept {
-		auto sp{ subPage->to<SettingsPage::BusinessSubPage>() };
+	static void InitializeBusinessSubPage(IInspectable* subPage) noexcept {
+		auto sp{ SettingsPage::BusinessSubPage::From(subPage) };
 		Application::LoadComponent(*sp, Windows::Foundation::Uri{ L"ms-appx:///Xaml/Settings/BusinessSubPage.xaml" });
-		auto panel{ sp->content() };
 		// 单价
-		sp->button_unitprice = panel.FindName(L"Button_UnitPrice").as<Controls::Button>();
-		sp->input_unitprice = panel.FindName(L"Input_UnitPrice").as<Controls::NumberBox>();
+		sp->Bind(sp->button_unitprice, L"Button_UnitPrice");
+		sp->Bind(sp->input_unitprice, L"Input_UnitPrice");
 		sp->button_unitprice.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
-			Global.cfg.set(GlobalConfig::UNIT_PRICE, static_cast<GlobalType::UNIT_PRICE>(sp->input_unitprice.Value()));
+			Global.cfg.Set<double, GlobalConfig::UNIT_PRICE>(sp->input_unitprice.Value());
 			Global.c_configFilePath.Write(Global.cfg.save());
 			co_await Global.ui_window->as<hyzjkz::MainWindow>()
 				.ShowTipDialog(util::RDString<hstring>(L"PathSubPage.Tip.SaveSuccess"));
 			});
 		// 清理周期
-		sp->button_resetmonth = panel.FindName(L"Button_ResetMonth").as<Controls::Button>();
-		sp->input_resetmonth = panel.FindName(L"Input_ResetMonth").as<Controls::NumberBox>();
+		sp->Bind(sp->button_resetmonth, L"Button_ResetMonth");
+		sp->Bind(sp->input_resetmonth, L"Input_ResetMonth");
 		sp->button_resetmonth.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
-			Global.cfg.set(GlobalConfig::RESET_MONTH, static_cast<GlobalType::RESET_MONTH>(sp->input_resetmonth.Value()));
+			Global.cfg.Set<double, GlobalConfig::RESET_MONTH>(sp->input_resetmonth.Value());
 			Global.c_configFilePath.Write(Global.cfg.save());
 			co_await Global.ui_window->as<hyzjkz::MainWindow>()
 				.ShowTipDialog(util::RDString<hstring>(L"PathSubPage.Tip.SaveSuccess"));
 			});
 		// 显示营业额
-		sp->switch_showturnover = panel.FindName(L"Switch_ShowTurnover").as<Controls::ToggleSwitch>();
+		sp->Bind(sp->switch_showturnover, L"Switch_ShowTurnover");
 		sp->switch_showturnover.Toggled([sp] (auto, auto) {
-			Global.cfg.set(GlobalConfig::SHOW_TURNOVER, sp->switch_showturnover.IsOn());
+			Global.cfg.Set<GlobalConfig::SHOW_TURNOVER>(sp->switch_showturnover.IsOn());
 			Global.c_configFilePath.Write(Global.cfg.save());
 			Global.ui_window->as<hyzjkz::MainWindow>().UpdateFlags(UpdateFlag::HISTORY, UpdateFlag::SHOW_TURNOVER);
 			});
 		// 管理员密码
-		sp->button_password = panel.FindName(L"Button_Password").as<Controls::Button>();
-		sp->input_password = panel.FindName(L"Input_Password").as<Controls::TextBox>();
-		sp->switch_password = panel.FindName(L"Switch_Password").as<Controls::ToggleSwitch>();
+		sp->Bind(sp->button_password, L"Button_Password");
+		sp->Bind(sp->input_password, L"Input_Password");
+		sp->Bind(sp->switch_password, L"Switch_Password");
 		sp->switch_password.Toggled([sp] (auto, auto) {
-			Global.cfg.set(GlobalConfig::USE_PASSWORD, sp->switch_password.IsOn());
+			Global.cfg.Set<GlobalConfig::USE_PASSWORD>(sp->switch_password.IsOn());
 			Global.c_configFilePath.Write(Global.cfg.save());
 			});
 		sp->button_password.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
 			auto pwd{ sp->input_password.Text() };
 			if (pwd.empty()) {
-				sp->input_password.Text(Global.cfg.get(GlobalConfig::PASSWORD, GlobalDefault::PASSWORD));
+				sp->input_password.Text(Global.cfg.Get<GlobalConfig::PASSWORD>());
 				co_await Global.ui_window->as<hyzjkz::MainWindow>()
 					.ShowTipDialog(util::RDString<hstring>(L"PathSubPage.Tip.PasswordEmpty"));
 			}
 			else {
-				Global.cfg.set(GlobalConfig::PASSWORD, pwd);
+				Global.cfg.Set<GlobalConfig::PASSWORD>(pwd);
 				Global.c_configFilePath.Write(Global.cfg.save());
 				co_await Global.ui_window->as<hyzjkz::MainWindow>()
 					.ShowTipDialog(util::RDString<hstring>(L"PathSubPage.Tip.SaveSuccess"));
@@ -253,41 +251,40 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 更新
-	static void UpdateBusinessSubPage(SubPageBase* subPage) noexcept {
-		auto sp{ subPage->to<SettingsPage::BusinessSubPage>() };
+	static void UpdateBusinessSubPage(IInspectable* subPage) noexcept {
+		auto sp{ SettingsPage::BusinessSubPage::From(subPage) };
 		// 单价
-		sp->input_unitprice.Value(static_cast<mqf64>(Global.cfg.get<GlobalType::UNIT_PRICE>(GlobalConfig::UNIT_PRICE, GlobalDefault::UNIT_PRICE)));
+		sp->input_unitprice.Value(static_cast<mqf64>(Global.cfg.Get<GlobalConfig::UNIT_PRICE>()));
 		// 清理周期
-		sp->input_resetmonth.Value(static_cast<mqf64>(Global.cfg.get<GlobalType::RESET_MONTH>(GlobalConfig::RESET_MONTH, GlobalDefault::RESET_MONTH)));
+		sp->input_resetmonth.Value(static_cast<mqf64>(Global.cfg.Get<GlobalConfig::RESET_MONTH>()));
 		// 显示营业额
-		sp->switch_showturnover.IsOn(Global.cfg.get<GlobalType::SHOW_TURNOVER>(GlobalConfig::SHOW_TURNOVER, GlobalDefault::SHOW_TURNOVER));
+		sp->switch_showturnover.IsOn(Global.cfg.Get<GlobalConfig::SHOW_TURNOVER>());
 		// 管理员密码
-		sp->switch_password.IsOn(Global.cfg.get<GlobalType::USE_PASSWORD>(GlobalConfig::USE_PASSWORD, GlobalDefault::USE_PASSWORD));
-		sp->input_password.Text(Global.cfg.get(GlobalConfig::PASSWORD, GlobalDefault::PASSWORD));
+		sp->switch_password.IsOn(Global.cfg.Get<GlobalConfig::USE_PASSWORD>());
+		sp->input_password.Text(Global.cfg.Get<GlobalConfig::PASSWORD>());
 	}
 
 	/*  打印页面  */
 
 	// 初始化
-	static void InitializePrintSubPage(SubPageBase* subPage) noexcept {
-		auto sp{ subPage->to<SettingsPage::PrintSubPage>() };
+	static void InitializePrintSubPage(IInspectable* subPage) noexcept {
+		auto sp{ SettingsPage::PrintSubPage::From(subPage) };
 		Application::LoadComponent(*sp, Windows::Foundation::Uri{ L"ms-appx:///Xaml/Settings/PrintSubPage.xaml" });
-		auto panel{ sp->content() };
 		// 打印机名称
-		sp->button_printername = panel.FindName(L"Button_PrinterName").as<Controls::Button>();
-		sp->input_printername = panel.FindName(L"Input_PrinterName").as<Controls::TextBox>();
-		sp->infobar_printername = panel.FindName(L"InfoBar_PrinterName").as<Controls::InfoBar>();
+		sp->Bind(sp->button_printername, L"Button_PrinterName");
+		sp->Bind(sp->input_printername, L"Input_PrinterName");
+		sp->Bind(sp->infobar_printername, L"InfoBar_PrinterName");
 		sp->button_printername.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
-			Global.cfg.set(GlobalConfig::PRINTER_NAME, sp->input_printername.Text());
+			Global.cfg.Set<GlobalConfig::PRINTER_NAME>(sp->input_printername.Text());
 			Global.c_configFilePath.Write(Global.cfg.save());
 			co_await Global.ui_window->as<hyzjkz::MainWindow>()
 				.ShowTipDialog(util::RDString<hstring>(L"PathSubPage.Tip.SaveSuccess"));
 			});
 		// 自动裁剪容忍误差
-		sp->button_autocuteps = panel.FindName(L"Button_AutoCutEPS").as<Controls::Button>();
-		sp->input_autocuteps = panel.FindName(L"Input_AutoCutEPS").as<Controls::NumberBox>();
+		sp->Bind(sp->button_autocuteps, L"Button_AutoCutEPS");
+		sp->Bind(sp->input_autocuteps, L"Input_AutoCutEPS");
 		sp->button_autocuteps.Click([sp] (auto, auto)-> Windows::Foundation::IAsyncAction {
-			Global.cfg.set(GlobalConfig::AUTOCUT_EPS, sp->input_autocuteps.Value());
+			Global.cfg.Set<GlobalConfig::AUTOCUT_EPS>(sp->input_autocuteps.Value());
 			Global.c_configFilePath.Write(Global.cfg.save());
 			co_await Global.ui_window->as<hyzjkz::MainWindow>()
 				.ShowTipDialog(util::RDString<hstring>(L"PathSubPage.Tip.SaveSuccess"));
@@ -295,14 +292,14 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 更新
-	static void UpdatePrintSubPage(SubPageBase* subPage) noexcept {
-		auto sp{ subPage->to<SettingsPage::PrintSubPage>() };
+	static void UpdatePrintSubPage(IInspectable* subPage) noexcept {
+		auto sp{ SettingsPage::PrintSubPage::From(subPage) };
 		// 打印机名称
-		auto printer_name{ Global.cfg.get(GlobalConfig::PRINTER_NAME, GlobalDefault::PRINTER_NAME) };
+		auto printer_name{ Global.cfg.Get<GlobalConfig::PRINTER_NAME>() };
 		sp->input_printername.Text(printer_name);
 		sp->infobar_printername.Severity(printer_name.empty() ? Controls::InfoBarSeverity::Error : Controls::InfoBarSeverity::Informational);
 		// 自动裁剪容忍误差
-		sp->input_autocuteps.Value(Global.cfg.get(GlobalConfig::AUTOCUT_EPS, GlobalDefault::AUTOCUT_EPS));
+		sp->input_autocuteps.Value(Global.cfg.Get<GlobalConfig::AUTOCUT_EPS>());
 	}
 }
 
@@ -321,7 +318,7 @@ namespace winrt::hyzjkz::implementation {
 
 		Loaded([this] (auto, auto) -> Windows::Foundation::IAsyncAction {
 			auto nv_main{ NV_Main() };
-			if (Global.cfg.get<GlobalType::USE_PASSWORD>(GlobalConfig::USE_PASSWORD, GlobalDefault::USE_PASSWORD)) {
+			if (Global.cfg.Get<GlobalConfig::USE_PASSWORD>()) {
 				nv_main.Visibility(Visibility::Collapsed);
 				co_await Global.ui_window->as<hyzjkz::MainWindow>().ShowPasswordDialog();
 				nv_main.Visibility(Visibility::Visible);
@@ -335,7 +332,7 @@ namespace winrt::hyzjkz::implementation {
 		auto tag{ args.SelectedItem().as<Controls::NavigationViewItem>().Tag() };
 		if (tag != nullptr) {
 			auto args{ tag.as<MasterQian::WinRT::Args>() };
-			auto [subPage, func] = args.unbox<SubPageBase*, UpdateSubPageFunc>();
+			auto [subPage, func] = args.unbox<IInspectable*, MasterQian::WinRT::SubPageFunc>();
 			Frame_Main().Content(*subPage);
 			if (func) {
 				func(subPage);

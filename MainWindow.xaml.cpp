@@ -11,9 +11,9 @@ namespace winrt::hyzjkz::implementation {
 
         co_await winrt::resume_background();
 
-        wchar_t clear_month[3]{ L'0', L'0', L'\0' };
+        mqchar clear_month[3]{ L'0', L'0', L'\0' };
         auto month{ static_cast<mqui32>(MasterQian::Timestamp().local().month) };
-        auto resetMonth{ Global.cfg.get<GlobalType::RESET_MONTH>(GlobalConfig::RESET_MONTH, 1U) };
+        auto resetMonth{ Global.cfg.Get<GlobalConfig::RESET_MONTH>() };
 
         if (resetMonth == 0U || resetMonth >= 12U) resetMonth = 1U;
         if (month <= resetMonth) {
@@ -123,7 +123,7 @@ namespace winrt::hyzjkz::implementation {
 
     // 连接相机
     F_EVENT Windows::Foundation::IAsyncAction MainWindow::AttachCamera_Click(IInspectable const&, RoutedEventArgs const&) {
-        MasterQian::Storage::Path eos_path{ Global.cfg.get(GlobalConfig::EOS_PATH) };
+        MasterQian::Storage::Path eos_path{ Global.cfg.Get<GlobalConfig::EOS_PATH>() };
         if (eos_path.IsFile()) {
             MasterQian::System::Process::Execute(eos_path, L"", false, true);
         }
@@ -173,8 +173,7 @@ namespace winrt::hyzjkz::implementation {
         auto dialog{ PasswordDialog() };
         dialog.Content().as<Controls::PasswordBox>().Password(L"");
         dialog.PrimaryButtonClick([ ] (Controls::ContentDialog const& dialog, Controls::ContentDialogButtonClickEventArgs const& args) {
-            if (dialog.Content().as<Controls::PasswordBox>().Password() !=
-                Global.cfg.get(GlobalConfig::PASSWORD, GlobalDefault::PASSWORD)) {
+            if (dialog.Content().as<Controls::PasswordBox>().Password() != Global.cfg.Get<GlobalConfig::PASSWORD>()) {
                 args.Cancel(true);
             }
             });

@@ -11,7 +11,7 @@ namespace winrt::hyzjkz::implementation {
 	static void UpdateToolChain(HistoryPage* page) noexcept {
 		auto items{ page->GV_Photos_Menu_Link().Items() };
 		items.Clear();
-		auto tools{ Global.cfg.get_config(GlobalConfig::TOOLS) };
+		auto tools{ Global.cfg.Get(GlobalConfig::TOOLS) };
 		for (auto& [name, _] : tools) {
 			MasterQian::Storage::Path path{ tools.get(name) };
 			if (path.IsFile()) {
@@ -27,16 +27,25 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// 更新报表数据
-	static void UpdateRecordData(HistoryPage* page, mqui16 year, mqui8 month, mqui8 day) noexcept {
+	// 更新照相报表数据
+	static void UpdateRecordPhotoData(HistoryPage* page, mqui16 year, mqui8 month, mqui8 day) noexcept {
 		std::wstring filename{ std::to_wstring(year) + L".bin" };
 		auto data_path{ Global.c_dataPath / filename };
 		MasterQian::Bin bin{ data_path.Read() };
-		if (bin.size() == sizeof(RecordYearData)) {
-			RecordYearData& recordData{ *reinterpret_cast<RecordYearData*>(bin.data()) };
-			recordData[month - 1][day - 1] = { static_cast<mqui16>(page->mPhotoNum),
-				static_cast<mqui16>(page->mPhotoNum * Global.cfg.get<GlobalType::UNIT_PRICE>(
-					GlobalConfig::UNIT_PRICE, 15U)) };
+		if (RecordData::CheckSize(bin)) {
+			RecordData::From(bin).Set(month, day, page->mPhotoNum, page->mPhotoNum * Global.cfg.Get<GlobalConfig::UNIT_PRICE>());
+			data_path.Write(bin);
+		}
+	}
+
+	// 更新复印报表数据
+	static void UpdateRecordCopyData(HistoryPage* page, mqui32 value) noexcept {
+		auto cur_date{ MasterQian::Timestamp{ page->CDP_Main().Date().as<Windows::Foundation::DateTime>(), true }.local() };
+		std::wstring filename{ std::to_wstring(cur_date.year) + L".bin" };
+		auto data_path{ Global.c_dataPath / filename };
+		MasterQian::Bin bin{ data_path.Read() };
+		if (RecordData::CheckSize(bin)) {
+			RecordData::From(bin).Add(cur_date.month, cur_date.day, value);
 			data_path.Write(bin);
 		}
 	}
@@ -75,7 +84,7 @@ namespace winrt::hyzjkz::implementation {
 
 		// 更新报表数据
 		if (updateRecord) {
-			UpdateRecordData(page, cur_date.year, cur_date.month, cur_date.day);
+			UpdateRecordPhotoData(page, cur_date.year, cur_date.month, cur_date.day);
 		}
 	}
 
@@ -495,7 +504,7 @@ namespace winrt::hyzjkz::implementation {
 namespace winrt::hyzjkz::implementation {
 	HistoryPage::HistoryPage() {
 		mNotAtExternalLink = true;
-		mCoverTurnover = !Global.cfg.get<GlobalType::SHOW_TURNOVER>(GlobalConfig::SHOW_TURNOVER, false);
+		mCoverTurnover = !Global.cfg.Get<GlobalConfig::SHOW_TURNOVER>();
 		mPhotoNum = 0U;
 
 		for (mqui64 i{ }, len{ bmp_nums.size() }; i < len; ++i) {
@@ -523,7 +532,7 @@ namespace winrt::hyzjkz::implementation {
 	F_EVENT void HistoryPage::OnNavigatedTo(Navigation::NavigationEventArgs const& args) {
 		FlagConverter flag{ .value = args.Parameter().as<mqui64>() };
 		if (flag.flags[UpdateFlag::SHOW_TURNOVER]) {
-			CoverTurnover(!Global.cfg.get<GlobalType::SHOW_TURNOVER>(GlobalConfig::SHOW_TURNOVER, false));
+			CoverTurnover(!Global.cfg.Get<GlobalConfig::SHOW_TURNOVER>());
 		}
 		if (flag.flags[UpdateFlag::LINK_MENU]) {
 			UpdateToolChain(this);
@@ -596,6 +605,27 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
+	// 添加复印数据
+	F_EVENT Windows::Foundation::IAsyncAction HistoryPage::AddCopyData_Click(IInspectable const&, RoutedEventArgs const&) {
+		NB_AddCopyData().Value(0.0);
+		co_await AddCopyDataDialog().ShowAsync();
+	}
+
+	// 添加复印数据, 点击
+	F_EVENT void HistoryPage::AddCopyData_Plus_Click(IInspectable const& sender, RoutedEventArgs const&) {
+		std::wstring_view str{ sender.as<Controls::Button>().Content().as<hstring>() };
+		auto value{ std::wcstoul(str.substr(1U).data(), nullptr, 10) };
+		UpdateRecordCopyData(this, value);
+		AddCopyDataDialog().Hide();
+	}
+
+	// 添加复印数据, 自定义点击
+	F_EVENT void HistoryPage::AddCopyData_Set_Click(IInspectable const&, RoutedEventArgs const&) {
+		auto value{ static_cast<mqui32>(NB_AddCopyData().Value()) };
+		UpdateRecordCopyData(this, value);
+		AddCopyDataDialog().Hide();
+	}
+
 	// 双击查看大图
 	F_EVENT Windows::Foundation::IAsyncAction HistoryPage::GV_Photos_DoubleClick(IInspectable const&, Input::DoubleTappedRoutedEventArgs const&) {
 		auto dialog{ ShowPictureDialog() };
@@ -652,7 +682,7 @@ namespace winrt::hyzjkz::implementation {
 			else if (name == L"IDCard") co_await Menu_IDCard(this, item);
 		}
 		else if (dom == L"Link") {
-			auto tools{ Global.cfg.get_config(GlobalConfig::TOOLS) };
+			auto tools{ Global.cfg.Get(GlobalConfig::TOOLS) };
 			if (tools.contains(name)) {
 				co_await Menu_Link(this, item, tools.get(name));
 			}
@@ -675,8 +705,7 @@ namespace winrt::hyzjkz::implementation {
 			}
 		}
 		else {
-			auto turnover{ photo_num * Global.cfg.get<GlobalType::UNIT_PRICE>(
-				GlobalConfig::UNIT_PRICE, 15U) }; // 营业额
+			auto turnover{ photo_num * Global.cfg.Get<GlobalConfig::UNIT_PRICE>() }; // 营业额
 			if (index == 1U) { // 若小于三位数则第一位不可见
 				return turnover < 100U ? Microsoft::UI::Xaml::Visibility::Collapsed : Microsoft::UI::Xaml::Visibility::Visible;
 			}
@@ -714,8 +743,7 @@ namespace winrt::hyzjkz::implementation {
 			}
 		}
 		else {
-			auto turnover{ photo_num * Global.cfg.get<GlobalType::UNIT_PRICE>(
-				GlobalConfig::UNIT_PRICE, 15U) }; // 营业额
+			auto turnover{ photo_num * Global.cfg.Get<GlobalConfig::UNIT_PRICE>() }; // 营业额
 			if (index == 1U) {
 				if (turnover >= 100U) {
 					return turnover < 1000U ? bmp_nums[turnover / 100U] : bmp_nums[turnover / 1000U];

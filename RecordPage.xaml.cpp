@@ -7,21 +7,25 @@
 #include <queue>
 
 struct RecordYearStatistics { // 年统计
-	mqui32 yearNum; // 年数量
-	mqui32 yearValue; // 年总值
-	mqui32 monthNums[12]; // 月数量
-	mqui32 monthValues[12]; // 月总值
-	mqui32 maxMonthValue; // 月最大总值
-	mqui32 avgMonthValue; // 月均值
+	mqui32 photo_year_num; // 照相年数量
+	mqui32 photo_year_value; // 照相年总值
+	mqui32 photo_month_nums[12]; // 照相月数量
+	mqui32 photo_month_values[12]; // 照相月总值
+	mqui32 copy_year_value; // 复印年总值
+	mqui32 copy_month_values[12]; // 复印月总值
+	mqui32 max_month_value; // 月最大总值
+	mqui32 avg_month_value; // 月均值
 };
 
 struct RecordMonthStatistics { // 月统计
-	mqui32 monthNum; // 月数量
-	mqui32 monthValue; // 月总值
-	mqui32 dayNums[31]; // 日数量
-	mqui32 dayValues[31]; // 日总值
-	mqui32 maxDayValue; // 日最大值
-	mqui32 avgDayValue; // 日均值
+	mqui32 photo_month_num; // 照相月数量
+	mqui32 photo_month_value; // 照相月总值
+	mqui32 photo_day_nums[31]; // 照相日数量
+	mqui32 photo_day_values[31]; // 照相日总值
+	mqui32 copy_month_value; // 复印月总值
+	mqui32 copy_day_values[31]; // 复印日总值
+	mqui32 max_day_value; // 日最大值
+	mqui32 avg_day_value; // 日均值
 };
 
 namespace winrt::hyzjkz::implementation {
@@ -63,40 +67,52 @@ namespace winrt::hyzjkz::implementation {
 	// 更新月报表
 	static void UpdateMonth(RecordPage* page) noexcept {
 		auto bin{ Global.c_dataPath.Concat(page->curYear + L".bin").Read() };
-		if (bin.size() == sizeof(RecordYearData)) {
+		if (RecordData::CheckSize(bin)) {
 			// 更新数据
 			RecordYearStatistics stat{ };
-			auto& data{ *reinterpret_cast<RecordYearData const*>(bin.data()) };
+			auto& data{ RecordData::From(bin) };
 			for (mqui32 month{ }; month < 12U; ++month) {
 				for (mqui32 day{ }; day < 31U; ++day) {
-					stat.monthNums[month] += data[month][day].num;
-					stat.monthValues[month] += data[month][day].value;
+					stat.photo_month_nums[month] += data.photoData[month][day].num;
+					stat.photo_month_values[month] += data.photoData[month][day].value;
+					stat.copy_month_values[month] += data.copyData[month][day];
 				}
-				stat.yearNum += stat.monthNums[month];
-				stat.yearValue += stat.monthValues[month];
-				if (stat.monthValues[month] > stat.maxMonthValue) {
-					stat.maxMonthValue = stat.monthValues[month];
+				stat.photo_year_num += stat.photo_month_nums[month];
+				stat.photo_year_value += stat.photo_month_values[month];
+				stat.copy_year_value += stat.copy_month_values[month];
+				if (stat.photo_month_values[month] + stat.copy_month_values[month] > stat.max_month_value) {
+					stat.max_month_value = stat.photo_month_values[month] + stat.copy_month_values[month];
 				}
 			}
-			stat.avgMonthValue = stat.yearValue / 12U;
+			stat.avg_month_value = (stat.photo_year_value + stat.copy_year_value) / 12U;
 
 			// 更新UI
 			auto grid_year{ page->Grid_Year() };
 			auto grid_month{ page->Grid_Month() };
 			auto grid_main{ grid_year.Children() };
 			grid_main.Clear();
+			mqchar buf[256]{ };
 			for (mqui32 i{ }; i < 12U; ++i) {
 				Controls::Button button;
 				Application::LoadComponent(button, Windows::Foundation::Uri{ L"ms-appx:///Xaml/RecordMonthItem.xaml" });
 				auto panel{ button.FindName(L"Panel").as<Controls::StackPanel>() };
 				auto text1{ panel.FindName(L"TB1").as<Controls::TextBlock>() };
 				auto text2{ panel.FindName(L"TB2").as<Controls::TextBlock>() };
-				text1.Text(to_hstring(i + 1U) + L"月");
-				text2.Text(to_hstring(stat.monthNums[i]) + L"    " + to_hstring(stat.monthValues[i]));
-				if (stat.monthValues[i] == stat.maxMonthValue) {
+				auto text3{ panel.FindName(L"TB3").as<Controls::TextBlock>() };
+				auto text4{ panel.FindName(L"TB4").as<Controls::TextBlock>() };
+				wsprintfW(buf, L"%u月", i + 1U);
+				text1.Text(buf);
+				wsprintfW(buf, L"照相 %u 张  %u 元", stat.photo_month_nums[i], stat.photo_month_values[i]);
+				text2.Text(buf);
+				wsprintfW(buf, L"复印    %u 元", stat.copy_month_values[i]);
+				text3.Text(buf);
+				auto total_month_value{ stat.photo_month_values[i] + stat.copy_month_values[i] };
+				wsprintfW(buf, L"总计    %u 元", total_month_value);
+				text4.Text(buf);
+				if (total_month_value == stat.max_month_value) {
 					panel.Background(page->MaxBrush());
 				}
-				else if (stat.monthValues[i] < stat.avgMonthValue) {
+				else if (total_month_value < stat.avg_month_value) {
 					panel.Background(page->LowBrush());
 				}
 				else {
@@ -108,10 +124,10 @@ namespace winrt::hyzjkz::implementation {
 				Controls::Grid::SetColumn(button, i % 4U);
 				grid_main.Append(button);
 			}
-
-			mqchar totalText[64]{ };
-			wsprintfW(totalText, L"%s年          %u    %u", page->curYear.data(), stat.yearNum, stat.yearValue);
-			page->TotalText().Text(totalText);
+			wsprintfW(buf, L"%s年    [照相 %u 张  %u元] [复印 %u 元] [总计 %u 元]",
+				page->curYear.data(), stat.photo_year_num, stat.photo_year_value, stat.copy_year_value,
+				stat.photo_year_value + stat.copy_year_value);
+			page->TotalText().Text(buf);
 
 			grid_year.Visibility(Visibility::Visible);
 			grid_month.Visibility(Visibility::Collapsed);
@@ -121,37 +137,51 @@ namespace winrt::hyzjkz::implementation {
 	// 更新日报表
 	static void UpdateDay(RecordPage* page) noexcept {
 		auto bin{ Global.c_dataPath.Concat(page->curYear + L".bin").Read() };
-		if (bin.size() == sizeof(RecordYearData)) {
+		if (RecordData::CheckSize(bin)) {
 			// 更新数据
 			RecordMonthStatistics stat{ };
-			auto& data{ (*reinterpret_cast<RecordYearData const*>(bin.data()))[page->curMonth - 1U] };
+			auto& data{ RecordData::From(bin) };
+			auto& photo_data{ data.photoData[page->curMonth - 1U] };
+			auto& copy_data{ data.copyData[page->curMonth - 1U] };
 			for (mqui32 day{ }; day < 31U; ++day) {
-				stat.dayNums[day] = data[day].num;
-				stat.dayValues[day] = data[day].value;
-				stat.monthNum += data[day].num;
-				stat.monthValue += data[day].value;
-				if (data[day].value > stat.maxDayValue) {
-					stat.maxDayValue = data[day].value;
+				stat.photo_day_nums[day] = photo_data[day].num;
+				stat.photo_day_values[day] = photo_data[day].value;
+				stat.copy_day_values[day] = copy_data[day];
+				stat.photo_month_num += stat.photo_day_nums[day];
+				stat.photo_month_value += stat.photo_day_values[day];
+				stat.copy_month_value += stat.copy_day_values[day];
+				if (stat.photo_day_values[day] + stat.copy_day_values[day] > stat.max_day_value) {
+					stat.max_day_value = stat.photo_day_values[day] + stat.copy_day_values[day];
 				}
 			}
-			stat.avgDayValue = stat.monthValue / 31U;
+			stat.avg_day_value = (stat.photo_month_value + stat.copy_month_value) / 31U;
 
 			// 更新UI
 			auto grid_year{ page->Grid_Year() }, grid_month{ page->Grid_Month() };
 			auto grid_main{ grid_month.Children() };
 			grid_main.Clear();
+			mqchar buf[256]{ };
 			for (mqui32 i{ }; i < 31U; ++i) {
 				Controls::Button button;
 				Application::LoadComponent(button, Windows::Foundation::Uri{ L"ms-appx:///Xaml/RecordDayItem.xaml" });
 				auto panel{ button.FindName(L"Panel").as<Controls::StackPanel>() };
 				auto text1{ panel.FindName(L"TB1").as<Controls::TextBlock>() };
 				auto text2{ panel.FindName(L"TB2").as<Controls::TextBlock>() };
-				text1.Text(to_hstring(i + 1U) + L"日");
-				text2.Text(to_hstring(stat.dayNums[i]) + L"    " + to_hstring(stat.dayValues[i]));
-				if (stat.dayValues[i] == stat.maxDayValue) {
+				auto text3{ panel.FindName(L"TB3").as<Controls::TextBlock>() };
+				auto text4{ panel.FindName(L"TB4").as<Controls::TextBlock>() };
+				wsprintfW(buf, L"%u日", i + 1U);
+				text1.Text(buf);
+				wsprintfW(buf, L"照相 %u 张  %u 元", stat.photo_day_nums[i], stat.photo_day_values[i]);
+				text2.Text(buf);
+				wsprintfW(buf, L"复印    %u 元", stat.copy_day_values[i]);
+				text3.Text(buf);
+				auto total_day_value{ stat.photo_day_values[i] + stat.photo_day_values[i] };
+				wsprintfW(buf, L"总计    %u 元", total_day_value);
+				text4.Text(buf);
+				if (total_day_value == stat.max_day_value) {
 					panel.Background(page->MaxBrush());
 				}
-				else if (stat.dayValues[i] < stat.avgDayValue) {
+				else if (total_day_value < stat.max_day_value) {
 					panel.Background(page->LowBrush());
 				}
 				else {
@@ -162,10 +192,10 @@ namespace winrt::hyzjkz::implementation {
 				Controls::Grid::SetColumn(button, i % 7U);
 				grid_main.Append(button);
 			}
-
-			mqchar totalText[64]{ };
-			wsprintfW(totalText, L"%s年%u月        %u    %u", page->curYear.data(), page->curMonth, stat.monthNum, stat.monthValue);
-			page->TotalText().Text(totalText);
+			wsprintfW(buf, L"%s年%u月    [照相 %u 张  %u元] [复印 %u 元] [总计 %u 元]",
+				page->curYear.data(), page->curMonth, stat.photo_month_num, stat.photo_month_value,
+				stat.copy_month_value, stat.photo_month_value + stat.copy_month_value);
+			page->TotalText().Text(buf);
 
 			grid_year.Visibility(Visibility::Collapsed);
 			grid_month.Visibility(Visibility::Visible);
@@ -178,7 +208,7 @@ namespace winrt::hyzjkz::implementation {
 		InitializeComponent();
 
 		Loaded([this] (auto, auto) -> Windows::Foundation::IAsyncAction {
-			if (Global.cfg.get<GlobalType::USE_PASSWORD>(GlobalConfig::USE_PASSWORD, GlobalDefault::USE_PASSWORD)) {
+			if (Global.cfg.Get<GlobalConfig::USE_PASSWORD>()) {
 				auto sp_main{ SP_Main() };
 				sp_main.Visibility(Visibility::Collapsed);
 				co_await Global.ui_window->as<hyzjkz::MainWindow>().ShowPasswordDialog();

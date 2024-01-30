@@ -7,27 +7,26 @@
 namespace winrt::hyzjkz::implementation {
     // 取默认配置
     static MasterQian::Bin GetDefaultConfig() noexcept {
-        MasterQian::Parser::Config config;
-        config.set(GlobalConfig::EOS_PATH, GlobalDefault::EOS_PATH);
-        config.set(GlobalConfig::PRINTER_NAME, GlobalDefault::PRINTER_NAME);
-        config.set(GlobalConfig::AUTOCUT_EPS, GlobalDefault::AUTOCUT_EPS);
-        config.set(GlobalConfig::UNIT_PRICE, GlobalDefault::UNIT_PRICE);
-        config.set(GlobalConfig::SHOW_TURNOVER, GlobalDefault::SHOW_TURNOVER);
-        config.set(GlobalConfig::RESET_MONTH, GlobalDefault::RESET_MONTH);
-        config.set(GlobalConfig::PASSWORD, GlobalDefault::PASSWORD);
-        config.set(GlobalConfig::USE_PASSWORD, GlobalDefault::USE_PASSWORD);
+        GlobalConfig config;
+        config.Set<GlobalConfig::EOS_PATH>();
+        config.Set<GlobalConfig::PRINTER_NAME>();
+        config.Set<GlobalConfig::AUTOCUT_EPS>();
+        config.Set<GlobalConfig::UNIT_PRICE>();
+        config.Set<GlobalConfig::SHOW_TURNOVER>();
+        config.Set<GlobalConfig::RESET_MONTH>();
+        config.Set<GlobalConfig::PASSWORD>();
+        config.Set<GlobalConfig::USE_PASSWORD>();
         MasterQian::Parser::Config tools;
         tools.set(L"美图秀秀", L"");
         tools.set(L"光影魔术手", L"");
         tools.set(L"PhotoShop", L"");
-        config.set(GlobalConfig::TOOLS, tools);
+        config.Set(GlobalConfig::TOOLS, tools);
         return config.save();
     }
 
     // 取默认报表数据
     static MasterQian::Bin GetDefaultRecordData() noexcept {
-        RecordYearData data{ };
-        return MasterQian::Bin{ reinterpret_cast<mqcbytes>(&data), sizeof(RecordYearData) };
+        return MasterQian::Bin(sizeof(RecordData));
     }
 
     // 取一寸模板
@@ -41,16 +40,16 @@ namespace winrt::hyzjkz::implementation {
         pt.flag.isRotate = false;
         pt.flag.isAutoCut = true;
         lstrcpyW(pt.name, L"一寸");
-        pt.data[0] = { 80, 95, 295, 413 };
-        pt.data[1] = { 406, 95, 295, 413 };
-        pt.data[2] = { 732, 95, 295, 413 };
-        pt.data[3] = { 1058, 95, 295, 413 };
-        pt.data[4] = { 1384, 95, 295, 413 };
-        pt.data[5] = { 100, 652, 295, 413 };
-        pt.data[6] = { 406, 652, 295, 413 };
-        pt.data[7] = { 732, 652, 295, 413 };
-        pt.data[8] = { 1058, 652, 295, 413 };
-        pt.data[9] = { 1384, 652, 295, 413 };
+        pt.data[0] = { 100, 160, 295, 413 };
+        pt.data[1] = { 415, 160, 295, 413 };
+        pt.data[2] = { 730, 160, 295, 413 };
+        pt.data[3] = { 1045, 160, 295, 413 };
+        pt.data[4] = { 1360, 160, 295, 413 };
+        pt.data[5] = { 100, 590, 295, 413 };
+        pt.data[6] = { 415, 590, 295, 413 };
+        pt.data[7] = { 730, 590, 295, 413 };
+        pt.data[8] = { 1045, 590, 295, 413 };
+        pt.data[9] = { 1360, 590, 295, 413 };
         return bin;
     }
 
@@ -102,14 +101,15 @@ namespace winrt::hyzjkz::implementation {
         pt.flag.isRotate = false;
         pt.flag.isAutoCut = false;
         lstrcpyW(pt.name, L"结婚照");
-        pt.data[0] = { 190, 110, 673, 437 };
-        pt.data[1] = { 917, 110, 673, 437 };
-        pt.data[2] = { 190, 603, 673, 437 };
-        pt.data[3] = { 917, 603, 673, 437 };
+        pt.data[0] = { 205, 125, 673, 437 };
+        pt.data[1] = { 895, 125, 673, 437 };
+        pt.data[2] = { 205, 585, 673, 437 };
+        pt.data[3] = { 895, 585, 673, 437 };
         return bin;
 }
 
     App::App() {
+        InitializeComponent();
 #ifdef _DEBUG
         UnhandledException([](IInspectable const&, UnhandledExceptionEventArgs const& args) {
             if (IsDebuggerPresent()) {
@@ -122,8 +122,6 @@ namespace winrt::hyzjkz::implementation {
 
     // 初始化路径
     static void InitializePath() noexcept {
-        using namespace MasterQian::System;
-
         // 获取运行路径
         Global.c_runPath = MasterQian::Storage::Path::Running();
 
@@ -168,10 +166,8 @@ namespace winrt::hyzjkz::implementation {
 
     // 初始化资源
     static void InitializeResource() noexcept {
-        using namespace MasterQian::System;
-
-        Global.res_icon = Process::GetResource(R_ICON);
-        Global.res_default_img = Process::GetResource(R_DEFAULT_IMG);
+        Global.res_icon = MasterQian::System::Process::GetResource(R_ICON);
+        Global.res_default_img = MasterQian::System::Process::GetResource(R_DEFAULT_IMG);
     }
 
     // 初始化配置

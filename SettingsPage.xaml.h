@@ -8,36 +8,36 @@ using namespace winrt::Microsoft::UI::Xaml;
 
 namespace winrt::hyzjkz::implementation {
     struct SettingsPage : SettingsPageT<SettingsPage> {
-        struct AboutSubPage : SubPage<Controls::StackPanel> {
-            Controls::Image image_icon;
+        struct AboutSubPage : MasterQian::WinRT::SubPage<Controls::StackPanel, AboutSubPage> {
+            Controls::Image image_icon{ nullptr };
         }About;
 
-        struct PathSubPage : SubPage<Controls::StackPanel> {
-            Controls::InfoBar infobar_eospath;
-            Controls::TextBox input_eospath;
-            Controls::Button button_eospath_set;
-            Controls::Button button_eospath_clear;
-            Controls::ListView list_tools;
-            Controls::Button button_tools_add;
+        struct PathSubPage : MasterQian::WinRT::SubPage<Controls::StackPanel, PathSubPage> {
+            Controls::InfoBar infobar_eospath{ nullptr };
+            Controls::TextBox input_eospath{ nullptr };
+            Controls::Button button_eospath_set{ nullptr };
+            Controls::Button button_eospath_clear{ nullptr };
+            Controls::ListView list_tools{ nullptr };
+            Controls::Button button_tools_add{ nullptr };
         }Path;
 
-        struct BusinessSubPage : SubPage<Controls::StackPanel> {
-            Controls::NumberBox input_unitprice;
-            Controls::Button button_unitprice;
-            Controls::NumberBox input_resetmonth;
-            Controls::Button button_resetmonth;
-            Controls::ToggleSwitch switch_showturnover;
-            Controls::ToggleSwitch switch_password;
-            Controls::TextBox input_password;
-            Controls::Button button_password;
+        struct BusinessSubPage : MasterQian::WinRT::SubPage<Controls::StackPanel, BusinessSubPage> {
+            Controls::NumberBox input_unitprice{ nullptr };
+            Controls::Button button_unitprice{ nullptr };
+            Controls::NumberBox input_resetmonth{ nullptr };
+            Controls::Button button_resetmonth{ nullptr };
+            Controls::ToggleSwitch switch_showturnover{ nullptr };
+            Controls::ToggleSwitch switch_password{ nullptr };
+            Controls::TextBox input_password{ nullptr };
+            Controls::Button button_password{ nullptr };
         }Business;
 
-        struct PrintSubPage : SubPage<Controls::StackPanel> {
-            Controls::InfoBar infobar_printername;
-            Controls::TextBox input_printername;
-            Controls::Button button_printername;
-            Controls::NumberBox input_autocuteps;
-            Controls::Button button_autocuteps;
+        struct PrintSubPage : MasterQian::WinRT::SubPage<Controls::StackPanel, PrintSubPage> {
+            Controls::InfoBar infobar_printername{ nullptr };
+            Controls::TextBox input_printername{ nullptr };
+            Controls::Button button_printername{ nullptr };
+            Controls::NumberBox input_autocuteps{ nullptr };
+            Controls::Button button_autocuteps{ nullptr };
         }Print;
 
         SettingsPage();

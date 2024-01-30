@@ -32,9 +32,6 @@
     <Page Include="Xaml\Settings\PathSubPage.xaml">
       <Filter>Pages\Xaml\Settings</Filter>
     </Page>
-    <Page Include="Xaml\Settings\PathSubPagePathItem.xaml">
-      <Filter>Pages\Xaml\Settings</Filter>
-    </Page>
     <Page Include="Xaml\Settings\PrintSubPage.xaml">
       <Filter>Pages\Xaml\Settings</Filter>
     </Page>
@@ -55,6 +52,12 @@
     </Page>
     <Page Include="Resources\RDStyle.xaml">
       <Filter>Resources</Filter>
+    </Page>
+    <Page Include="Xaml\PathSubPagePathItem.xaml">
+      <Filter>Pages\Xaml</Filter>
+    </Page>
+    <Page Include="Xaml\Tools\JigsawSubPage.xaml">
+      <Filter>Pages\Xaml\Tools</Filter>
     </Page>
   </ItemGroup>
   <ItemGroup>

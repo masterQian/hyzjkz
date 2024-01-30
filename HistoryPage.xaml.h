@@ -25,6 +25,9 @@ namespace winrt::hyzjkz::implementation {
         F_EVENT void Refresh_Click(IInspectable const&, RoutedEventArgs const&);
         F_EVENT Windows::Foundation::IAsyncAction AddDefault_Click(IInspectable const&, RoutedEventArgs const&);
         F_EVENT Windows::Foundation::IAsyncAction Import_Click(IInspectable const&, RoutedEventArgs const&);
+        F_EVENT Windows::Foundation::IAsyncAction AddCopyData_Click(IInspectable const&, RoutedEventArgs const&);
+        F_EVENT void AddCopyData_Plus_Click(IInspectable const&, RoutedEventArgs const&);
+        F_EVENT void AddCopyData_Set_Click(IInspectable const&, RoutedEventArgs const&);
 
         F_EVENT Windows::Foundation::IAsyncAction GV_Photos_DoubleClick(IInspectable const&, Input::DoubleTappedRoutedEventArgs const&);
         F_EVENT void ModelPhoto_RightClick(IInspectable const&, Input::RightTappedRoutedEventArgs const&);

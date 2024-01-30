@@ -33,6 +33,7 @@
     <x:String x:Key="HistoryPage.Bar.Refresh">刷新</x:String>
     <x:String x:Key="HistoryPage.Bar.AddDefault">补差</x:String>
     <x:String x:Key="HistoryPage.Bar.Import">导入</x:String>
+    <x:String x:Key="HistoryPage.Bar.AddCopyData">复印记录</x:String>
 
     <x:String x:Key="BorderDialog.BorderWidth.Text">边框尺寸:</x:String>
     <x:String x:Key="IDCardDialog.IDCardNumber.Text">身份证号</x:String>
@@ -45,6 +46,17 @@
 
     <x:String x:Key="HistoryPage.Tip.InputDPI">输入分辨率(DPI)大小</x:String>
     <x:String x:Key="HistoryPage.Tip.InputInvalid">输入不合法</x:String>
+
+    <x:String x:Key="HistoryPage.AddCopyData.Plus1">+1</x:String>
+    <x:String x:Key="HistoryPage.AddCopyData.Plus2">+2</x:String>
+    <x:String x:Key="HistoryPage.AddCopyData.Plus3">+3</x:String>
+    <x:String x:Key="HistoryPage.AddCopyData.Plus4">+4</x:String>
+    <x:String x:Key="HistoryPage.AddCopyData.Plus5">+5</x:String>
+    <x:String x:Key="HistoryPage.AddCopyData.Plus6">+10</x:String>
+    <x:String x:Key="HistoryPage.AddCopyData.Plus7">+15</x:String>
+    <x:String x:Key="HistoryPage.AddCopyData.Plus8">+20</x:String>
+    <x:String x:Key="HistoryPage.AddCopyData.UserText">自定义</x:String>
+    <x:String x:Key="HistoryPage.AddCopyData.OKText">确定</x:String>
 
     <!--  PrintPage  -->
     <x:String x:Key="PrintPage.TemplateList.Text">模板列表</x:String>
@@ -121,6 +133,7 @@
     <x:String x:Key="ToolsPage.NVI_Home.Text">首页</x:String>
     <x:String x:Key="ToolsPage.NVI_Picture.Text">图片处理</x:String>
     <x:String x:Key="ToolsPage.NVI_IDCard.Text">身份证拼接</x:String>
+    <x:String x:Key="ToolsPage.NVI_Jigsaw.Text">拼图</x:String>
 
     <x:String x:Key="IDCardSubPage.Front.Text">上面</x:String>
     <x:String x:Key="IDCardSubPage.Back.Text">下面</x:String>
@@ -130,6 +143,15 @@
     <x:String x:Key="IDCardSubPage.Work.Text">合成</x:String>
     <x:String x:Key="IDCardSubPage.SaveName">身份证</x:String>
     <x:String x:Key="IDCardSubPage.Tip.AddPhoto">请添加上下面照片</x:String>
+
+    <x:String x:Key="JigsawSubPage.Mode.Text">画布尺寸模式</x:String>
+    <x:String x:Key="JigsawSubPage.Info.Text" xml:space="preserve">左键拖拽  右键删除  滑轮缩放</x:String>
+    <x:String x:Key="JigsawSubPage.Mode.Off">A4</x:String>
+    <x:String x:Key="JigsawSubPage.Mode.On">A6</x:String>
+    <x:String x:Key="JigsawSubPage.Bar.Import">导入</x:String>
+    <x:String x:Key="JigsawSubPage.Bar.Clear">清空</x:String>
+    <x:String x:Key="JigsawSubPage.Bar.Save">保存</x:String>
+    <x:String x:Key="JigsawSubPage.SaveName">拼图</x:String>
 
     <!--  Dialog  -->
     <x:String x:Key="Dialog.OK.Text">确定</x:String>

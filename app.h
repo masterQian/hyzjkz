@@ -1,10 +1,5 @@
 #pragma once
 
-#include <winrt/Windows.Foundation.h>
-#include <winrt/Windows.Foundation.Collections.h>
-#include <winrt/Microsoft.UI.Xaml.h>
-#include <winrt/Microsoft.UI.Xaml.Media.Imaging.h>
-
 #include <MasterQian.Media.GDI.h>
 #include <MasterQian.Storage.Path.h>
 #include <MasterQian.Parser.Config.h>
@@ -14,6 +9,11 @@
 #include <MasterQian.System.Info.h>
 #include <MasterQian.System.Process.h>
 #include <MasterQian.WinRT.h>
+
+#include <winrt/Windows.Foundation.h>
+#include <winrt/Windows.Foundation.Collections.h>
+#include <winrt/Microsoft.UI.Xaml.h>
+#include <winrt/Microsoft.UI.Xaml.Media.Imaging.h>
 
 #include "resource.h"
 
@@ -27,32 +27,41 @@
 inline MasterQian::System::DebugLogger logger;
 #endif
 
-// 子页面
-struct SubPageBase : winrt::Windows::Foundation::IInspectable {
-	template<std::derived_from<SubPageBase> T>
-	T* to() noexcept {
-		return reinterpret_cast<T*>(this);
-	}
-};
-
-template<typename T>
-struct SubPage : SubPageBase {
-	SubPage() : SubPageBase{ T{ } } {}
-
-	T content() const noexcept {
-		return winrt::Windows::Foundation::IInspectable::as<T>();
-	}
-};
-
-using UpdateSubPageFunc = void(*)(SubPageBase*) noexcept;
-
 // 报表数据结构
-struct RecordDayData {
-	mqui16 num;
-	mqui16 value;
+struct RecordData {
+	// 照相数据
+	struct PhotoDayData {
+		mqui16 num;
+		mqui16 value;
+	};
+	using PhotoMonthData = PhotoDayData[31];
+	using PhotoYearData = PhotoMonthData[12];
+	// 复印数据
+	using CopyDayData = mqui16;
+	using CopyMonthData = CopyDayData[31];
+	using CopyYearData = CopyMonthData[12];
+
+	PhotoYearData photoData;
+	CopyYearData copyData;
+
+	static bool CheckSize(MasterQian::BinView bv) noexcept {
+		return bv.size() == sizeof(RecordData);
+	}
+
+	static RecordData& From(MasterQian::Bin& bin) noexcept {
+		return *reinterpret_cast<RecordData*>(bin.data());
+	}
+
+	void Set(std::integral auto month, std::integral auto day,
+		std::integral auto num, std::integral auto value) noexcept {
+		photoData[static_cast<mqui32>(month) - 1U][static_cast<mqui32>(day) - 1U]
+			= { static_cast<mqui16>(num), static_cast<mqui16>(value) };
+	}
+
+	void Add(std::integral auto month, std::integral auto day, std::integral auto value) noexcept {
+		copyData[static_cast<mqui32>(month) - 1U][static_cast<mqui32>(day) - 1U] += value;
+	}
 };
-using RecordMonthData = RecordDayData[31];
-using RecordYearData = RecordMonthData[12];
 
 // 打印模板
 struct PrintTemplate {
@@ -165,42 +174,78 @@ struct UpdateFlag {
 	FlagConverter flags[8ULL]{ };
 };
 
+template<typename T>
+concept ConfigItem = requires() {
+	typename T::Type;
+	{ std::remove_cvref_t<decltype(T::name)>{} } -> std::same_as<std::wstring_view>;
+	{ std::remove_cvref_t<decltype(T::def_value)>{} } -> std::same_as<typename T::Type>;
+};
+
 // 全局配置结构
-struct GlobalConfig : MasterQian::Parser::Config {
-	static constexpr auto EOS_PATH{ L"eos_path" };
-	static constexpr auto PRINTER_NAME{ L"printer_name" };
-	static constexpr auto AUTOCUT_EPS{ L"autocut_eps" };
-	static constexpr auto UNIT_PRICE{ L"unit_price" };
-	static constexpr auto SHOW_TURNOVER{ L"show_turnover" };
-	static constexpr auto RESET_MONTH{ L"reset_month" };
-	static constexpr auto PASSWORD{ L"password" };
-	static constexpr auto USE_PASSWORD{ L"use_password" };
-	static constexpr auto TOOLS{ L"tools" };
-};
+struct GlobalConfig : private MasterQian::Parser::Config {
+	template<ConfigItem T>
+	auto Get() const noexcept { return get(T::name, T::def_value); }
+	auto Get(std::wstring_view name) const noexcept { return get_config(name); }
 
-// 全局配置类型
-struct GlobalType {
-	using EOS_PATH = std::wstring_view;
-	using PRINTER_NAME = std::wstring_view;
-	using AUTOCUT_EPS = mqf64;
-	using UNIT_PRICE = mqui32;
-	using SHOW_TURNOVER = bool;
-	using RESET_MONTH = mqui32;
-	using PASSWORD = std::wstring_view;
-	using USE_PASSWORD = bool;
-	using TOOLS = MasterQian::Parser::Config;
-};
+	template<ConfigItem T>
+	void Set(typename T::Type t = T::def_value) noexcept { set(T::name, t); }
+	template<typename U, ConfigItem T>
+	void Set(U u) noexcept { set(T::name, static_cast<T::Type>(u)); }
+	void Set(std::wstring_view name, MasterQian::Parser::Config const& config) noexcept { set(name, config); }
 
-// 全局配置默认值
-struct GlobalDefault {
-	static constexpr auto EOS_PATH{ L"" };
-	static constexpr auto PRINTER_NAME{ L"照相打印机" };
-	static constexpr auto AUTOCUT_EPS{ 0.03 };
-	static constexpr auto UNIT_PRICE{ 15U };
-	static constexpr auto SHOW_TURNOVER{ false };
-	static constexpr auto RESET_MONTH{ 1U };
-	static constexpr auto PASSWORD{ L"011105" };
-	static constexpr auto USE_PASSWORD{ false };
+	using MasterQian::Parser::Config::Config;
+	using MasterQian::Parser::Config::load;
+	using MasterQian::Parser::Config::save;
+
+	struct EOS_PATH {
+		using Type = std::wstring_view;
+		static constexpr std::wstring_view name{ L"eos_path" };
+		static constexpr Type def_value{ L"" };
+	};
+
+	struct PRINTER_NAME {
+		using Type = std::wstring_view;
+		static constexpr std::wstring_view name{ L"printer_name" };
+		static constexpr Type def_value{ L"照相打印机" };
+	};
+
+	struct AUTOCUT_EPS {
+		using Type = mqf64;
+		static constexpr std::wstring_view name{ L"autocut_eps" };
+		static constexpr Type def_value{ 0.03 };
+	};
+
+	struct UNIT_PRICE {
+		using Type = mqui32;
+		static constexpr std::wstring_view name{ L"unit_price" };
+		static constexpr Type def_value{ 15U };
+	};
+
+	struct SHOW_TURNOVER {
+		using Type = bool;
+		static constexpr std::wstring_view name{ L"show_turnover" };
+		static constexpr Type def_value{ false };
+	};
+
+	struct RESET_MONTH {
+		using Type = mqui32;
+		static constexpr std::wstring_view name{ L"reset_month" };
+		static constexpr Type def_value{ 1U };
+	};
+
+	struct PASSWORD {
+		using Type = std::wstring_view;
+		static constexpr std::wstring_view name{ L"password" };
+		static constexpr Type def_value{ L"011105" };
+	};
+
+	struct USE_PASSWORD {
+		using Type = bool;
+		static constexpr std::wstring_view name{ L"use_password" };
+		static constexpr Type def_value{ false };
+	};
+
+	static constexpr std::wstring_view TOOLS{ L"tools" };
 };
 
 // 全局数据结构

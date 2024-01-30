@@ -15,6 +15,7 @@
             <NavigationViewItem Content="{StaticResource ToolsPage.NVI_Picture.Text}" Icon="BrowsePhotos">
                 <NavigationViewItem.MenuItems>
                     <NavigationViewItem x:Name="NVI_IDCard" Content="{StaticResource ToolsPage.NVI_IDCard.Text}" Icon="People" />
+                    <NavigationViewItem x:Name="NVI_Jigsaw" Content="{StaticResource ToolsPage.NVI_Jigsaw.Text}" Icon="Pictures" />
                 </NavigationViewItem.MenuItems>
             </NavigationViewItem>
         </NavigationView.MenuItems>
