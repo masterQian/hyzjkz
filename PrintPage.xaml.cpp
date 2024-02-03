@@ -9,12 +9,12 @@
 namespace winrt::hyzjkz::implementation {
 	// 所有同宽同高的项归为一类, 由其位置数组及对应缩略图构成
 	struct ImageItem {
-		std::vector<MasterQian::Media::ImagePoint> points;
+		std::vector<mqpoint> points;
 		MasterQian::Media::GDI::Image img;
 
 		static MasterQian::Media::GDI::Image MakeImage(bool isResample, MasterQian::Media::GDI::Image const& src,
 			mqui32 actual_width, mqui32 actual_height, bool isRotate, bool isAutoCut) noexcept {
-			MasterQian::Media::ImageRect crop_rect{ }; // 裁剪参数
+			mqrect crop_rect{ }; // 裁剪参数
 			if (isRotate) { // 若要旋转先将宽高互换
 				std::swap(actual_width, actual_height);
 			}
@@ -40,8 +40,8 @@ namespace winrt::hyzjkz::implementation {
 
 			MasterQian::Media::GDI::Image image{ isResample ?
 				(isAutoCut ?
-					src.Crop(crop_rect).Resample({ actual_width, actual_height }, MasterQian::Media::QUALITY_MODE)
-					: src.Resample({ actual_width, actual_height }, MasterQian::Media::QUALITY_MODE))
+					src.Crop(crop_rect).Resample({ actual_width, actual_height }, MasterQian::Media::GDI::QUALITY_MODE)
+					: src.Resample({ actual_width, actual_height }, MasterQian::Media::GDI::QUALITY_MODE))
 				:
 				(isAutoCut ?
 					src.Crop(crop_rect).Thumbnail({ actual_width, actual_height })
@@ -56,19 +56,19 @@ namespace winrt::hyzjkz::implementation {
 			mqui32 actual_width, mqui32 actual_height, bool isRotate, bool isAutoCut) noexcept :
 			img{ MakeImage(isResample, src, actual_width, actual_height, isRotate, isAutoCut) } {}
 
-		void Add(MasterQian::Media::ImagePoint point) noexcept {
+		void Add(mqpoint point) noexcept {
 			points.emplace_back(point.x, point.y);
 		}
 	};
 
 	struct ImageSizeHash {
-		auto operator () (MasterQian::Media::ImageSize const& size) const noexcept {
+		auto operator () (mqsize const& size) const noexcept {
 			return std::hash<mqui32>()(size.width) ^ std::hash<mqui32>()(size.height);
 		}
 	};
 
 	// 尺寸映射
-	using ImageItems = std::unordered_map<MasterQian::Media::ImageSize, ImageItem, ImageSizeHash>;
+	using ImageItems = std::unordered_map<mqsize, ImageItem, ImageSizeHash>;
 
 	// 预览模板
 	static void PreviewTemplate(PrintPage* page, std::wstring_view template_name) noexcept {
@@ -93,7 +93,7 @@ namespace winrt::hyzjkz::implementation {
 			auto actual_top{ static_cast<mqui32>(data.top / canvas_scale) };
 			auto actual_width{ static_cast<mqui32>(data.width / canvas_scale) };
 			auto actual_height{ static_cast<mqui32>(data.height / canvas_scale) };
-			ImageSize size{ actual_width, actual_height };
+			mqsize size{ actual_width, actual_height };
 			auto iter{ photoItems.find(size) };
 			if (iter == photoItems.cend()) {
 				iter = photoItems.try_emplace(size, false, photo, actual_width,
@@ -105,10 +105,10 @@ namespace winrt::hyzjkz::implementation {
 		// 画照片
 		for (auto& [size, pre] : photoItems) {
 			for (auto& [left, top] : pre.points) {
-				canvas.DrawImage(pre.img, { left, top }, { }, FAST_MODE);
+				canvas.DrawImage(pre.img, { left, top }, { }, GDI::FAST_MODE);
 			}
 		}
-		page->CanvasImage().Source(util::StreamToBMP(canvas.SaveToUnsafeStream(ImageFormat::BMP)));
+		page->CanvasImage().Source(util::StreamToBMP(canvas.SaveToUnsafeStream(GDI::ImageFormat::BMP)));
 	}
 
 	// 刷新模板列表
@@ -142,7 +142,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 生成保存模板
-	static MasterQian::Media::GDI::Image MakeSaveImage(PrintTemplate& pt, hstring const& photo_path, MasterQian::Media::ImageSize canvas_size) noexcept {
+	static MasterQian::Media::GDI::Image MakeSaveImage(PrintTemplate& pt, hstring const& photo_path, mqsize canvas_size) noexcept {
 		// 照片
 		MasterQian::Media::GDI::Image photo{ photo_path };
 		photo.DPI({ 300U, 300U });
@@ -154,7 +154,7 @@ namespace winrt::hyzjkz::implementation {
 		ImageItems photoItems;
 		for (mqui32 i{ }; i < pt.count; ++i) {
 			auto& data{ pt.data[i] };
-			MasterQian::Media::ImageSize size{ data.width, data.height };
+			mqsize size{ data.width, data.height };
 			auto iter{ photoItems.find(size) };
 			if (iter == photoItems.cend()) {
 				iter = photoItems.try_emplace(size, true, photo, data.width,
@@ -166,7 +166,7 @@ namespace winrt::hyzjkz::implementation {
 		// 画照片
 		for (auto& [size, pre] : photoItems) {
 			for (auto& [left, top] : pre.points) {
-				canvas.DrawImage(pre.img, { left, top }, { }, MasterQian::Media::QUALITY_MODE);
+				canvas.DrawImage(pre.img, { left, top }, { }, MasterQian::Media::GDI::QUALITY_MODE);
 			}
 		}
 		return canvas;
@@ -183,7 +183,7 @@ namespace winrt::hyzjkz::implementation {
 				co_await winrt::resume_background();
 
 				printer.DrawImage(MakeSaveImage(Global.templateList[template_name],
-					photo_path, Global.c_printCanvasSize), { }, { }, MasterQian::Media::QUALITY_MODE);
+					photo_path, Global.c_printCanvasSize), MasterQian::Media::GDI::QUALITY_MODE);
 
 				co_await ui_thread;
 
@@ -210,7 +210,7 @@ namespace winrt::hyzjkz::implementation {
 			co_await winrt::resume_background();
 
 			MakeSaveImage(Global.templateList[template_name], photo_path, Global.c_printCanvasSize)
-				.Save(file.Path(), MasterQian::Media::ImageFormat::JPG);
+				.Save(file.Path(), MasterQian::Media::GDI::ImageFormat::JPG);
 
 			co_await ui_thread;
 		}

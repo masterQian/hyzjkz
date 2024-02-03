@@ -1,0 +1,14 @@
+﻿<Grid xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" RowDefinitions="Auto, *">
+    <CommandBar Grid.Row="0" HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Background="Transparent"
+                DefaultLabelPosition="Right" IsOpen="False">
+        <AppBarButton x:Name="Button_Import" Icon="Import" Label="{StaticResource ToPDFSubPage.Bar.Import}" />
+        <AppBarButton x:Name="Button_Delete" Icon="Delete" Label="{StaticResource ToPDFSubPage.Bar.Delete}" />
+        <AppBarButton x:Name="Button_Clear" Icon="Clear" Label="{StaticResource ToPDFSubPage.Bar.Clear}" />
+        <AppBarButton x:Name="Button_Save" Icon="Save" Label="{StaticResource ToPDFSubPage.Bar.Save}" />
+    </CommandBar>
+    <GridView x:Name="GV_PDF" Grid.Row="1" AllowDrop="True"
+              CanReorderItems="True" IsItemClickEnabled="True"
+              IsSwipeEnabled="False" SelectionMode="Single" />
+</Grid>

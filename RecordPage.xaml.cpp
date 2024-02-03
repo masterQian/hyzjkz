@@ -89,17 +89,16 @@ namespace winrt::hyzjkz::implementation {
 			// 更新UI
 			auto grid_year{ page->Grid_Year() };
 			auto grid_month{ page->Grid_Month() };
-			auto grid_main{ grid_year.Children() };
-			grid_main.Clear();
+			auto items{ grid_year.Children() };
+			items.Clear();
 			mqchar buf[256]{ };
 			for (mqui32 i{ }; i < 12U; ++i) {
-				Controls::Button button;
-				Application::LoadComponent(button, Windows::Foundation::Uri{ L"ms-appx:///Xaml/RecordMonthItem.xaml" });
-				auto panel{ button.FindName(L"Panel").as<Controls::StackPanel>() };
-				auto text1{ panel.FindName(L"TB1").as<Controls::TextBlock>() };
-				auto text2{ panel.FindName(L"TB2").as<Controls::TextBlock>() };
-				auto text3{ panel.FindName(L"TB3").as<Controls::TextBlock>() };
-				auto text4{ panel.FindName(L"TB4").as<Controls::TextBlock>() };
+				Controls::Grid grid;
+				Application::LoadComponent(grid, Windows::Foundation::Uri{ L"ms-appx:///Xaml/RecordMonthItem.xaml" });
+				auto text1{ grid.FindName(L"TB1").as<Controls::TextBlock>() };
+				auto text2{ grid.FindName(L"TB2").as<Controls::TextBlock>() };
+				auto text3{ grid.FindName(L"TB3").as<Controls::TextBlock>() };
+				auto text4{ grid.FindName(L"TB4").as<Controls::TextBlock>() };
 				wsprintfW(buf, L"%u月", i + 1U);
 				text1.Text(buf);
 				wsprintfW(buf, L"照相 %u 张  %u 元", stat.photo_month_nums[i], stat.photo_month_values[i]);
@@ -110,19 +109,19 @@ namespace winrt::hyzjkz::implementation {
 				wsprintfW(buf, L"总计    %u 元", total_month_value);
 				text4.Text(buf);
 				if (total_month_value == stat.max_month_value) {
-					panel.Background(page->MaxBrush());
+					grid.Background(page->MaxBrush());
 				}
 				else if (total_month_value < stat.avg_month_value) {
-					panel.Background(page->LowBrush());
+					grid.Background(page->LowBrush());
 				}
 				else {
-					panel.Background(page->NormalBrush());
+					grid.Background(page->NormalBrush());
 				}
-				button.Tag(box_value(i + 1U));
-				button.Click({ page, &RecordPage::Month_Clicked });
-				Controls::Grid::SetRow(button, i / 4U);
-				Controls::Grid::SetColumn(button, i % 4U);
-				grid_main.Append(button);
+				grid.Tag(box_value(i + 1U));
+				grid.Tapped({ page, &RecordPage::Month_Clicked });
+				Controls::Grid::SetRow(grid, i / 4U);
+				Controls::Grid::SetColumn(grid, i % 4U);
+				items.Append(grid);
 			}
 			wsprintfW(buf, L"%s年    [照相 %u 张  %u元] [复印 %u 元] [总计 %u 元]",
 				page->curYear.data(), stat.photo_year_num, stat.photo_year_value, stat.copy_year_value,
@@ -158,39 +157,38 @@ namespace winrt::hyzjkz::implementation {
 
 			// 更新UI
 			auto grid_year{ page->Grid_Year() }, grid_month{ page->Grid_Month() };
-			auto grid_main{ grid_month.Children() };
-			grid_main.Clear();
+			auto items{ grid_month.Children() };
+			items.Clear();
 			mqchar buf[256]{ };
 			for (mqui32 i{ }; i < 31U; ++i) {
-				Controls::Button button;
-				Application::LoadComponent(button, Windows::Foundation::Uri{ L"ms-appx:///Xaml/RecordDayItem.xaml" });
-				auto panel{ button.FindName(L"Panel").as<Controls::StackPanel>() };
-				auto text1{ panel.FindName(L"TB1").as<Controls::TextBlock>() };
-				auto text2{ panel.FindName(L"TB2").as<Controls::TextBlock>() };
-				auto text3{ panel.FindName(L"TB3").as<Controls::TextBlock>() };
-				auto text4{ panel.FindName(L"TB4").as<Controls::TextBlock>() };
+				Controls::Grid grid;
+				Application::LoadComponent(grid, Windows::Foundation::Uri{ L"ms-appx:///Xaml/RecordDayItem.xaml" });
+				auto text1{ grid.FindName(L"TB1").as<Controls::TextBlock>() };
+				auto text2{ grid.FindName(L"TB2").as<Controls::TextBlock>() };
+				auto text3{ grid.FindName(L"TB3").as<Controls::TextBlock>() };
+				auto text4{ grid.FindName(L"TB4").as<Controls::TextBlock>() };
 				wsprintfW(buf, L"%u日", i + 1U);
 				text1.Text(buf);
 				wsprintfW(buf, L"照相 %u 张  %u 元", stat.photo_day_nums[i], stat.photo_day_values[i]);
 				text2.Text(buf);
 				wsprintfW(buf, L"复印    %u 元", stat.copy_day_values[i]);
 				text3.Text(buf);
-				auto total_day_value{ stat.photo_day_values[i] + stat.photo_day_values[i] };
+				auto total_day_value{ stat.photo_day_values[i] + stat.copy_day_values[i] };
 				wsprintfW(buf, L"总计    %u 元", total_day_value);
 				text4.Text(buf);
 				if (total_day_value == stat.max_day_value) {
-					panel.Background(page->MaxBrush());
+					grid.Background(page->MaxBrush());
 				}
 				else if (total_day_value < stat.max_day_value) {
-					panel.Background(page->LowBrush());
+					grid.Background(page->LowBrush());
 				}
 				else {
-					panel.Background(page->NormalBrush());
+					grid.Background(page->NormalBrush());
 				}
-				button.Click({ page, &RecordPage::Day_Clicked });
-				Controls::Grid::SetRow(button, i / 7U);
-				Controls::Grid::SetColumn(button, i % 7U);
-				grid_main.Append(button);
+				grid.Tapped({ page, &RecordPage::Day_Clicked });
+				Controls::Grid::SetRow(grid, i / 7U);
+				Controls::Grid::SetColumn(grid, i % 7U);
+				items.Append(grid);
 			}
 			wsprintfW(buf, L"%s年%u月    [照相 %u 张  %u元] [复印 %u 元] [总计 %u 元]",
 				page->curYear.data(), page->curMonth, stat.photo_month_num, stat.photo_month_value,
@@ -209,7 +207,7 @@ namespace winrt::hyzjkz::implementation {
 
 		Loaded([this] (auto, auto) -> Windows::Foundation::IAsyncAction {
 			if (Global.cfg.Get<GlobalConfig::USE_PASSWORD>()) {
-				auto sp_main{ SP_Main() };
+				auto sp_main{ Grid_Main() };
 				sp_main.Visibility(Visibility::Collapsed);
 				co_await Global.ui_window->as<hyzjkz::MainWindow>().ShowPasswordDialog();
 				sp_main.Visibility(Visibility::Visible);

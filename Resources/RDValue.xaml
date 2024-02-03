@@ -31,4 +31,7 @@
     <x:Double x:Key="A4PrinterCanvasWidth">2479</x:Double>
     <x:Double x:Key="A4PrinterCanvasHeight">3508</x:Double>
 
+    <x:Double x:Key="ToPDFImageWidth">165</x:Double>
+    <x:Double x:Key="ToPDFImageHeight">234</x:Double>
+
 </ResourceDictionary>

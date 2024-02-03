@@ -29,6 +29,14 @@ namespace winrt::hyzjkz::implementation {
             Controls::Canvas canvas{ nullptr };
         }Jigsaw;
 
+        struct ToPDFSubPage : MasterQian::WinRT::SubPage<Controls::Grid, ToPDFSubPage> {
+            Controls::AppBarButton button_import{ nullptr };
+            Controls::AppBarButton button_delete{ nullptr };
+            Controls::AppBarButton button_clear{ nullptr };
+            Controls::AppBarButton button_save{ nullptr };
+            Controls::GridView gv_pdf{ nullptr };
+        }ToPDF;
+
         ToolsPage();
         F_EVENT void NV_Main_SelectionChanged(Controls::NavigationView const&, Controls::NavigationViewSelectionChangedEventArgs const&);
     };

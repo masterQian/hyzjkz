@@ -15,7 +15,7 @@ using namespace winrt::Windows::Foundation;
 namespace util {
 	constexpr GUID GuidIRandomAccessStream{ 0x905a0fe1, 0xbc53, 0x11df, { 0x8c, 0x49, 0x00, 0x1e, 0x4f, 0xc6, 0x86, 0xda } };
 
-	Media::Imaging::BitmapImage BinToBMP(MasterQian::BinView bin, MasterQian::Media::ImageSize size, bool hasCache) noexcept {
+	Media::Imaging::BitmapImage BinToBMP(MasterQian::BinView bin, mqsize size, bool hasCache) noexcept {
 		IStream* stream{ SHCreateMemStream(bin.data(), bin.size32()) };
 		Streams::IRandomAccessStream ras;
 		CreateRandomAccessStreamOverStream(stream, BSOS_OPTIONS::BSOS_DEFAULT, GuidIRandomAccessStream, reinterpret_cast<void**>(&ras));
@@ -28,7 +28,7 @@ namespace util {
 		return bmp;
 	}
 
-	Media::Imaging::BitmapImage FileToBMP(std::wstring_view fn, MasterQian::Media::ImageSize size, bool hasCache) noexcept {
+	Media::Imaging::BitmapImage FileToBMP(std::wstring_view fn, mqsize size, bool hasCache) noexcept {
 		Media::Imaging::BitmapImage bmp;
 		if (!hasCache) bmp.CreateOptions(Media::Imaging::BitmapCreateOptions::IgnoreImageCache);
 		if (size.width) bmp.DecodePixelWidth(size.width);
@@ -38,7 +38,7 @@ namespace util {
 	}
 
 	winrt::Microsoft::UI::Xaml::Media::Imaging::BitmapImage
-		StreamToBMP(mqhandle handle, MasterQian::Media::ImageSize size, bool hasCache) noexcept {
+		StreamToBMP(mqhandle handle, mqsize size, bool hasCache) noexcept {
 		auto stream{ static_cast<IStream*>(handle) };
 		Streams::IRandomAccessStream ras;
 		CreateRandomAccessStreamOverStream(stream, BSOS_OPTIONS::BSOS_DEFAULT, GuidIRandomAccessStream, reinterpret_cast<void**>(&ras));

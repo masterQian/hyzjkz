@@ -11,17 +11,27 @@
         <SolidColorBrush x:Name="NormalBrush" Color="LightGreen" />
         <SolidColorBrush x:Name="LowBrush" Color="LightBlue" />
     </Page.Resources>
-    <StackPanel x:Name="SP_Main" HorizontalAlignment="Center" VerticalAlignment="Top" Orientation="Vertical">
-        <Grid Margin="20,10,20,10" ColumnDefinitions="Auto,Auto,*">
-            <TextBlock Grid.Column="0" Margin="10,0,10,0" Style="{StaticResource Style.Text.Middle}" Text="{StaticResource RecordPage.Year}" />
-            <DropDownButton x:Name="SelectYear" Grid.Column="1" Margin="10,0,50,0" Content="{StaticResource RecordPage.NoData}">
-                <DropDownButton.Flyout>
-                    <MenuFlyout x:Name="SelectYearFlyout" Placement="Bottom" />
-                </DropDownButton.Flyout>
-            </DropDownButton>
-            <TextBlock x:Name="TotalText" Grid.Column="2" Margin="10,0,10,0" Style="{StaticResource Style.Text.Large}" />
-        </Grid>
-        <Grid x:Name="Grid_Year" ColumnDefinitions="*,*,*,*" RowDefinitions="*,*,*" Visibility="Collapsed" />
-        <Grid x:Name="Grid_Month" ColumnDefinitions="*,*,*,*,*,*,*" RowDefinitions="*,*,*,*,*" Visibility="Collapsed" />
-    </StackPanel>
+    <Grid x:Name="Grid_Main" ColumnDefinitions="Auto, Auto, *" RowDefinitions="Auto, *">
+        <TextBlock Grid.Row="0" Grid.Column="0" Margin="50,10,10,10"
+                   Style="{StaticResource Style.Text.Middle}"
+                   Text="{StaticResource RecordPage.Year}" />
+        <DropDownButton x:Name="SelectYear" Grid.Row="0" Grid.Column="1"
+                        Margin="10,10,50,10"
+                        Content="{StaticResource RecordPage.NoData}">
+            <DropDownButton.Flyout>
+                <MenuFlyout x:Name="SelectYearFlyout" Placement="Bottom" />
+            </DropDownButton.Flyout>
+        </DropDownButton>
+        <TextBlock x:Name="TotalText" Grid.Row="0" Grid.Column="2"
+                   Margin="10,10,20,10"
+                   Style="{StaticResource Style.Text.Large}" />
+        <Grid x:Name="Grid_Year" Grid.Row="1" Grid.Column="0"
+              Grid.ColumnSpan="3" Margin="2.5"
+              ColumnDefinitions="*,*,*,*" RowDefinitions="*,*,*"
+              Visibility="Collapsed" />
+        <Grid x:Name="Grid_Month" Grid.Row="1" Grid.Column="0"
+              Grid.ColumnSpan="3" Margin="2.5"
+              ColumnDefinitions="*,*,*,*,*,*,*"
+              RowDefinitions="*,*,*,*,*" Visibility="Collapsed" />
+    </Grid>
 </Page>

@@ -59,6 +59,9 @@
     <Page Include="Xaml\Tools\JigsawSubPage.xaml">
       <Filter>Pages\Xaml\Tools</Filter>
     </Page>
+    <Page Include="Xaml\Tools\ToPDFSubPage.xaml">
+      <Filter>Pages\Xaml\Tools</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl" />
@@ -77,6 +80,36 @@
       <Filter>Others</Filter>
     </ClCompile>
     <ClCompile Include="app.cpp" />
+    <ClCompile Include="include\MasterQian.Bin.ixx">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="include\MasterQian.freestanding.ixx">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="include\MasterQian.Media.Color.ixx">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="include\MasterQian.Media.GDI.ixx">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="include\MasterQian.Parser.Config.ixx">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="include\MasterQian.Storage.Path.ixx">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="include\MasterQian.Storage.PDF.ixx">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="include\MasterQian.System.ixx">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="include\MasterQian.Time.ixx">
+      <Filter>Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="include\MasterQian.WinRT.ixx">
+      <Filter>Modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Pages">
@@ -99,6 +132,9 @@
     </Filter>
     <Filter Include="Resources">
       <UniqueIdentifier>{289ea7b8-60cb-4887-9960-5c03bcf9e8e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Modules">
+      <UniqueIdentifier>{17a7362c-3c1c-45af-8415-30a033bae257}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

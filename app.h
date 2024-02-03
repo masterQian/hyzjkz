@@ -1,15 +1,5 @@
 #pragma once
 
-#include <MasterQian.Media.GDI.h>
-#include <MasterQian.Storage.Path.h>
-#include <MasterQian.Parser.Config.h>
-#ifdef _DEBUG
-#include <MasterQian.System.Log.h>
-#endif
-#include <MasterQian.System.Info.h>
-#include <MasterQian.System.Process.h>
-#include <MasterQian.WinRT.h>
-
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Microsoft.UI.Xaml.h>
@@ -17,15 +7,17 @@
 
 #include "resource.h"
 
+import MasterQian.Media.GDI;
+import MasterQian.Storage.Path;
+import MasterQian.Storage.PDF;
+import MasterQian.Parser.Config;
+import MasterQian.System;
+import MasterQian.WinRT;
+
 // 运行时函数
 #define F_RT
 // 事件函数
 #define F_EVENT
-
-// 调试日志输出器
-#ifdef _DEBUG
-inline MasterQian::System::DebugLogger logger;
-#endif
 
 // 报表数据结构
 struct RecordData {
@@ -101,8 +93,8 @@ struct PrintTemplate {
 };
 
 // 模板列表
-struct TemplateList : private std::unordered_map<std::wstring, MasterQian::Bin, MasterQian::Meta::isomerism_hash, MasterQian::Meta::isomerism_equal> {
-	using BaseT = std::unordered_map<std::wstring, MasterQian::Bin, MasterQian::Meta::isomerism_hash, MasterQian::Meta::isomerism_equal>;
+struct TemplateList : private std::unordered_map<std::wstring, MasterQian::Bin, MasterQian::freestanding::isomerism_hash, MasterQian::freestanding::isomerism_equal> {
+	using BaseT = std::unordered_map<std::wstring, MasterQian::Bin, MasterQian::freestanding::isomerism_hash, MasterQian::freestanding::isomerism_equal>;
 	
 	TemplateList() = default;
 
@@ -263,10 +255,12 @@ inline struct GlobalStruct {
 	MasterQian::Storage::Path c_tempPhotoPath; // 临时照片路径
 	MasterQian::Storage::Path c_cameraPhotoPath; // 相机照片路径
 
-	MasterQian::Media::ImageSize c_photoThumbSize; // 缩略图尺寸
-	MasterQian::Media::ImageSize c_photoPreviewSize; // 预览图尺寸
-	MasterQian::Media::ImageSize c_printCanvasSize; // 打印画布尺寸
-	MasterQian::Media::ImageSize c_IDCardPreviewSize; // 身份证拼接预览尺寸
+	mqsize c_photoThumbSize; // 缩略图尺寸
+	mqsize c_photoPreviewSize; // 预览图尺寸
+	mqsize c_printCanvasSize; // 打印画布尺寸
+	mqsize c_IDCardPreviewSize; // 身份证拼接预览尺寸
+	mqsize c_A4Size; // A4尺寸
+	mqsize c_ToPDFImageSize; // 导出PDF导入图像尺寸
 
 	// 全局资源
 	MasterQian::BinView res_icon; // 图标
@@ -282,18 +276,23 @@ inline struct GlobalStruct {
 namespace util {
 	// 字节集转图像
 	winrt::Microsoft::UI::Xaml::Media::Imaging::BitmapImage
-		BinToBMP(MasterQian::BinView, MasterQian::Media::ImageSize size = { }, bool hasCache = false) noexcept;
+		BinToBMP(MasterQian::BinView, mqsize size = { }, bool hasCache = false) noexcept;
 
 	// 文件转图像
 	winrt::Microsoft::UI::Xaml::Media::Imaging::BitmapImage
-		FileToBMP(std::wstring_view, MasterQian::Media::ImageSize size = { }, bool hasCache = false) noexcept;
+		FileToBMP(std::wstring_view, mqsize size = { }, bool hasCache = false) noexcept;
 
 	// 流转图像
 	winrt::Microsoft::UI::Xaml::Media::Imaging::BitmapImage
-		StreamToBMP(mqhandle, MasterQian::Media::ImageSize size = { }, bool hasCache = false) noexcept;
+		StreamToBMP(mqhandle, mqsize size = { }, bool hasCache = false) noexcept;
 
 	// 初始化对话框窗口
 	void InitializeDialog(winrt::Windows::Foundation::IInspectable const&, HWND) noexcept;
+
+	// DateTime转LocalTime
+	inline MasterQian::Time DateTimeToLocal(winrt::Windows::Foundation::DateTime dt) noexcept {
+		return MasterQian::Timestamp{ static_cast<mqui64>(dt.time_since_epoch().count()), MasterQian::Timestamp::Type::microsecond, true }.local();
+	}
 
 	// 注册拖放钩子
 	void SetDropHook(void (*callback)(mqhandle, std::vector<std::wstring> const&) noexcept, mqhandle) noexcept;

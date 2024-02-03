@@ -19,7 +19,7 @@ namespace winrt::hyzjkz::implementation {
 		GDI::Image canvas({ static_cast<mqui32>(canvas_width), static_cast<mqui32>(canvas_height) }, Colors::Pink);
 		// »­¾ØÐÎ
 		auto items{ page->LV_TemplateData().Items() };
-		std::vector<ImageRect> rects{ items.Size() };
+		std::vector<mqrect> rects{ items.Size() };
 		for (auto item_ : items) {
 			auto item{ item_.as<hyzjkz::ModelTemplateData>() };
 			rects.emplace_back(
@@ -28,9 +28,9 @@ namespace winrt::hyzjkz::implementation {
 				static_cast<mqui32>(item.TWidth() / canvas_scale),
 				static_cast<mqui32>(item.THeight() / canvas_scale));
 		}
-		canvas.FillRectangles(rects, Colors::Orange, FAST_MODE);
-		canvas.DrawRectangles(rects, Colors::Black, 1.0, FAST_MODE);
-		image.Source(util::StreamToBMP(canvas.SaveToUnsafeStream(ImageFormat::BMP)));
+		canvas.FillRectangles(rects, Colors::Orange, GDI::FAST_MODE);
+		canvas.DrawRectangles(rects, Colors::Black, 1.0, GDI::FAST_MODE);
+		image.Source(util::StreamToBMP(canvas.SaveToUnsafeStream(GDI::ImageFormat::BMP)));
 	}
 
 	// Ë¢ÐÂÄ£°å

@@ -2,13 +2,15 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="..\include\MasterQian.Parser.Ini.ixx" />
+    <ClCompile Include="..\include\MasterQian.Storage.Path.ixx" />
+    <ClCompile Include="..\include\MasterQian.Bin.ixx" />
+    <ClCompile Include="..\include\MasterQian.freestanding.ixx" />
+    <ClCompile Include="..\include\MasterQian.Time.ixx" />
+    <ClCompile Include="..\include\MasterQian.Log.ixx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="PropertySheet.props" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="pch.h" />
   </ItemGroup>
 </Project>

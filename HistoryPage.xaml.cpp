@@ -17,7 +17,7 @@ namespace winrt::hyzjkz::implementation {
 			if (path.IsFile()) {
 				Controls::MenuFlyoutItem menu;
 				Controls::ImageIcon icon;
-				icon.Source(util::StreamToBMP(GDI::Image(path, 0U).SaveToUnsafeStream(ImageFormat::PNG), { }, true));
+				icon.Source(util::StreamToBMP(GDI::Image(path, 0U).SaveToUnsafeStream(GDI::ImageFormat::PNG), { }, true));
 				menu.Icon(icon);
 				menu.Text(name);
 				menu.Tag(box_value(L"Link|" + name));
@@ -40,7 +40,7 @@ namespace winrt::hyzjkz::implementation {
 
 	// 更新复印报表数据
 	static void UpdateRecordCopyData(HistoryPage* page, mqui32 value) noexcept {
-		auto cur_date{ MasterQian::Timestamp{ page->CDP_Main().Date().as<Windows::Foundation::DateTime>(), true }.local() };
+		auto cur_date{ util::DateTimeToLocal(page->CDP_Main().Date().as<Windows::Foundation::DateTime>()) };
 		std::wstring filename{ std::to_wstring(cur_date.year) + L".bin" };
 		auto data_path{ Global.c_dataPath / filename };
 		MasterQian::Bin bin{ data_path.Read() };
@@ -57,7 +57,7 @@ namespace winrt::hyzjkz::implementation {
 		photo_view.ItemsSource(nullptr);
 		auto new_photos{ single_threaded_observable_vector<hyzjkz::ModelPhoto>() };
 
-		auto cur_date{ MasterQian::Timestamp{ page->CDP_Main().Date().as<Windows::Foundation::DateTime>(), true }.local() };
+		auto cur_date{ util::DateTimeToLocal(page->CDP_Main().Date().as<Windows::Foundation::DateTime>()) };
 		auto date_str{ cur_date.formatDate() };
 		auto photo_path{ Global.c_photoPath / date_str }; // [照片路径]/20231231
 		auto thumb_path{ Global.c_thumbPath / date_str }; // [缩略图路径]/20231231
@@ -71,7 +71,7 @@ namespace winrt::hyzjkz::implementation {
 			auto thumb_file{ thumb_path / filename };
 			if (!thumb_file.Exists()) { // 缩略图不存在
 				// 创建缩略图
-				GDI::Image(photo_file).Thumbnail(Global.c_photoThumbSize).Save(thumb_file, ImageFormat::JPG);
+				GDI::Image(photo_file).Thumbnail(Global.c_photoThumbSize).Save(thumb_file, GDI::ImageFormat::JPG);
 			}
 
 			new_photos.Append(hyzjkz::ModelPhoto{ date_str, filename }); // 添加新照片
@@ -104,13 +104,13 @@ namespace winrt::hyzjkz::implementation {
 			co_await winrt::resume_background();
 
 			GDI::Image image{ item.PhotoPath() };
-			ImageFormat format{ ImageFormat::JPG };
+			GDI::ImageFormat format{ GDI::ImageFormat::JPG };
 			image.DPI({ 300U, 300U });
 			if (file.FileType() == L".png") {
-				format = ImageFormat::PNG;
+				format = GDI::ImageFormat::PNG;
 			}
 			else if (file.FileType() == L".bmp") {
-				format = ImageFormat::BMP;
+				format = GDI::ImageFormat::BMP;
 			}
 			image.Save(file.Path(), format);
 
@@ -167,7 +167,7 @@ namespace winrt::hyzjkz::implementation {
 		GDI::Image thumb_image{ image.Thumbnail(Global.c_photoThumbSize) };
 
 		auto dialog{ page->PreviewDialog() };
-		auto stream{ thumb_image.SaveToUnsafeStream(ImageFormat::BMP) };
+		auto stream{ thumb_image.SaveToUnsafeStream(GDI::ImageFormat::BMP) };
 		dialog.Content().as<Controls::Image>().Source(util::StreamToBMP(stream));
 
 		auto result{ co_await dialog.ShowAsync() };
@@ -175,8 +175,8 @@ namespace winrt::hyzjkz::implementation {
 			winrt::apartment_context ui_thread;
 			co_await winrt::resume_background();
 
-			image.Save(photo_path, ImageFormat::JPG);
-			thumb_image.Save(thumb_path, ImageFormat::JPG);
+			image.Save(photo_path, GDI::ImageFormat::JPG);
+			thumb_image.Save(thumb_path, GDI::ImageFormat::JPG);
 
 			co_await ui_thread;
 
@@ -198,7 +198,7 @@ namespace winrt::hyzjkz::implementation {
 
 				GDI::Image image{ photo_path };
 				image.DPI({ static_cast<mqui32>(dpi), static_cast<mqui32>(dpi) });
-				image.Save(photo_path, ImageFormat::JPG);
+				image.Save(photo_path, GDI::ImageFormat::JPG);
 
 				co_await ui_thread;
 			}
@@ -212,7 +212,7 @@ namespace winrt::hyzjkz::implementation {
 	// 边框
 	static Windows::Foundation::IAsyncAction Menu_Border(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
 		static auto ImageBorderImpl = [ ] (GDI::Image& image,
-			mqui32 size, Windows::UI::Color color, AlgorithmModes mode) {
+			mqui32 size, Windows::UI::Color color, GDI::AlgorithmModes mode) {
 				auto border_x{ (image.Width() >> 8) * size };
 				auto border_y{ (image.Height() >> 8) * size };
 				if (border_x == 0) border_x = 1;
@@ -239,8 +239,8 @@ namespace winrt::hyzjkz::implementation {
 				auto color{ page->MBD_BorderColor().Color() };
 
 				GDI::Image image{ unbox_value<hstring>(page->MBD_Image().Tag()) };
-				auto stream{ ImageBorderImpl(image, size, color, FAST_MODE).
-					Thumbnail(Global.c_photoPreviewSize).SaveToUnsafeStream(ImageFormat::BMP) };
+				auto stream{ ImageBorderImpl(image, size, color, GDI::FAST_MODE).
+					Thumbnail(Global.c_photoPreviewSize).SaveToUnsafeStream(GDI::ImageFormat::BMP) };
 				page->MBD_Image().Source(util::StreamToBMP(stream));
 				args.Cancel(true);
 			});
@@ -256,9 +256,9 @@ namespace winrt::hyzjkz::implementation {
 
 			// 图像边框保存
 			GDI::Image image{ photo_path };
-			image = ImageBorderImpl(image, size, color, QUALITY_MODE);
-			image.Save(photo_path, ImageFormat::JPG);
-			image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path, ImageFormat::JPG);
+			image = ImageBorderImpl(image, size, color, GDI::QUALITY_MODE);
+			image.Save(photo_path, GDI::ImageFormat::JPG);
+			image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path, GDI::ImageFormat::JPG);
 
 			co_await ui_thread;
 
@@ -273,10 +273,10 @@ namespace winrt::hyzjkz::implementation {
 
 		GDI::Image image{ photo_path };
 		GDI::Image thumb_image{ image.Thumbnail(Global.c_photoThumbSize) };
-		thumb_image.GrayScale(FAST_MODE);
+		thumb_image.GrayScale(GDI::FAST_MODE);
 
 		auto dialog{ page->PreviewDialog() };
-		auto stream{ thumb_image.SaveToUnsafeStream(ImageFormat::BMP) };
+		auto stream{ thumb_image.SaveToUnsafeStream(GDI::ImageFormat::BMP) };
 		dialog.Content().as<Controls::Image>().Source(util::StreamToBMP(stream));
 
 		auto result{ co_await dialog.ShowAsync() };
@@ -284,9 +284,9 @@ namespace winrt::hyzjkz::implementation {
 			winrt::apartment_context ui_thread;
 			co_await winrt::resume_background();
 
-			image.GrayScale(QUALITY_MODE);
-			image.Save(photo_path, ImageFormat::JPG);
-			thumb_image.Save(thumb_path, ImageFormat::JPG);
+			image.GrayScale(GDI::QUALITY_MODE);
+			image.Save(photo_path, GDI::ImageFormat::JPG);
+			thumb_image.Save(thumb_path, GDI::ImageFormat::JPG);
 
 			co_await ui_thread;
 
@@ -301,7 +301,7 @@ namespace winrt::hyzjkz::implementation {
 
 		GDI::Image image{ photo_path };
 		auto [width, height] { image.Size() };
-		ImageText textInfo{ L"", width * 7 / image.DPI().horizontal, Colors::White, L"黑体" };
+		GDI::GDIText textInfo{ L"", width * 7 / image.DPI().width, Colors::White, L"黑体" };
 
 		auto dialog{ page->MenuIDCardDialog() };
 		auto idcard_image{ page->MIDD_Image() };
@@ -335,7 +335,7 @@ namespace winrt::hyzjkz::implementation {
 				// 图像身份证预览
 				GDI::Image image{ unbox_value<hstring>(page->MIDD_Image().Tag()) };
 				auto color{ page->MIDD_IDCardColor().Color() };
-				ImageText textInfo{ page->MIDD_IDCardNumber().Text().data(),
+				GDI::GDIText textInfo{ page->MIDD_IDCardNumber().Text().data(),
 					static_cast<mqui32>(page->MIDD_IDCardFontSize().Value()),
 					Color(color.R, color.G, color.B, color.A), L"黑体" };
 				auto bottom{ static_cast<mqui32>(page->MIDD_IDCardBottom().Value()) };
@@ -343,12 +343,12 @@ namespace winrt::hyzjkz::implementation {
 
 				auto extend_height{ image.Height() * 5U / 64U };
 				if (isExtend) {
-					image = image.Border({ 0, 0, 0, extend_height }, Colors::White, FAST_MODE);
+					image = image.Border({ 0, 0, 0, extend_height }, Colors::White, GDI::FAST_MODE);
 					bottom += extend_height;
 				}
-				ImagePoint point{ image.Width() / 2, bottom };
-				image.DrawString(point, textInfo, FAST_MODE);
-				auto stream{ image.Thumbnail(Global.c_photoPreviewSize).SaveToUnsafeStream(ImageFormat::BMP) };
+				mqpoint point{ image.Width() / 2, bottom };
+				image.DrawString(point, textInfo, GDI::FAST_MODE);
+				auto stream{ image.Thumbnail(Global.c_photoPreviewSize).SaveToUnsafeStream(GDI::ImageFormat::BMP) };
 				page->MIDD_Image().Source(util::StreamToBMP(stream));
 				args.Cancel(true);
 			});
@@ -365,18 +365,18 @@ namespace winrt::hyzjkz::implementation {
 
 			auto extend_height{ image.Height() * 5U / 64U };
 			if (isExtend) {
-				image = image.Border({ 0, 0, 0, extend_height }, Colors::White, QUALITY_MODE);
+				image = image.Border({ 0, 0, 0, extend_height }, Colors::White, GDI::QUALITY_MODE);
 				bottom += extend_height;
 			}
-			ImagePoint point{ image.Width() / 2, bottom };
+			mqpoint point{ image.Width() / 2, bottom };
 
 			winrt::apartment_context ui_thread;
 			co_await winrt::resume_background();
 
 			// 图像身份证保存
-			image.DrawString(point, textInfo, QUALITY_MODE);
-			image.Save(photo_path, ImageFormat::JPG);
-			image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path, ImageFormat::JPG);
+			image.DrawString(point, textInfo, GDI::QUALITY_MODE);
+			image.Save(photo_path, GDI::ImageFormat::JPG);
+			image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path, GDI::ImageFormat::JPG);
 
 			co_await ui_thread;
 
@@ -418,7 +418,7 @@ namespace winrt::hyzjkz::implementation {
 			// 复制临时照片到照片路径
 			Global.c_tempPhotoPath.CopyRename(photo_path, true);
 			// 生成缩略图
-			GDI::Image(photo_path).Thumbnail(Global.c_photoThumbSize).Save(thumb_path, ImageFormat::JPG);
+			GDI::Image(photo_path).Thumbnail(Global.c_photoThumbSize).Save(thumb_path, GDI::ImageFormat::JPG);
 
 			Refresh(page, false);
 		}
@@ -429,7 +429,7 @@ namespace winrt::hyzjkz::implementation {
 	// 导入照片
 	static void ImportPhotos(mqhandle arg, std::vector<std::wstring> const& files) noexcept {
 		auto page{ static_cast<HistoryPage*>(arg) };
-		auto date_str{ MasterQian::Timestamp{ page->CDP_Main().Date().as<Windows::Foundation::DateTime>(), true }.local().formatDate() };
+		auto date_str{ util::DateTimeToLocal(page->CDP_Main().Date().as<Windows::Foundation::DateTime>()).formatDate() };
 		auto photo_path{ Global.c_photoPath / date_str };
 		photo_path.Create();
 		auto thumb_path{ Global.c_thumbPath / date_str };
@@ -440,8 +440,8 @@ namespace winrt::hyzjkz::implementation {
 			std::wstring filename{ MasterQian::Timestamp{ }.local().formatDateTime() + std::to_wstring(index++) };
 			filename += L".jpg";
 			GDI::Image image(file);
-			image.Save(photo_path / filename, ImageFormat::JPG); // 复制照片及导出缩略图
-			image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path / filename, ImageFormat::JPG);
+			image.Save(photo_path / filename, GDI::ImageFormat::JPG); // 复制照片及导出缩略图
+			image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path / filename, GDI::ImageFormat::JPG);
 		}
 
 		Refresh(page, true);
@@ -468,7 +468,7 @@ namespace winrt::hyzjkz::implementation {
 			}
 			else if (tag == WAIT_OBJECT_0 + 1) {
 				auto now_date{ MasterQian::Timestamp{ }.local() };
-				auto cur_date{ MasterQian::Timestamp{ page->CDP_Main().Date().as<Windows::Foundation::DateTime>(), true }.local() };
+				auto cur_date{ util::DateTimeToLocal(page->CDP_Main().Date().as<Windows::Foundation::DateTime>()) };
 				auto date_str{ now_date.formatDate() };
 
 				PFILE_NOTIFY_INFORMATION fni{ };
@@ -484,7 +484,7 @@ namespace winrt::hyzjkz::implementation {
 						auto file{ Global.c_cameraPhotoPath / filename };
 						file.Move(photo_path);
 						GDI::Image thumb_image(photo_path / filename);
-						thumb_image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path / filename, ImageFormat::JPG);
+						thumb_image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path / filename, GDI::ImageFormat::JPG);
 
 						co_await ui_thread;
 						if (now_date.compare_date(cur_date)) {
@@ -546,7 +546,7 @@ namespace winrt::hyzjkz::implementation {
 			Refresh(this, false);
 		}
 		else if (old_date != nullptr) {
-			auto t{ MasterQian::Timestamp{ old_date.Value(), true }.local() };
+			auto t{ util::DateTimeToLocal(old_date.Value()) };
 			mqchar buf[32]{ };
 			wsprintfW(buf, L"%hu年%u月%u日", t.year, t.month, t.day);
 			CDP_Main().PlaceholderText(buf);
@@ -560,8 +560,7 @@ namespace winrt::hyzjkz::implementation {
 
 	// 补差
 	F_EVENT Windows::Foundation::IAsyncAction HistoryPage::AddDefault_Click(IInspectable const&, RoutedEventArgs const&) {
-		auto date_str{ MasterQian::Timestamp{ CDP_Main().Date().as<Windows::Foundation::DateTime>(), true }.local().formatDate() };
-		
+		auto date_str{ util::DateTimeToLocal(CDP_Main().Date().as<Windows::Foundation::DateTime>()).formatDate() };
 		winrt::apartment_context ui_thread;
 		co_await winrt::resume_background();
 
@@ -595,8 +594,6 @@ namespace winrt::hyzjkz::implementation {
 
 		if (Windows::Foundation::Collections::IVectorView<StorageFile>
 			files_view{ co_await openPicker.PickMultipleFilesAsync() }; files_view.Size() > 0U) {
-			auto date_str{ MasterQian::Timestamp{ CDP_Main().Date().as<Windows::Foundation::DateTime>(), true }.local().formatDate() };
-			
 			std::vector<std::wstring> files;
 			for (auto file_view : files_view) {
 				files.emplace_back(file_view.Path());
@@ -636,13 +633,13 @@ namespace winrt::hyzjkz::implementation {
 		wsprintfW(image_information, L"尺寸: %u × %u 像素", size.width, size.height);
 		SPD_Text1().Text(image_information);
 		auto dpi{ image.DPI() };
-		wsprintfW(image_information, L"分辨率: %u × %u dpi", dpi.horizontal, dpi.vertical);
+		wsprintfW(image_information, L"分辨率: %u × %u dpi", dpi.width, dpi.height);
 		SPD_Text2().Text(image_information);
 		wsprintfW(image_information, L"位深度: %u", image.BitDepth());
 		SPD_Text3().Text(image_information);
 		wsprintfW(image_information, L"大小: %u KB", static_cast<mqui32>(photo_path.Size()) / 1024U);
 		SPD_Text4().Text(image_information);
-		SPD_Image().Source(util::StreamToBMP(image.SaveToUnsafeStream(ImageFormat::BMP)));
+		SPD_Image().Source(util::StreamToBMP(image.SaveToUnsafeStream(GDI::ImageFormat::BMP)));
 		co_await dialog.ShowAsync();
 	}
 

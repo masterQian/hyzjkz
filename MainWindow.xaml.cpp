@@ -52,7 +52,7 @@ namespace winrt::hyzjkz::implementation {
         auto thumb_path{ Global.c_thumbPath / date_str };
         for (auto& file : Global.c_cameraPhotoPath.EnumFolder(L"*.jpg")) {
             MasterQian::Media::GDI::Image thumb_image(file);
-            thumb_image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path / file.Name(), MasterQian::Media::ImageFormat::JPG);
+            thumb_image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path / file.Name(), MasterQian::Media::GDI::ImageFormat::JPG);
             file.Move(photo_path);
         }
     }

@@ -59,7 +59,7 @@ namespace winrt::hyzjkz::implementation {
 					MasterQian::Media::GDI::Image combine_image{ front_image.Combine<false>(back_image,
 						{ 0U, 0U, front_image.Width(), front_image.Height() / 2U },
 						{ 0U, back_image.Height() / 2U, back_image.Width(), back_image.Height() / 2U },
-						MasterQian::Media::FAST_MODE).Thumbnail({ 280, 350 }) };
+						MasterQian::Media::GDI::FAST_MODE).Thumbnail({ 280, 350 }) };
 
 					co_await ui_thread;
 
@@ -67,7 +67,7 @@ namespace winrt::hyzjkz::implementation {
 					sp->button_work.IsEnabled(true);
 					sp->preview_text.Text(util::RDString<hstring>(L"IDCardSubPage.Preview.Text"));
 
-					sp->image_preview.Source(util::StreamToBMP(combine_image.SaveToUnsafeStream(MasterQian::Media::ImageFormat::BMP)));
+					sp->image_preview.Source(util::StreamToBMP(combine_image.SaveToUnsafeStream(MasterQian::Media::GDI::ImageFormat::BMP)));
 				}
 			}
 		}
@@ -113,7 +113,7 @@ namespace winrt::hyzjkz::implementation {
 				front_image.Combine<false>(back_image,
 					{ 0U, 0U, front_image.Width(), front_image.Height() / 2U },
 					{ 0U, back_image.Height() / 2U, back_image.Width(), back_image.Height() / 2U },
-					MasterQian::Media::QUALITY_MODE).Save(file.Path(), MasterQian::Media::ImageFormat::JPG);
+					MasterQian::Media::GDI::QUALITY_MODE).Save(file.Path(), MasterQian::Media::GDI::ImageFormat::JPG);
 
 				co_await ui_thread;
 			}
@@ -164,8 +164,8 @@ namespace winrt::hyzjkz::implementation {
 	static void Canvas_Jigsaw_Resize(ToolsPage::JigsawSubPage* sp) noexcept {
 		auto canvas{ sp->canvas };
 		mqf64 scale{ sp->switch_mode.IsOn() ?
-			util::RDValue<mqf64>(L"CanvasWidth") / util::RDValue<mqf64>(L"CanvasHeight") // A6
-			: util::RDValue<mqf64>(L"A4PrinterCanvasWidth") / util::RDValue<mqf64>(L"A4PrinterCanvasHeight") }; // A4
+			static_cast<mqf64>(Global.c_printCanvasSize.width) / Global.c_printCanvasSize.height // A6
+			: static_cast<mqf64>(Global.c_A4Size.width) / Global.c_A4Size.height }; // A4
 		canvas.Width(canvas.ActualHeight() * scale);
 		Media::RectangleGeometry rg;
 		rg.Rect({ 0.0f, 0.0f, static_cast<mqf32>(canvas.ActualWidth()), static_cast<mqf32>(canvas.ActualHeight()) });
@@ -204,11 +204,11 @@ namespace winrt::hyzjkz::implementation {
 
 				GDI::Image image(file);
 				auto image_size{ image.Size() };
-				if (image_size != ImageSize{ }) {
-					auto thumb_height{ static_cast<mqui32>(canvas_height / 4) }; // 高度缩放到画布高度的1/4
+				if (image_size != mqsize{ }) {
+					auto thumb_height{ static_cast<mqui32>(canvas_height / 3) }; // 高度缩放到画布高度的1/3
 					auto thumb_width{ thumb_height * image_size.width / image_size.height }; // 宽度按比例缩放
-					image = image.Resample({ thumb_width, thumb_height }, FAST_MODE); // 重新采样
-					auto stream{ image.SaveToUnsafeStream(ImageFormat::BMP) }; // 保存到流
+					image = image.Resample({ thumb_width, thumb_height }, GDI::FAST_MODE); // 重新采样
+					auto stream{ image.SaveToUnsafeStream(GDI::ImageFormat::BMP) }; // 保存到流
 					// 更新UI
 					co_await ui_thread;
 
@@ -268,7 +268,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 拼图
-	static Windows::Foundation::IAsyncAction Canvas_Jigsaw_Work(ToolsPage::JigsawSubPage* sp) noexcept {
+	static Windows::Foundation::IAsyncAction Canvas_Jigsaw_Save(ToolsPage::JigsawSubPage* sp) noexcept {
 		Windows::Storage::Pickers::FileSavePicker savePicker;
 		savePicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
 		auto filters{ savePicker.FileTypeChoices() };
@@ -277,35 +277,31 @@ namespace winrt::hyzjkz::implementation {
 		util::InitializeDialog(savePicker, Global.ui_hwnd);
 
 		if (Windows::Storage::StorageFile file{ co_await savePicker.PickSaveFileAsync() }) {
-			winrt::apartment_context ui_thread;
-
+			auto print_canvas_size{ sp->switch_mode.IsOn() ? Global.c_printCanvasSize : Global.c_A4Size };
 			auto canvas{ sp->canvas };
 			auto canvas_width{ sp->canvas.ActualWidth() }; // 画布实际宽度
-			auto canvas_height{ sp->canvas.ActualHeight() }; // 画布实际高度
-			auto print_width{ sp->switch_mode.IsOn() ? util::RDValue<mqf64>(L"CanvasWidth") : util::RDValue<mqf64>(L"A4PrinterCanvasWidth") };
-			auto print_height{ sp->switch_mode.IsOn() ? util::RDValue<mqf64>(L"CanvasHeight") : util::RDValue<mqf64>(L"A4PrinterCanvasHeight") };
-			auto scale{ print_width / canvas_width }; // 缩放比例
-			std::vector<std::pair<std::wstring, MasterQian::Media::ImageRect>> rects;
+			auto scale{ print_canvas_size.width / canvas_width }; // 缩放比例
+			std::vector<std::pair<std::wstring, mqrect>> rects;
 			for (auto item : canvas.Children()) {
 				auto drag_image{ item.as<Controls::Image>() };
-				rects.emplace_back(drag_image.Tag().as<hstring>(), MasterQian::Media::ImageRect{
+				rects.emplace_back(drag_image.Tag().as<hstring>(), mqrect{
 					static_cast<mqui32>(Controls::Canvas::GetLeft(drag_image) * scale),
 					static_cast<mqui32>(Controls::Canvas::GetTop(drag_image) * scale),
 					static_cast<mqui32>(drag_image.ActualWidth() * scale),
 					static_cast<mqui32>(drag_image.ActualHeight() * scale) });
 			}
 
+			winrt::apartment_context ui_thread;
 			co_await winrt::resume_background();
 
-			MasterQian::Media::GDI::Image print_canvas({ static_cast<mqui32>(print_width),
-				static_cast<mqui32>(print_height) }, MasterQian::Media::Colors::White); // 打印画布
+			MasterQian::Media::GDI::Image print_canvas(print_canvas_size, MasterQian::Media::Colors::White); // 打印画布
 			print_canvas.DPI({ 300U, 300U });
 			for (auto& [file, rect] : rects) {
 				MasterQian::Media::GDI::Image image{ file };
 				image.DPI({ 300U, 300U });
-				print_canvas.DrawImage(image, { rect.left, rect.top }, { rect.width, rect.height }, MasterQian::Media::QUALITY_MODE);
+				print_canvas.DrawImage(image, { rect.left, rect.top }, { rect.width, rect.height }, MasterQian::Media::GDI::QUALITY_MODE);
 			}
-			print_canvas.Save(file.Path(), MasterQian::Media::ImageFormat::JPG);
+			print_canvas.Save(file.Path(), MasterQian::Media::GDI::ImageFormat::JPG);
 
 			co_await ui_thread;
 		}
@@ -335,7 +331,7 @@ namespace winrt::hyzjkz::implementation {
 			Canvas_Jigsaw_Clear(sp);
 			});
 		sp->button_save.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
-			co_await Canvas_Jigsaw_Work(sp);
+			co_await Canvas_Jigsaw_Save(sp);
 			});
 	}
 
@@ -349,6 +345,102 @@ namespace winrt::hyzjkz::implementation {
 			Canvas_Jigsaw_Clear(sp);
 		}
 	}
+
+	/*  导出PDF  */
+
+	// 导入
+	static Windows::Foundation::IAsyncAction ToPDF_Import(ToolsPage::ToPDFSubPage* sp) noexcept {
+		using namespace winrt::Windows::Storage;
+
+		Pickers::FileOpenPicker openPicker;
+		openPicker.SuggestedStartLocation(Pickers::PickerLocationId::Desktop);
+		openPicker.ViewMode(Pickers::PickerViewMode::Thumbnail);
+		auto filters{ openPicker.FileTypeFilter() };
+		filters.Append(L".jpg");
+		filters.Append(L".png");
+		filters.Append(L".bmp");
+		util::InitializeDialog(openPicker, Global.ui_hwnd);
+
+		if (Windows::Foundation::Collections::IVectorView<StorageFile>
+			files_view{ co_await openPicker.PickMultipleFilesAsync() }; files_view.Size() > 0U) {
+			auto items{ sp->gv_pdf.Items() };
+			for (auto file_view : files_view) {
+				auto path{ file_view.Path() };
+				Controls::Image image;
+				image.Width(Global.c_ToPDFImageSize.width);
+				image.Height(Global.c_ToPDFImageSize.height);
+				image.Source(util::FileToBMP(path, Global.c_ToPDFImageSize));
+				image.Tag(box_value(path));
+				items.Append(image);
+			}
+		}
+	}
+
+	// 保存
+	static Windows::Foundation::IAsyncAction ToPDF_Save(ToolsPage::ToPDFSubPage* sp) noexcept {
+		Windows::Storage::Pickers::FileSavePicker savePicker;
+		savePicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
+		auto filters{ savePicker.FileTypeChoices() };
+		filters.Insert(L"PDF文档", single_threaded_observable_vector<hstring>({ L".pdf" }));
+		savePicker.SuggestedFileName(util::RDString<hstring>(L"ToPDFSubPage.SaveName"));
+		util::InitializeDialog(savePicker, Global.ui_hwnd);
+
+		if (Windows::Storage::StorageFile file{ co_await savePicker.PickSaveFileAsync() }) {
+			std::vector<std::wstring> files;
+			for (auto item : sp->gv_pdf.Items()) {
+				files.emplace_back(item.as<FrameworkElement>().Tag().as<hstring>());
+			}
+			winrt::apartment_context ui_thread;
+			co_await winrt::resume_background();
+
+			MasterQian::Storage::PDF pdf;
+			for (auto& file : files) {
+				MasterQian::Media::GDI::Image image{ file };
+				auto scale{ image.DPI().width / 72.0 };
+				auto size{ image.Size() };
+				size.width = static_cast<mqui32>(size.width / scale);
+				size.height = static_cast<mqui32>(size.height / scale);
+
+				auto page{ pdf.AddPage(MasterQian::Storage::PDF::PageConfig{ .page_size = { size.width, size.height } }) };
+				auto page_image{ pdf.LoadPNGImage(image.Save(MasterQian::Media::GDI::ImageFormat::PNG)) };
+				page.AddImage(page_image, { 0U, 0U }, size);
+			}
+			pdf.Save(file.Path());
+
+			co_await ui_thread;
+		}
+	}
+
+	// 初始化
+	static void InitializeToPDFSubPage(IInspectable* subPage) noexcept {
+		auto sp{ ToolsPage::ToPDFSubPage::From(subPage) };
+		Application::LoadComponent(*sp, Windows::Foundation::Uri{ L"ms-appx:///Xaml/Tools/ToPDFSubPage.xaml" });
+		sp->Bind(sp->button_import, L"Button_Import");
+		sp->Bind(sp->button_delete, L"Button_Delete");
+		sp->Bind(sp->button_clear, L"Button_Clear");
+		sp->Bind(sp->button_save, L"Button_Save");
+		sp->Bind(sp->gv_pdf, L"GV_PDF");
+		sp->button_import.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
+			co_await ToPDF_Import(sp);
+			});
+		sp->button_delete.Click([sp] (auto, auto) {
+			if (auto index{ sp->gv_pdf.SelectedIndex() }; index != -1) {
+				sp->gv_pdf.Items().RemoveAt(index);
+			}
+			});
+		sp->button_clear.Click([sp] (auto, auto) {
+			sp->gv_pdf.Items().Clear();
+			});
+		sp->button_save.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
+			co_await ToPDF_Save(sp);
+			});
+	}
+
+	// 更新
+	static void UpdateToPDFSubPage(IInspectable* subPage) noexcept {
+		auto sp{ ToolsPage::ToPDFSubPage::From(subPage) };
+		sp->gv_pdf.Items().Clear();
+	}
 }
 
 namespace winrt::hyzjkz::implementation {
@@ -361,6 +453,8 @@ namespace winrt::hyzjkz::implementation {
 		InitializeIDCardSubPage(&IDCard);
 		NVI_Jigsaw().Tag(Args::box(&Jigsaw, &UpdateJigsawSubPage));
 		InitializeJigsawSubPage(&Jigsaw);
+		NVI_ToPDF().Tag(Args::box(&ToPDF, &UpdateToPDFSubPage));
+		InitializeToPDFSubPage(&ToPDF);
 
 		Loaded([this] (auto, auto) {
 			NV_Main().SelectedItem(NVI_Home());

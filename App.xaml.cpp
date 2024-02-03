@@ -200,6 +200,16 @@ namespace winrt::hyzjkz::implementation {
         Global.c_IDCardPreviewSize = {
             static_cast<mqui32>(util::RDValue<mqf64>(L"IDCardPreviewWidth")),
             static_cast<mqui32>(util::RDValue<mqf64>(L"IDCardPreviewHeight")) };
+
+        Global.c_A4Size = {
+            static_cast<mqui32>(util::RDValue<mqf64>(L"A4PrinterCanvasWidth")),
+            static_cast<mqui32>(util::RDValue<mqf64>(L"A4PrinterCanvasHeight"))
+        };
+
+        Global.c_ToPDFImageSize = {
+            static_cast<mqui32>(util::RDValue<mqf64>(L"ToPDFImageWidth")),
+            static_cast<mqui32>(util::RDValue<mqf64>(L"ToPDFImageHeight"))
+        };
     }
 
     void App::OnLaunched(LaunchActivatedEventArgs const& e) {
