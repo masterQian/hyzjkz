@@ -4,15 +4,13 @@
 
 #include "app.h"
 
-using namespace winrt::Microsoft::UI::Xaml;
-
 namespace winrt::hyzjkz::implementation {
     struct ToolsPage : ToolsPageT<ToolsPage> {
-        struct HomeSubPage : MasterQian::WinRT::SubPage<Controls::Image, HomeSubPage> {
+        struct HomeSubPage : WinRT::SubPage<Controls::Image, HomeSubPage> {
 
         }Home;
 
-        struct IDCardSubPage : MasterQian::WinRT::SubPage<Controls::Grid, IDCardSubPage> {
+        struct IDCardSubPage : WinRT::SubPage<Controls::Grid, IDCardSubPage> {
             Controls::Button button_front{ nullptr };
             Controls::Button button_back{ nullptr };
             Controls::Image image_preview{ nullptr };
@@ -21,7 +19,7 @@ namespace winrt::hyzjkz::implementation {
             Controls::Button button_work{ nullptr };
         }IDCard;
 
-        struct JigsawSubPage : MasterQian::WinRT::SubPage<Controls::Grid, JigsawSubPage> {
+        struct JigsawSubPage : WinRT::SubPage<Controls::Grid, JigsawSubPage> {
             Controls::ToggleSwitch switch_mode{ nullptr };
             Controls::AppBarButton button_import{ nullptr };
             Controls::AppBarButton button_clear{ nullptr };
@@ -29,7 +27,7 @@ namespace winrt::hyzjkz::implementation {
             Controls::Canvas canvas{ nullptr };
         }Jigsaw;
 
-        struct ToPDFSubPage : MasterQian::WinRT::SubPage<Controls::Grid, ToPDFSubPage> {
+        struct ToPDFSubPage : WinRT::SubPage<Controls::Grid, ToPDFSubPage> {
             Controls::AppBarButton button_import{ nullptr };
             Controls::AppBarButton button_delete{ nullptr };
             Controls::AppBarButton button_clear{ nullptr };

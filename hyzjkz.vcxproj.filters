@@ -62,6 +62,9 @@
     <Page Include="Xaml\Tools\ToPDFSubPage.xaml">
       <Filter>Pages\Xaml\Tools</Filter>
     </Page>
+    <Page Include="Xaml\CopyDataDialog.xaml">
+      <Filter>Pages\Xaml</Filter>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl" />

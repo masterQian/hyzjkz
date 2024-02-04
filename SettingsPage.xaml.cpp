@@ -10,7 +10,7 @@ namespace winrt::hyzjkz::implementation {
 	// 初始化
 	static void InitializeAboutSubPage(IInspectable* subPage) noexcept {
 		auto sp{ SettingsPage::AboutSubPage::From(subPage) };
-		Application::LoadComponent(*sp, Windows::Foundation::Uri{ L"ms-appx:///Xaml/Settings/AboutSubPage.xaml" });
+		Application::LoadComponent(*sp, Uri{ L"ms-appx:///Xaml/Settings/AboutSubPage.xaml" });
 		sp->Bind(sp->image_icon, L"Image_Icon");
 		sp->image_icon.Source(util::BinToBMP(Global.res_icon, {
 			static_cast<mqui32>(util::RDValue<mqf64>(L"About.Icon.Width")),
@@ -20,7 +20,7 @@ namespace winrt::hyzjkz::implementation {
 	/*  路径页面  */
 
 	// 工具链删除
-	static Windows::Foundation::IAsyncAction ToolsDelete(IInspectable const& sender, RoutedEventArgs const&) noexcept {
+	static IAsyncAction ToolsDelete(IInspectable const& sender, RoutedEventArgs const&) noexcept {
 		auto grid{ sender.as<FrameworkElement>().Parent().as<Controls::Grid>() };
 		auto tool_name{ grid.FindName(L"Button_Name").as<Controls::Button>().Content().as<hstring>() };
 		auto list_tools{ grid.Parent().as<Controls::ListView>() };
@@ -48,7 +48,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 工具链修改名称
-	static Windows::Foundation::IAsyncAction ToolsSetName(IInspectable const& sender, RoutedEventArgs const&) noexcept {
+	static IAsyncAction ToolsSetName(IInspectable const& sender, RoutedEventArgs const&) noexcept {
 		auto button_name{ sender.as<Controls::Button>() };
 		auto old_tool_name{ button_name.Content().as<hstring>() };
 		hstring tool_name{ co_await Global.ui_window->as<hyzjkz::MainWindow>()
@@ -75,7 +75,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 工具链修改路径
-	static Windows::Foundation::IAsyncAction ToolsSetPath(IInspectable const& sender, RoutedEventArgs const&) noexcept {
+	static IAsyncAction ToolsSetPath(IInspectable const& sender, RoutedEventArgs const&) noexcept {
 		auto button_path{ sender.as<Controls::Button>() };
 		auto button_name{ button_path.Parent().as<Controls::Grid>().FindName(L"Button_Name").as<Controls::Button>() };
 
@@ -102,7 +102,7 @@ namespace winrt::hyzjkz::implementation {
 	// 生成外链项
 	static Controls::Grid MakeToolItemGrid(std::wstring_view tool_name, std::wstring_view tool_path) noexcept {
 		Controls::Grid grid;
-		Application::LoadComponent(grid, Windows::Foundation::Uri{ L"ms-appx:///Xaml/PathSubPagePathItem.xaml" });
+		Application::LoadComponent(grid, Uri{ L"ms-appx:///Xaml/PathSubPagePathItem.xaml" });
 		auto button_delete{ grid.FindName(L"Button_Delete").as<Controls::Button>() };
 		button_delete.Click(&ToolsDelete);
 		auto button_name{ grid.FindName(L"Button_Name").as<Controls::Button>() };
@@ -115,7 +115,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 工具链添加
-	static Windows::Foundation::IAsyncAction ToolsAdd(SettingsPage::PathSubPage* sp) noexcept {
+	static IAsyncAction ToolsAdd(SettingsPage::PathSubPage* sp) noexcept {
 		Windows::Storage::Pickers::FileOpenPicker openPicker;
 		openPicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
 		openPicker.FileTypeFilter().Append(L".exe");
@@ -146,13 +146,13 @@ namespace winrt::hyzjkz::implementation {
 	// 初始化
 	static void InitializePathSubPage(IInspectable* subPage) noexcept {
 		auto sp{ SettingsPage::PathSubPage::From(subPage) };
-		Application::LoadComponent(*sp, Windows::Foundation::Uri{ L"ms-appx:///Xaml/Settings/PathSubPage.xaml" });
+		Application::LoadComponent(*sp, Uri{ L"ms-appx:///Xaml/Settings/PathSubPage.xaml" });
 		// EOS路径
 		sp->Bind(sp->button_eospath_set, L"Button_EOSPath_Set");
 		sp->Bind(sp->button_eospath_clear, L"Button_EOSPath_Clear");
 		sp->Bind(sp->infobar_eospath, L"InfoBar_EOSPath");
 		sp->Bind(sp->input_eospath, L"Input_EOSPath");
-		sp->button_eospath_set.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
+		sp->button_eospath_set.Click([sp] (auto, auto) -> IAsyncAction {
 			Windows::Storage::Pickers::FileOpenPicker openPicker;
 			openPicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
 			openPicker.FileTypeFilter().Append(L".exe");
@@ -176,7 +176,7 @@ namespace winrt::hyzjkz::implementation {
 		// 工具链
 		sp->Bind(sp->button_tools_add, L"Button_Tools_Add");
 		sp->Bind(sp->list_tools, L"List_Tools");
-		sp->button_tools_add.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
+		sp->button_tools_add.Click([sp] (auto, auto) -> IAsyncAction {
 			co_await ToolsAdd(sp);
 			});
 		auto tool_items{ sp->list_tools.Items() };
@@ -200,11 +200,11 @@ namespace winrt::hyzjkz::implementation {
 	// 初始化
 	static void InitializeBusinessSubPage(IInspectable* subPage) noexcept {
 		auto sp{ SettingsPage::BusinessSubPage::From(subPage) };
-		Application::LoadComponent(*sp, Windows::Foundation::Uri{ L"ms-appx:///Xaml/Settings/BusinessSubPage.xaml" });
+		Application::LoadComponent(*sp, Uri{ L"ms-appx:///Xaml/Settings/BusinessSubPage.xaml" });
 		// 单价
 		sp->Bind(sp->button_unitprice, L"Button_UnitPrice");
 		sp->Bind(sp->input_unitprice, L"Input_UnitPrice");
-		sp->button_unitprice.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
+		sp->button_unitprice.Click([sp] (auto, auto) -> IAsyncAction {
 			Global.cfg.Set<double, GlobalConfig::UNIT_PRICE>(sp->input_unitprice.Value());
 			Global.c_configFilePath.Write(Global.cfg.save());
 			co_await Global.ui_window->as<hyzjkz::MainWindow>()
@@ -213,7 +213,7 @@ namespace winrt::hyzjkz::implementation {
 		// 清理周期
 		sp->Bind(sp->button_resetmonth, L"Button_ResetMonth");
 		sp->Bind(sp->input_resetmonth, L"Input_ResetMonth");
-		sp->button_resetmonth.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
+		sp->button_resetmonth.Click([sp] (auto, auto) -> IAsyncAction {
 			Global.cfg.Set<double, GlobalConfig::RESET_MONTH>(sp->input_resetmonth.Value());
 			Global.c_configFilePath.Write(Global.cfg.save());
 			co_await Global.ui_window->as<hyzjkz::MainWindow>()
@@ -234,7 +234,7 @@ namespace winrt::hyzjkz::implementation {
 			Global.cfg.Set<GlobalConfig::USE_PASSWORD>(sp->switch_password.IsOn());
 			Global.c_configFilePath.Write(Global.cfg.save());
 			});
-		sp->button_password.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
+		sp->button_password.Click([sp] (auto, auto) -> IAsyncAction {
 			auto pwd{ sp->input_password.Text() };
 			if (pwd.empty()) {
 				sp->input_password.Text(Global.cfg.Get<GlobalConfig::PASSWORD>());
@@ -269,12 +269,12 @@ namespace winrt::hyzjkz::implementation {
 	// 初始化
 	static void InitializePrintSubPage(IInspectable* subPage) noexcept {
 		auto sp{ SettingsPage::PrintSubPage::From(subPage) };
-		Application::LoadComponent(*sp, Windows::Foundation::Uri{ L"ms-appx:///Xaml/Settings/PrintSubPage.xaml" });
+		Application::LoadComponent(*sp, Uri{ L"ms-appx:///Xaml/Settings/PrintSubPage.xaml" });
 		// 打印机名称
 		sp->Bind(sp->button_printername, L"Button_PrinterName");
 		sp->Bind(sp->input_printername, L"Input_PrinterName");
 		sp->Bind(sp->infobar_printername, L"InfoBar_PrinterName");
-		sp->button_printername.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
+		sp->button_printername.Click([sp] (auto, auto) -> IAsyncAction {
 			Global.cfg.Set<GlobalConfig::PRINTER_NAME>(sp->input_printername.Text());
 			Global.c_configFilePath.Write(Global.cfg.save());
 			co_await Global.ui_window->as<hyzjkz::MainWindow>()
@@ -283,7 +283,7 @@ namespace winrt::hyzjkz::implementation {
 		// 自动裁剪容忍误差
 		sp->Bind(sp->button_autocuteps, L"Button_AutoCutEPS");
 		sp->Bind(sp->input_autocuteps, L"Input_AutoCutEPS");
-		sp->button_autocuteps.Click([sp] (auto, auto)-> Windows::Foundation::IAsyncAction {
+		sp->button_autocuteps.Click([sp] (auto, auto)-> IAsyncAction {
 			Global.cfg.Set<GlobalConfig::AUTOCUT_EPS>(sp->input_autocuteps.Value());
 			Global.c_configFilePath.Write(Global.cfg.save());
 			co_await Global.ui_window->as<hyzjkz::MainWindow>()
@@ -305,18 +305,17 @@ namespace winrt::hyzjkz::implementation {
 
 namespace winrt::hyzjkz::implementation {
 	SettingsPage::SettingsPage() {
-		using Args = MasterQian::WinRT::Args;
 		InitializeComponent();
-		NVI_Home().Tag(Args::box(&About, nullptr));
+		NVI_Home().Tag(WinRT::Args::box(&About, nullptr));
 		InitializeAboutSubPage(&About);
-		NVI_Path().Tag(Args::box(&Path, &UpdatePathSubPage));
+		NVI_Path().Tag(WinRT::Args::box(&Path, &UpdatePathSubPage));
 		InitializePathSubPage(&Path);
-		NVI_Business().Tag(Args::box(&Business, &UpdateBusinessSubPage));
+		NVI_Business().Tag(WinRT::Args::box(&Business, &UpdateBusinessSubPage));
 		InitializeBusinessSubPage(&Business);
-		NVI_Print().Tag(Args::box(&Print, &UpdatePrintSubPage));
+		NVI_Print().Tag(WinRT::Args::box(&Print, &UpdatePrintSubPage));
 		InitializePrintSubPage(&Print);
 
-		Loaded([this] (auto, auto) -> Windows::Foundation::IAsyncAction {
+		Loaded([this] (auto, auto) -> IAsyncAction {
 			auto nv_main{ NV_Main() };
 			if (Global.cfg.Get<GlobalConfig::USE_PASSWORD>()) {
 				nv_main.Visibility(Visibility::Collapsed);
@@ -331,8 +330,8 @@ namespace winrt::hyzjkz::implementation {
 	F_EVENT void SettingsPage::NV_Main_SelectionChanged(Controls::NavigationView const&, Controls::NavigationViewSelectionChangedEventArgs const& args) {
 		auto tag{ args.SelectedItem().as<Controls::NavigationViewItem>().Tag() };
 		if (tag != nullptr) {
-			auto args{ tag.as<MasterQian::WinRT::Args>() };
-			auto [subPage, func] = args.unbox<IInspectable*, MasterQian::WinRT::SubPageFunc>();
+			auto args{ tag.as<WinRT::Args>() };
+			auto [subPage, func] = args.unbox<IInspectable*, WinRT::SubPageFunc>();
 			Frame_Main().Content(*subPage);
 			if (func) {
 				func(subPage);

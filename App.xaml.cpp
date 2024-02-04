@@ -6,7 +6,7 @@
 
 namespace winrt::hyzjkz::implementation {
     // 取默认配置
-    static MasterQian::Bin GetDefaultConfig() noexcept {
+    static Bin GetDefaultConfig() noexcept {
         GlobalConfig config;
         config.Set<GlobalConfig::EOS_PATH>();
         config.Set<GlobalConfig::PRINTER_NAME>();
@@ -16,7 +16,7 @@ namespace winrt::hyzjkz::implementation {
         config.Set<GlobalConfig::RESET_MONTH>();
         config.Set<GlobalConfig::PASSWORD>();
         config.Set<GlobalConfig::USE_PASSWORD>();
-        MasterQian::Parser::Config tools;
+        Parser::Config tools;
         tools.set(L"美图秀秀", L"");
         tools.set(L"光影魔术手", L"");
         tools.set(L"PhotoShop", L"");
@@ -25,14 +25,14 @@ namespace winrt::hyzjkz::implementation {
     }
 
     // 取默认报表数据
-    static MasterQian::Bin GetDefaultRecordData() noexcept {
-        return MasterQian::Bin(sizeof(RecordData));
+    inline static Bin GetDefaultRecordData() noexcept {
+        return Bin(sizeof(RecordData));
     }
 
     // 取一寸模板
-    static MasterQian::Bin GetTemplate1() noexcept {
+    static Bin GetTemplate1() noexcept {
         mqui32 count{ 10U };
-        MasterQian::Bin bin(PrintTemplate::CalcSize(count));
+        Bin bin(PrintTemplate::CalcSize(count));
         auto& pt{ *reinterpret_cast<PrintTemplate*>(bin.data()) };
         pt.size = sizeof(PrintTemplate);
         pt.count = count;
@@ -54,9 +54,9 @@ namespace winrt::hyzjkz::implementation {
     }
 
     // 取二寸模板
-    static MasterQian::Bin GetTemplate2() noexcept {
+    static Bin GetTemplate2() noexcept {
         mqui32 count{ 8U };
-        MasterQian::Bin bin(PrintTemplate::CalcSize(count));
+        Bin bin(PrintTemplate::CalcSize(count));
         auto& pt{ *reinterpret_cast<PrintTemplate*>(bin.data()) };
         pt.size = sizeof(PrintTemplate);
         pt.count = count;
@@ -76,9 +76,9 @@ namespace winrt::hyzjkz::implementation {
     }
 
     // 取五寸模板
-    static MasterQian::Bin GetTemplate5() noexcept {
+    static Bin GetTemplate5() noexcept {
         mqui32 count{ 1U };
-        MasterQian::Bin bin(PrintTemplate::CalcSize(count));
+        Bin bin(PrintTemplate::CalcSize(count));
         auto& pt{ *reinterpret_cast<PrintTemplate*>(bin.data()) };
         pt.size = sizeof(PrintTemplate);
         pt.count = count;
@@ -91,9 +91,9 @@ namespace winrt::hyzjkz::implementation {
     }
 
     // 取结婚照模板
-    static MasterQian::Bin GetTemplateMarry() noexcept {
+    static Bin GetTemplateMarry() noexcept {
         mqui32 count{ 4U };
-        MasterQian::Bin bin(PrintTemplate::CalcSize(count));
+        Bin bin(PrintTemplate::CalcSize(count));
         auto& pt{ *reinterpret_cast<PrintTemplate*>(bin.data()) };
         pt.size = sizeof(PrintTemplate);
         pt.count = count;
@@ -123,10 +123,11 @@ namespace winrt::hyzjkz::implementation {
     // 初始化路径
     static void InitializePath() noexcept {
         // 获取运行路径
-        Global.c_runPath = MasterQian::Storage::Path::Running();
+        Global.c_runPath = Storage::Path::Running();
 
         // 当前日期文本
-        auto currentDate{ MasterQian::Timestamp().local().formatDate() };
+        auto lt{ Timestamp{ }.local() };
+        auto currentDate{ lt.formatDate() };
 
         // 照片路径
         Global.c_photoPath = Global.c_runPath / L"photo";
@@ -149,7 +150,7 @@ namespace winrt::hyzjkz::implementation {
         // 数据路径
         Global.c_dataPath = Global.c_runPath / L"data";
         Global.c_dataPath.Create();
-        Global.c_dataPath.Concat(std::to_wstring(MasterQian::Timestamp{ }.local().year) + L".bin")
+        Global.c_dataPath.Concat(std::to_wstring(lt.year) + L".bin")
             .Create(GetDefaultRecordData());
 
         // 配置文件
@@ -166,8 +167,8 @@ namespace winrt::hyzjkz::implementation {
 
     // 初始化资源
     static void InitializeResource() noexcept {
-        Global.res_icon = MasterQian::System::Process::GetResource(R_ICON);
-        Global.res_default_img = MasterQian::System::Process::GetResource(R_DEFAULT_IMG);
+        Global.res_icon = System::Process::GetResource(R_ICON);
+        Global.res_default_img = System::Process::GetResource(R_DEFAULT_IMG);
     }
 
     // 初始化配置
@@ -212,8 +213,8 @@ namespace winrt::hyzjkz::implementation {
         };
     }
 
-    void App::OnLaunched(LaunchActivatedEventArgs const& e) {
-        if (MasterQian::System::Process::SingleProcessLock()) { // 防止多开
+    void App::OnLaunched(Microsoft::UI::Xaml::LaunchActivatedEventArgs const& e) {
+        if (System::Process::SingleProcessLock()) { // 防止多开
             // 初始化
             InitializePath();
             InitializeResource();

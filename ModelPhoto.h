@@ -15,7 +15,7 @@ namespace winrt::hyzjkz::implementation {
 
         hstring ThumbPath() const;
         hstring PhotoPath() const;
-        Media::Imaging::BitmapImage PhotoSource() const;
+        Microsoft::UI::Xaml::Media::Imaging::BitmapImage PhotoSource() const;
     };
 }
 

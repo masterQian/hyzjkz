@@ -4,8 +4,6 @@
 #include "HistoryPage.g.cpp"
 #endif
 
-using namespace MasterQian::Media;
-
 namespace winrt::hyzjkz::implementation {
 	// 更新工具链菜单
 	static void UpdateToolChain(HistoryPage* page) noexcept {
@@ -13,11 +11,11 @@ namespace winrt::hyzjkz::implementation {
 		items.Clear();
 		auto tools{ Global.cfg.Get(GlobalConfig::TOOLS) };
 		for (auto& [name, _] : tools) {
-			MasterQian::Storage::Path path{ tools.get(name) };
+			Storage::Path path{ tools.get(name) };
 			if (path.IsFile()) {
 				Controls::MenuFlyoutItem menu;
 				Controls::ImageIcon icon;
-				icon.Source(util::StreamToBMP(GDI::Image(path, 0U).SaveToUnsafeStream(GDI::ImageFormat::PNG), { }, true));
+				icon.Source(util::StreamToBMP(Media::GDI::Image(path, 0U).SaveToUnsafeStream(Media::GDI::ImageFormat::PNG), { }, true));
 				menu.Icon(icon);
 				menu.Text(name);
 				menu.Tag(box_value(L"Link|" + name));
@@ -31,7 +29,7 @@ namespace winrt::hyzjkz::implementation {
 	static void UpdateRecordPhotoData(HistoryPage* page, mqui16 year, mqui8 month, mqui8 day) noexcept {
 		std::wstring filename{ std::to_wstring(year) + L".bin" };
 		auto data_path{ Global.c_dataPath / filename };
-		MasterQian::Bin bin{ data_path.Read() };
+		Bin bin{ data_path.Read() };
 		if (RecordData::CheckSize(bin)) {
 			RecordData::From(bin).Set(month, day, page->mPhotoNum, page->mPhotoNum * Global.cfg.Get<GlobalConfig::UNIT_PRICE>());
 			data_path.Write(bin);
@@ -71,7 +69,7 @@ namespace winrt::hyzjkz::implementation {
 			auto thumb_file{ thumb_path / filename };
 			if (!thumb_file.Exists()) { // 缩略图不存在
 				// 创建缩略图
-				GDI::Image(photo_file).Thumbnail(Global.c_photoThumbSize).Save(thumb_file, GDI::ImageFormat::JPG);
+				Media::GDI::Image(photo_file).Thumbnail(Global.c_photoThumbSize).Save(thumb_file, Media::GDI::ImageFormat::JPG);
 			}
 
 			new_photos.Append(hyzjkz::ModelPhoto{ date_str, filename }); // 添加新照片
@@ -89,7 +87,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 另存为照片
-	static Windows::Foundation::IAsyncAction Menu_Save(hyzjkz::ModelPhoto item) noexcept {
+	static IAsyncAction Menu_Save(hyzjkz::ModelPhoto item) noexcept {
 		Windows::Storage::Pickers::FileSavePicker savePicker;
 		auto filters{ savePicker.FileTypeChoices() };
 		filters.Insert(L"JPG图片", single_threaded_observable_vector<hstring>({ L".jpg" }));
@@ -103,14 +101,14 @@ namespace winrt::hyzjkz::implementation {
 			winrt::apartment_context ui_thread;
 			co_await winrt::resume_background();
 
-			GDI::Image image{ item.PhotoPath() };
-			GDI::ImageFormat format{ GDI::ImageFormat::JPG };
+			Media::GDI::Image image{ item.PhotoPath() };
+			Media::GDI::ImageFormat format{ Media::GDI::ImageFormat::JPG };
 			image.DPI({ 300U, 300U });
 			if (file.FileType() == L".png") {
-				format = GDI::ImageFormat::PNG;
+				format = Media::GDI::ImageFormat::PNG;
 			}
 			else if (file.FileType() == L".bmp") {
-				format = GDI::ImageFormat::BMP;
+				format = Media::GDI::ImageFormat::BMP;
 			}
 			image.Save(file.Path(), format);
 
@@ -119,13 +117,13 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 复制照片
-	static Windows::Foundation::IAsyncAction Menu_Copy(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
+	static IAsyncAction Menu_Copy(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
 		winrt::apartment_context ui_thread;
 		co_await winrt::resume_background();
 
-		MasterQian::Storage::Path photo_path{ item.PhotoPath() };
-		MasterQian::Storage::Path thumb_path{ item.ThumbPath() };
-		auto filename{ MasterQian::Timestamp{ }.local().formatDateTime() + L"00.jpg" };
+		Storage::Path photo_path{ item.PhotoPath() };
+		Storage::Path thumb_path{ item.ThumbPath() };
+		auto filename{ Timestamp{ }.local().formatDateTime() + L"00.jpg" };
 		photo_path.CopyRename(photo_path.Parent() / filename, true);
 		thumb_path.CopyRename(thumb_path.Parent() / filename, true);
 
@@ -135,12 +133,12 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 删除照片
-	static Windows::Foundation::IAsyncAction Menu_Delete(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
+	static IAsyncAction Menu_Delete(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
 		winrt::apartment_context ui_thread;
 		co_await winrt::resume_background();
 		
-		MasterQian::Storage::Path(item.PhotoPath()).DeleteToRecycleBin();
-		MasterQian::Storage::Path(item.ThumbPath()).Delete();
+		Storage::Path(item.PhotoPath()).DeleteToRecycleBin();
+		Storage::Path(item.ThumbPath()).Delete();
 
 		co_await ui_thread;
 
@@ -154,20 +152,20 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 旋转
-	static Windows::Foundation::IAsyncAction Menu_Rotate(HistoryPage* page, hyzjkz::ModelPhoto item, std::wstring_view tag) noexcept {
+	static IAsyncAction Menu_Rotate(HistoryPage* page, hyzjkz::ModelPhoto item, std::wstring_view tag) noexcept {
 		std::wstring photo_path{ item.PhotoPath() };
 		std::wstring thumb_path{ item.ThumbPath() };
 		std::wstring type{ tag };
 
-		GDI::Image image{ photo_path };
+		Media::GDI::Image image{ photo_path };
 		if (type == L"RotateLeft") image.RotateLeft();
 		else if (type == L"RotateRight") image.RotateRight();
 		else if (type == L"RotateFlipX") image.FlipX();
 		else if (type == L"RotateFlipY") image.FlipY();
-		GDI::Image thumb_image{ image.Thumbnail(Global.c_photoThumbSize) };
+		Media::GDI::Image thumb_image{ image.Thumbnail(Global.c_photoThumbSize) };
 
 		auto dialog{ page->PreviewDialog() };
-		auto stream{ thumb_image.SaveToUnsafeStream(GDI::ImageFormat::BMP) };
+		auto stream{ thumb_image.SaveToUnsafeStream(Media::GDI::ImageFormat::BMP) };
 		dialog.Content().as<Controls::Image>().Source(util::StreamToBMP(stream));
 
 		auto result{ co_await dialog.ShowAsync() };
@@ -175,8 +173,8 @@ namespace winrt::hyzjkz::implementation {
 			winrt::apartment_context ui_thread;
 			co_await winrt::resume_background();
 
-			image.Save(photo_path, GDI::ImageFormat::JPG);
-			thumb_image.Save(thumb_path, GDI::ImageFormat::JPG);
+			image.Save(photo_path, Media::GDI::ImageFormat::JPG);
+			thumb_image.Save(thumb_path, Media::GDI::ImageFormat::JPG);
 
 			co_await ui_thread;
 
@@ -185,7 +183,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// DPI
-	static Windows::Foundation::IAsyncAction Menu_DPI(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
+	static IAsyncAction Menu_DPI(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
 		std::wstring photo_path{ item.PhotoPath() };
 		hstring str{ co_await Global.ui_window->as<hyzjkz::MainWindow>()
 			.ShowInputDialog(util::RDString<hstring>(L"HistoryPage.Tip.InputDPI")) };
@@ -196,9 +194,9 @@ namespace winrt::hyzjkz::implementation {
 				winrt::apartment_context ui_thread;
 				co_await winrt::resume_background();
 
-				GDI::Image image{ photo_path };
+				Media::GDI::Image image{ photo_path };
 				image.DPI({ static_cast<mqui32>(dpi), static_cast<mqui32>(dpi) });
-				image.Save(photo_path, GDI::ImageFormat::JPG);
+				image.Save(photo_path, Media::GDI::ImageFormat::JPG);
 
 				co_await ui_thread;
 			}
@@ -210,9 +208,9 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 边框
-	static Windows::Foundation::IAsyncAction Menu_Border(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
-		static auto ImageBorderImpl = [ ] (GDI::Image& image,
-			mqui32 size, Windows::UI::Color color, GDI::AlgorithmModes mode) {
+	static IAsyncAction Menu_Border(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
+		static auto ImageBorderImpl = [ ] (Media::GDI::Image& image,
+			mqui32 size, Windows::UI::Color color, Media::GDI::AlgorithmModes mode) {
 				auto border_x{ (image.Width() >> 8) * size };
 				auto border_y{ (image.Height() >> 8) * size };
 				if (border_x == 0) border_x = 1;
@@ -238,9 +236,9 @@ namespace winrt::hyzjkz::implementation {
 				auto size{ static_cast<mqui32>(page->MBD_BorderWidth().Value()) };
 				auto color{ page->MBD_BorderColor().Color() };
 
-				GDI::Image image{ unbox_value<hstring>(page->MBD_Image().Tag()) };
-				auto stream{ ImageBorderImpl(image, size, color, GDI::FAST_MODE).
-					Thumbnail(Global.c_photoPreviewSize).SaveToUnsafeStream(GDI::ImageFormat::BMP) };
+				Media::GDI::Image image{ unbox_value<hstring>(page->MBD_Image().Tag()) };
+				auto stream{ ImageBorderImpl(image, size, color, Media::GDI::FAST_MODE).
+					Thumbnail(Global.c_photoPreviewSize).SaveToUnsafeStream(Media::GDI::ImageFormat::BMP) };
 				page->MBD_Image().Source(util::StreamToBMP(stream));
 				args.Cancel(true);
 			});
@@ -255,10 +253,10 @@ namespace winrt::hyzjkz::implementation {
 			co_await winrt::resume_background();
 
 			// 图像边框保存
-			GDI::Image image{ photo_path };
-			image = ImageBorderImpl(image, size, color, GDI::QUALITY_MODE);
-			image.Save(photo_path, GDI::ImageFormat::JPG);
-			image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path, GDI::ImageFormat::JPG);
+			Media::GDI::Image image{ photo_path };
+			image = ImageBorderImpl(image, size, color, Media::GDI::QUALITY_MODE);
+			image.Save(photo_path, Media::GDI::ImageFormat::JPG);
+			image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path, Media::GDI::ImageFormat::JPG);
 
 			co_await ui_thread;
 
@@ -267,16 +265,16 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 黑白照
-	static Windows::Foundation::IAsyncAction Menu_BWPhoto(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
+	static IAsyncAction Menu_BWPhoto(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
 		std::wstring photo_path{ item.PhotoPath() };
 		std::wstring thumb_path{ item.ThumbPath() };
 
-		GDI::Image image{ photo_path };
-		GDI::Image thumb_image{ image.Thumbnail(Global.c_photoThumbSize) };
-		thumb_image.GrayScale(GDI::FAST_MODE);
+		Media::GDI::Image image{ photo_path };
+		Media::GDI::Image thumb_image{ image.Thumbnail(Global.c_photoThumbSize) };
+		thumb_image.GrayScale(Media::GDI::FAST_MODE);
 
 		auto dialog{ page->PreviewDialog() };
-		auto stream{ thumb_image.SaveToUnsafeStream(GDI::ImageFormat::BMP) };
+		auto stream{ thumb_image.SaveToUnsafeStream(Media::GDI::ImageFormat::BMP) };
 		dialog.Content().as<Controls::Image>().Source(util::StreamToBMP(stream));
 
 		auto result{ co_await dialog.ShowAsync() };
@@ -284,9 +282,9 @@ namespace winrt::hyzjkz::implementation {
 			winrt::apartment_context ui_thread;
 			co_await winrt::resume_background();
 
-			image.GrayScale(GDI::QUALITY_MODE);
-			image.Save(photo_path, GDI::ImageFormat::JPG);
-			thumb_image.Save(thumb_path, GDI::ImageFormat::JPG);
+			image.GrayScale(Media::GDI::QUALITY_MODE);
+			image.Save(photo_path, Media::GDI::ImageFormat::JPG);
+			thumb_image.Save(thumb_path, Media::GDI::ImageFormat::JPG);
 
 			co_await ui_thread;
 
@@ -295,13 +293,13 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 身份证
-	static Windows::Foundation::IAsyncAction Menu_IDCard(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
+	static IAsyncAction Menu_IDCard(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
 		std::wstring photo_path{ item.PhotoPath() };
 		std::wstring thumb_path{ item.ThumbPath() };
 
-		GDI::Image image{ photo_path };
+		Media::GDI::Image image{ photo_path };
 		auto [width, height] { image.Size() };
-		GDI::GDIText textInfo{ L"", width * 7 / image.DPI().width, Colors::White, L"黑体" };
+		Media::GDI::GDIText textInfo{ L"", width * 7 / image.DPI().width, Media::Colors::White, L"黑体" };
 
 		auto dialog{ page->MenuIDCardDialog() };
 		auto idcard_image{ page->MIDD_Image() };
@@ -325,7 +323,7 @@ namespace winrt::hyzjkz::implementation {
 			auto id_number{ idcard_box.Text() };
 			if (id_number.size() < 18U) {
 				idcard_box.Text(id_number + L"X");
-				idcard_box.Focus(FocusState::Keyboard);
+				idcard_box.Focus(Microsoft::UI::Xaml::FocusState::Keyboard);
 				idcard_box.Select(id_number.size() + 1ULL, 0);
 			}
 			});
@@ -333,22 +331,22 @@ namespace winrt::hyzjkz::implementation {
 		dialog.PrimaryButtonClick([page] (auto,
 			Controls::ContentDialogButtonClickEventArgs const& args) {
 				// 图像身份证预览
-				GDI::Image image{ unbox_value<hstring>(page->MIDD_Image().Tag()) };
+				Media::GDI::Image image{ unbox_value<hstring>(page->MIDD_Image().Tag()) };
 				auto color{ page->MIDD_IDCardColor().Color() };
-				GDI::GDIText textInfo{ page->MIDD_IDCardNumber().Text().data(),
+				Media::GDI::GDIText textInfo{ page->MIDD_IDCardNumber().Text().data(),
 					static_cast<mqui32>(page->MIDD_IDCardFontSize().Value()),
-					Color(color.R, color.G, color.B, color.A), L"黑体" };
+					Media::Color(color.R, color.G, color.B, color.A), L"黑体" };
 				auto bottom{ static_cast<mqui32>(page->MIDD_IDCardBottom().Value()) };
 				auto isExtend{ page->MIDD_IDCardMode().IsOn() };
 
 				auto extend_height{ image.Height() * 5U / 64U };
 				if (isExtend) {
-					image = image.Border({ 0, 0, 0, extend_height }, Colors::White, GDI::FAST_MODE);
+					image = image.Border({ 0, 0, 0, extend_height }, Media::Colors::White, Media::GDI::FAST_MODE);
 					bottom += extend_height;
 				}
 				mqpoint point{ image.Width() / 2, bottom };
-				image.DrawString(point, textInfo, GDI::FAST_MODE);
-				auto stream{ image.Thumbnail(Global.c_photoPreviewSize).SaveToUnsafeStream(GDI::ImageFormat::BMP) };
+				image.DrawString(point, textInfo, Media::GDI::FAST_MODE);
+				auto stream{ image.Thumbnail(Global.c_photoPreviewSize).SaveToUnsafeStream(Media::GDI::ImageFormat::BMP) };
 				page->MIDD_Image().Source(util::StreamToBMP(stream));
 				args.Cancel(true);
 			});
@@ -359,13 +357,13 @@ namespace winrt::hyzjkz::implementation {
 			textInfo.content = idcard_box.Text().data();
 			textInfo.size = static_cast<mqui32>(idcard_fontsize.Value());
 			auto color{ idcard_color.Color() };
-			textInfo.color = Color(color.R, color.G, color.B, color.A);
+			textInfo.color = Media::Color(color.R, color.G, color.B, color.A);
 			auto bottom{ static_cast<mqui32>(idcard_bottom.Value()) };
 			auto isExtend{ idcard_mode.IsOn() };
 
 			auto extend_height{ image.Height() * 5U / 64U };
 			if (isExtend) {
-				image = image.Border({ 0, 0, 0, extend_height }, Colors::White, GDI::QUALITY_MODE);
+				image = image.Border({ 0, 0, 0, extend_height }, Media::Colors::White, Media::GDI::QUALITY_MODE);
 				bottom += extend_height;
 			}
 			mqpoint point{ image.Width() / 2, bottom };
@@ -374,9 +372,9 @@ namespace winrt::hyzjkz::implementation {
 			co_await winrt::resume_background();
 
 			// 图像身份证保存
-			image.DrawString(point, textInfo, GDI::QUALITY_MODE);
-			image.Save(photo_path, GDI::ImageFormat::JPG);
-			image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path, GDI::ImageFormat::JPG);
+			image.DrawString(point, textInfo, Media::GDI::QUALITY_MODE);
+			image.Save(photo_path, Media::GDI::ImageFormat::JPG);
+			image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path, Media::GDI::ImageFormat::JPG);
 
 			co_await ui_thread;
 
@@ -385,11 +383,11 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// [协程] 外链
-	static Windows::Foundation::IAsyncAction Menu_Link(HistoryPage* page, hyzjkz::ModelPhoto item, std::wstring_view name) noexcept {
+	static IAsyncAction Menu_Link(HistoryPage* page, hyzjkz::ModelPhoto item, std::wstring_view name) noexcept {
 		// 照片路径, 缩略图路径, 临时路径, 外链路径
-		MasterQian::Storage::Path photo_path{ item.PhotoPath() };
-		MasterQian::Storage::Path thumb_path{ item.ThumbPath() };
-		MasterQian::Storage::Path link_path{ name };
+		Storage::Path photo_path{ item.PhotoPath() };
+		Storage::Path thumb_path{ item.ThumbPath() };
+		Storage::Path link_path{ name };
 		// 复制照片到临时路径
 		photo_path.CopyRename(Global.c_tempPhotoPath, true);
 
@@ -400,7 +398,7 @@ namespace winrt::hyzjkz::implementation {
 		winrt::apartment_context ui_thread;
 		co_await winrt::resume_background();
 
-		auto ret{ MasterQian::System::Process::Execute(link_path, Global.c_tempPhotoPath, true, true) };
+		auto ret{ System::Process::Execute(link_path, Global.c_tempPhotoPath, true, true) };
 
 		co_await ui_thread;
 
@@ -418,7 +416,7 @@ namespace winrt::hyzjkz::implementation {
 			// 复制临时照片到照片路径
 			Global.c_tempPhotoPath.CopyRename(photo_path, true);
 			// 生成缩略图
-			GDI::Image(photo_path).Thumbnail(Global.c_photoThumbSize).Save(thumb_path, GDI::ImageFormat::JPG);
+			Media::GDI::Image(photo_path).Thumbnail(Global.c_photoThumbSize).Save(thumb_path, Media::GDI::ImageFormat::JPG);
 
 			Refresh(page, false);
 		}
@@ -437,18 +435,18 @@ namespace winrt::hyzjkz::implementation {
 
 		mqui32 index{ 10U }; // 从10开始省的一位数转字符串还要添前置0
 		for (auto& file : files) {
-			std::wstring filename{ MasterQian::Timestamp{ }.local().formatDateTime() + std::to_wstring(index++) };
+			std::wstring filename{ Timestamp{ }.local().formatDateTime() + std::to_wstring(index++) };
 			filename += L".jpg";
-			GDI::Image image(file);
-			image.Save(photo_path / filename, GDI::ImageFormat::JPG); // 复制照片及导出缩略图
-			image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path / filename, GDI::ImageFormat::JPG);
+			Media::GDI::Image image(file);
+			image.Save(photo_path / filename, Media::GDI::ImageFormat::JPG); // 复制照片及导出缩略图
+			image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path / filename, Media::GDI::ImageFormat::JPG);
 		}
 
 		Refresh(page, true);
 	}
 
 	// 文件监控
-	static Windows::Foundation::IAsyncAction StartFileSpy(HistoryPage* page) noexcept {
+	static IAsyncAction StartFileSpy(HistoryPage* page) noexcept {
 		winrt::apartment_context ui_thread;
 		HANDLE hDir{ CreateFileW(std::wstring_view{ Global.c_cameraPhotoPath }.data(),
 			FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
@@ -467,7 +465,7 @@ namespace winrt::hyzjkz::implementation {
 				break;
 			}
 			else if (tag == WAIT_OBJECT_0 + 1) {
-				auto now_date{ MasterQian::Timestamp{ }.local() };
+				auto now_date{ Timestamp{ }.local() };
 				auto cur_date{ util::DateTimeToLocal(page->CDP_Main().Date().as<Windows::Foundation::DateTime>()) };
 				auto date_str{ now_date.formatDate() };
 
@@ -483,8 +481,8 @@ namespace winrt::hyzjkz::implementation {
 						auto thumb_path{ Global.c_thumbPath / date_str };
 						auto file{ Global.c_cameraPhotoPath / filename };
 						file.Move(photo_path);
-						GDI::Image thumb_image(photo_path / filename);
-						thumb_image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path / filename, GDI::ImageFormat::JPG);
+						Media::GDI::Image thumb_image(photo_path / filename);
+						thumb_image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path / filename, Media::GDI::ImageFormat::JPG);
 
 						co_await ui_thread;
 						if (now_date.compare_date(cur_date)) {
@@ -508,8 +506,7 @@ namespace winrt::hyzjkz::implementation {
 		mPhotoNum = 0U;
 
 		for (mqui64 i{ }, len{ bmp_nums.size() }; i < len; ++i) {
-			bmp_nums[i] = util::BinToBMP(MasterQian::System::Process::GetResource(
-				static_cast<mqui32>(R_NUM0 + i)), { 18U, 24U }, true);
+			bmp_nums[i] = util::BinToBMP(System::Process::GetResource(static_cast<mqui32>(R_NUM0 + i)), { 18U, 24U }, true);
 		}
 		bmp_default_img = util::BinToBMP(Global.res_default_img, Global.c_photoThumbSize, true);
 	
@@ -517,6 +514,16 @@ namespace winrt::hyzjkz::implementation {
 
 		// 更新工具链菜单
 		UpdateToolChain(this);
+
+		// 初始化复印数据对话框
+		auto copy_grid{ AddCopyDataGrid() };
+		Application::LoadComponent(copy_grid, Uri{ L"ms-appx:///Xaml/CopyDataDialog.xaml" });
+		for (auto child : copy_grid.Children()) {
+			if (child.as<FrameworkElement>().Tag() != nullptr) {
+				child.as<Controls::Button>().Click({ this, &HistoryPage::AddCopyData_Plus_Click });
+			}
+		}
+		copy_grid.FindName(L"Button_AddCopyData_Set").as<Controls::Button>().Click({ this, &HistoryPage::AddCopyData_Set_Click });
 
 		// 设置日期为今天
 		CDP_Main().Date(winrt::clock::now());
@@ -529,7 +536,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 切换页面
-	F_EVENT void HistoryPage::OnNavigatedTo(Navigation::NavigationEventArgs const& args) {
+	F_EVENT void HistoryPage::OnNavigatedTo(Microsoft::UI::Xaml::Navigation::NavigationEventArgs const& args) {
 		FlagConverter flag{ .value = args.Parameter().as<mqui64>() };
 		if (flag.flags[UpdateFlag::SHOW_TURNOVER]) {
 			CoverTurnover(!Global.cfg.Get<GlobalConfig::SHOW_TURNOVER>());
@@ -559,7 +566,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 补差
-	F_EVENT Windows::Foundation::IAsyncAction HistoryPage::AddDefault_Click(IInspectable const&, RoutedEventArgs const&) {
+	F_EVENT IAsyncAction HistoryPage::AddDefault_Click(IInspectable const&, RoutedEventArgs const&) {
 		auto date_str{ util::DateTimeToLocal(CDP_Main().Date().as<Windows::Foundation::DateTime>()).formatDate() };
 		winrt::apartment_context ui_thread;
 		co_await winrt::resume_background();
@@ -568,7 +575,7 @@ namespace winrt::hyzjkz::implementation {
 		photo_file.Create();
 		auto thumb_file{ Global.c_thumbPath / date_str };
 		thumb_file.Create();
-		auto filename{ MasterQian::Timestamp{ }.local().formatDateTime() + L"00.jpg" };
+		auto filename{ Timestamp{ }.local().formatDateTime() + L"00.jpg" };
 		photo_file /= filename;
 		thumb_file /= filename;
 		photo_file.Write(Global.res_default_img);
@@ -580,19 +587,17 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 导入
-	F_EVENT Windows::Foundation::IAsyncAction HistoryPage::Import_Click(IInspectable const&, RoutedEventArgs const&) {
-		using namespace winrt::Windows::Storage;
-
-		Pickers::FileOpenPicker openPicker;
-		openPicker.SuggestedStartLocation(Pickers::PickerLocationId::Desktop);
-		openPicker.ViewMode(Pickers::PickerViewMode::Thumbnail);
+	F_EVENT IAsyncAction HistoryPage::Import_Click(IInspectable const&, RoutedEventArgs const&) {
+		Windows::Storage::Pickers::FileOpenPicker openPicker;
+		openPicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
+		openPicker.ViewMode(Windows::Storage::Pickers::PickerViewMode::Thumbnail);
 		auto filters{ openPicker.FileTypeFilter() };
 		filters.Append(L".jpg");
 		filters.Append(L".png");
 		filters.Append(L".bmp");
 		util::InitializeDialog(openPicker, Global.ui_hwnd);
 
-		if (Windows::Foundation::Collections::IVectorView<StorageFile>
+		if (Windows::Foundation::Collections::IVectorView<Windows::Storage::StorageFile>
 			files_view{ co_await openPicker.PickMultipleFilesAsync() }; files_view.Size() > 0U) {
 			std::vector<std::wstring> files;
 			for (auto file_view : files_view) {
@@ -603,8 +608,8 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 添加复印数据
-	F_EVENT Windows::Foundation::IAsyncAction HistoryPage::AddCopyData_Click(IInspectable const&, RoutedEventArgs const&) {
-		NB_AddCopyData().Value(0.0);
+	F_EVENT IAsyncAction HistoryPage::AddCopyData_Click(IInspectable const&, RoutedEventArgs const&) {
+		AddCopyDataGrid().FindName(L"NB_AddCopyData").as<Controls::NumberBox>().Value(0.0);
 		co_await AddCopyDataDialog().ShowAsync();
 	}
 
@@ -618,16 +623,16 @@ namespace winrt::hyzjkz::implementation {
 
 	// 添加复印数据, 自定义点击
 	F_EVENT void HistoryPage::AddCopyData_Set_Click(IInspectable const&, RoutedEventArgs const&) {
-		auto value{ static_cast<mqui32>(NB_AddCopyData().Value()) };
+		auto value{ static_cast<mqui32>(AddCopyDataGrid().FindName(L"NB_AddCopyData").as<Controls::NumberBox>().Value()) };
 		UpdateRecordCopyData(this, value);
 		AddCopyDataDialog().Hide();
 	}
 
 	// 双击查看大图
-	F_EVENT Windows::Foundation::IAsyncAction HistoryPage::GV_Photos_DoubleClick(IInspectable const&, Input::DoubleTappedRoutedEventArgs const&) {
+	F_EVENT IAsyncAction HistoryPage::GV_Photos_DoubleClick(IInspectable const&, Input::DoubleTappedRoutedEventArgs const&) {
 		auto dialog{ ShowPictureDialog() };
-		MasterQian::Storage::Path photo_path{ GV_Photos().SelectedItem().as<hyzjkz::ModelPhoto>().PhotoPath() };
-		GDI::Image image(photo_path);
+		Storage::Path photo_path{ GV_Photos().SelectedItem().as<hyzjkz::ModelPhoto>().PhotoPath() };
+		Media::GDI::Image image(photo_path);
 		mqchar image_information[32]{ };
 		auto size{ image.Size() };
 		wsprintfW(image_information, L"尺寸: %u × %u 像素", size.width, size.height);
@@ -639,7 +644,7 @@ namespace winrt::hyzjkz::implementation {
 		SPD_Text3().Text(image_information);
 		wsprintfW(image_information, L"大小: %u KB", static_cast<mqui32>(photo_path.Size()) / 1024U);
 		SPD_Text4().Text(image_information);
-		SPD_Image().Source(util::StreamToBMP(image.SaveToUnsafeStream(GDI::ImageFormat::BMP)));
+		SPD_Image().Source(util::StreamToBMP(image.SaveToUnsafeStream(Media::GDI::ImageFormat::BMP)));
 		co_await dialog.ShowAsync();
 	}
 
@@ -658,7 +663,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 右键菜单
-	F_EVENT Windows::Foundation::IAsyncAction HistoryPage::MenuItem_Click(IInspectable const&, RoutedEventArgs const& args) {
+	F_EVENT IAsyncAction HistoryPage::MenuItem_Click(IInspectable const&, RoutedEventArgs const& args) {
 		std::wstring tag{ args.OriginalSource().as<FrameworkElement>().Tag().as<hstring>() };
 		auto dom{ std::wstring_view{ tag }.substr(0ULL, 4ULL) };
 		auto name{ std::wstring_view{ tag }.substr(5ULL) };
@@ -692,33 +697,33 @@ namespace winrt::hyzjkz::implementation {
 	F_RT Microsoft::UI::Xaml::Visibility HistoryPage::GetPVBVisibility(mqui32 photo_num, mqui32 index, bool is_photo_num) const {
 		if (is_photo_num) { // 照片数
 			if (index == 1U) { // 若小于两位数则第一位不可见
-				return photo_num < 10U ? Microsoft::UI::Xaml::Visibility::Collapsed : Microsoft::UI::Xaml::Visibility::Visible;
+				return photo_num < 10U ? Visibility::Collapsed : Visibility::Visible;
 			}
 			else if (index == 2U) { // 第二位始终可见
-				return Microsoft::UI::Xaml::Visibility::Visible;
+				return Visibility::Visible;
 			}
 			else { // 若小于三位数则第三位不可见
-				return photo_num < 100U ? Microsoft::UI::Xaml::Visibility::Collapsed : Microsoft::UI::Xaml::Visibility::Visible;
+				return photo_num < 100U ? Visibility::Collapsed : Visibility::Visible;
 			}
 		}
 		else {
 			auto turnover{ photo_num * Global.cfg.Get<GlobalConfig::UNIT_PRICE>() }; // 营业额
 			if (index == 1U) { // 若小于三位数则第一位不可见
-				return turnover < 100U ? Microsoft::UI::Xaml::Visibility::Collapsed : Microsoft::UI::Xaml::Visibility::Visible;
+				return turnover < 100U ? Visibility::Collapsed : Visibility::Visible;
 			}
 			else if (index == 2U) { // 第二位始终可见
-				return Microsoft::UI::Xaml::Visibility::Visible;
+				return Visibility::Visible;
 			}
 			else if (index == 3U) { // 若小于两位数则第三位不可见
-				return turnover < 10U ? Microsoft::UI::Xaml::Visibility::Collapsed : Microsoft::UI::Xaml::Visibility::Visible;
+				return turnover < 10U ? Visibility::Collapsed : Visibility::Visible;
 			}
 			else { // 若小于四位数则第四位不可见
-				return turnover < 1000U ? Microsoft::UI::Xaml::Visibility::Collapsed : Microsoft::UI::Xaml::Visibility::Visible;
+				return turnover < 1000U ? Visibility::Collapsed : Visibility::Visible;
 			}
 		}
 	}
 
-	F_RT Media::Imaging::BitmapImage HistoryPage::GetPVBSource(mqui32 photo_num, mqui32 index, bool is_photo_num) const {
+	F_RT Microsoft::UI::Xaml::Media::Imaging::BitmapImage HistoryPage::GetPVBSource(mqui32 photo_num, mqui32 index, bool is_photo_num) const {
 		if (is_photo_num) { // 照片数
 			if (index == 1U) {
 				if (photo_num >= 10U) {

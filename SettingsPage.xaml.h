@@ -4,15 +4,13 @@
 
 #include "app.h"
 
-using namespace winrt::Microsoft::UI::Xaml;
-
 namespace winrt::hyzjkz::implementation {
     struct SettingsPage : SettingsPageT<SettingsPage> {
-        struct AboutSubPage : MasterQian::WinRT::SubPage<Controls::StackPanel, AboutSubPage> {
+        struct AboutSubPage : WinRT::SubPage<Controls::StackPanel, AboutSubPage> {
             Controls::Image image_icon{ nullptr };
         }About;
 
-        struct PathSubPage : MasterQian::WinRT::SubPage<Controls::StackPanel, PathSubPage> {
+        struct PathSubPage : WinRT::SubPage<Controls::StackPanel, PathSubPage> {
             Controls::InfoBar infobar_eospath{ nullptr };
             Controls::TextBox input_eospath{ nullptr };
             Controls::Button button_eospath_set{ nullptr };
@@ -21,7 +19,7 @@ namespace winrt::hyzjkz::implementation {
             Controls::Button button_tools_add{ nullptr };
         }Path;
 
-        struct BusinessSubPage : MasterQian::WinRT::SubPage<Controls::StackPanel, BusinessSubPage> {
+        struct BusinessSubPage : WinRT::SubPage<Controls::StackPanel, BusinessSubPage> {
             Controls::NumberBox input_unitprice{ nullptr };
             Controls::Button button_unitprice{ nullptr };
             Controls::NumberBox input_resetmonth{ nullptr };
@@ -32,7 +30,7 @@ namespace winrt::hyzjkz::implementation {
             Controls::Button button_password{ nullptr };
         }Business;
 
-        struct PrintSubPage : MasterQian::WinRT::SubPage<Controls::StackPanel, PrintSubPage> {
+        struct PrintSubPage : WinRT::SubPage<Controls::StackPanel, PrintSubPage> {
             Controls::InfoBar infobar_printername{ nullptr };
             Controls::TextBox input_printername{ nullptr };
             Controls::Button button_printername{ nullptr };

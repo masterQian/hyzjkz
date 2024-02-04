@@ -190,6 +190,9 @@
     <Page Include="ToolsPage.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Xaml\CopyDataDialog.xaml">
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Xaml\PathSubPagePathItem.xaml" />
     <Page Include="Xaml\RecordDayItem.xaml">
       <SubType>Designer</SubType>

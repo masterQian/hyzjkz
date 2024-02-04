@@ -4,8 +4,6 @@
 
 #include "app.h"
 
-using namespace winrt::Microsoft::UI::Xaml;
-
 namespace winrt::hyzjkz::implementation {
     struct RecordPage : RecordPageT<RecordPage> {
         hstring curYear{ };

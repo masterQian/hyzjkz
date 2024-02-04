@@ -6,13 +6,11 @@
 
 namespace winrt::hyzjkz::implementation {
     // [异步] 照片清理
-    static Windows::Foundation::IAsyncAction ClearPhotos() noexcept {
-        using namespace MasterQian::Storage;
-
+    static IAsyncAction ClearPhotos() noexcept {
         co_await winrt::resume_background();
 
         mqchar clear_month[3]{ L'0', L'0', L'\0' };
-        auto month{ static_cast<mqui32>(MasterQian::Timestamp().local().month) };
+        auto month{ static_cast<mqui32>(Timestamp{ }.local().month) };
         auto resetMonth{ Global.cfg.Get<GlobalConfig::RESET_MONTH>() };
 
         if (resetMonth == 0U || resetMonth >= 12U) resetMonth = 1U;
@@ -43,26 +41,26 @@ namespace winrt::hyzjkz::implementation {
     // 初始化全局
     static void InitializeGlobal() noexcept {
         // 开启GDI
-        MasterQian::Media::GDI::StartupGDI();
+        Media::GDI::StartupGDI();
         // 创建文件监控事件
         Global.file_spy_event = CreateEventW(nullptr, true, false, nullptr);
         // 照片转储
-        auto date_str{ MasterQian::Timestamp{ }.local().formatDate() };
+        auto date_str{ Timestamp{ }.local().formatDate() };
         auto photo_path{ Global.c_photoPath / date_str };
         auto thumb_path{ Global.c_thumbPath / date_str };
         for (auto& file : Global.c_cameraPhotoPath.EnumFolder(L"*.jpg")) {
-            MasterQian::Media::GDI::Image thumb_image(file);
-            thumb_image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path / file.Name(), MasterQian::Media::GDI::ImageFormat::JPG);
+            Media::GDI::Image thumb_image(file);
+            thumb_image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path / file.Name(), Media::GDI::ImageFormat::JPG);
             file.Move(photo_path);
         }
     }
 
     // 清理全局
-    static void UninitializeGlobal(IInspectable const&, WindowEventArgs const&) noexcept {
+    static void UninitializeGlobal(IInspectable const&, Microsoft::UI::Xaml::WindowEventArgs const&) noexcept {
         // 发送停止文件监控事件
         SetEvent(Global.file_spy_event);
         // 关闭GDI
-        MasterQian::Media::GDI::ShutdownGDI();
+        Media::GDI::ShutdownGDI();
     }
 }
 
@@ -84,8 +82,8 @@ namespace winrt::hyzjkz::implementation {
         SetTitleBar(SP_TitleBar());
 
         // 调整窗口大小
-        auto width{ static_cast<mqi32>(MasterQian::System::Info::GetScreenWidth()) };
-        auto height{ static_cast<mqi32>(MasterQian::System::Info::GetScreenHeight()) };
+        auto width{ static_cast<mqi32>(System::Info::GetScreenWidth()) };
+        auto height{ static_cast<mqi32>(System::Info::GetScreenHeight()) };
         auto scale{ util::RDValue<mqf64>(L"MainWindow.Scale.Value") };
         auto actualWidth{ static_cast<mqi32>(width * scale) };
         auto actualHeight{ static_cast<mqi32>(height * scale) };
@@ -122,10 +120,10 @@ namespace winrt::hyzjkz::implementation {
     }
 
     // 连接相机
-    F_EVENT Windows::Foundation::IAsyncAction MainWindow::AttachCamera_Click(IInspectable const&, RoutedEventArgs const&) {
-        MasterQian::Storage::Path eos_path{ Global.cfg.Get<GlobalConfig::EOS_PATH>() };
+    F_EVENT IAsyncAction MainWindow::AttachCamera_Click(IInspectable const&, RoutedEventArgs const&) {
+        Storage::Path eos_path{ Global.cfg.Get<GlobalConfig::EOS_PATH>() };
         if (eos_path.IsFile()) {
-            MasterQian::System::Process::Execute(eos_path, L"", false, true);
+            System::Process::Execute(eos_path, L"", false, true);
         }
         else {
             co_await ShowTipDialog(util::RDString<hstring>(L"MainWindow.Tip.NoEOSPath"));
@@ -138,20 +136,20 @@ namespace winrt::hyzjkz::implementation {
         // 结束程序
         Close();
         // 唤起更新程序
-        MasterQian::System::Process::Execute(L"AutoUpdate.exe", CurrentVersion, false, true);
+        System::Process::Execute(L"AutoUpdate.exe", CurrentVersion, false, true);
     }
 }
 
 namespace winrt::hyzjkz::implementation {
     // 提示对话框
-    F_RT Windows::Foundation::IAsyncAction MainWindow::ShowTipDialog(hstring const& msg) {
+    F_RT IAsyncAction MainWindow::ShowTipDialog(hstring const& msg) {
         auto dialog{ TipDialog() };
         dialog.Title(box_value(msg));
         co_await dialog.ShowAsync();
     }
 
     // 确认对话框
-    F_RT  Windows::Foundation::IAsyncOperation<bool> MainWindow::ShowConfirmDialog(hstring const& msg) {
+    F_RT IAsyncOperation<bool> MainWindow::ShowConfirmDialog(hstring const& msg) {
         auto dialog{ ConfirmDialog() };
         dialog.Title(box_value(msg));
         auto result{ co_await dialog.ShowAsync() };
@@ -159,7 +157,7 @@ namespace winrt::hyzjkz::implementation {
     }
 
     // 输入对话框
-    F_RT Windows::Foundation::IAsyncOperation<hstring> MainWindow::ShowInputDialog(hstring const& msg) {
+    F_RT IAsyncOperation<hstring> MainWindow::ShowInputDialog(hstring const& msg) {
         auto dialog{ InputDialog() };
         dialog.Title(box_value(msg));
         auto textbox{ dialog.Content().as<Controls::TextBox>() };
@@ -169,7 +167,7 @@ namespace winrt::hyzjkz::implementation {
     }
 
     // 密码对话框
-    F_RT Windows::Foundation::IAsyncAction MainWindow::ShowPasswordDialog() {
+    F_RT IAsyncAction MainWindow::ShowPasswordDialog() {
         auto dialog{ PasswordDialog() };
         dialog.Content().as<Controls::PasswordBox>().Password(L"");
         dialog.PrimaryButtonClick([ ] (Controls::ContentDialog const& dialog, Controls::ContentDialogButtonClickEventArgs const& args) {

@@ -10,14 +10,14 @@ namespace winrt::hyzjkz::implementation {
 	// 初始化
 	static void InitializeHomeSubPage(IInspectable* subPage) noexcept {
 		auto sp{ ToolsPage::HomeSubPage::From(subPage) };
-		sp->Stretch(Media::Stretch::Fill);
-		sp->Source(util::BinToBMP(MasterQian::System::Process::GetResource(R_SIZEINFORMATION), { }, true));
+		sp->Stretch(Microsoft::UI::Xaml::Media::Stretch::Fill);
+		sp->Source(util::BinToBMP(System::Process::GetResource(R_SIZEINFORMATION), { }, true));
 	}
 
 	/*  身份证拼接  */
 
 	// 选择
-	static Windows::Foundation::IAsyncAction IDCard_Select_Click(ToolsPage::IDCardSubPage* sp, IInspectable const& sender) noexcept {
+	static IAsyncAction IDCard_Select_Click(ToolsPage::IDCardSubPage* sp, IInspectable const& sender) noexcept {
 		auto button{ sender.as<Controls::Button>() };
 
 		// 未导入照片状态
@@ -37,7 +37,7 @@ namespace winrt::hyzjkz::implementation {
 				Controls::Image image;
 				image.Width(Global.c_IDCardPreviewSize.width);
 				image.Height(Global.c_IDCardPreviewSize.height);
-				image.Stretch(Media::Stretch::Fill);
+				image.Stretch(Microsoft::UI::Xaml::Media::Stretch::Fill);
 				image.Tag(box_value(file.Path()));
 				image.Source(util::FileToBMP(file.Path(), Global.c_IDCardPreviewSize, true));
 				button.Content(image);
@@ -55,11 +55,11 @@ namespace winrt::hyzjkz::implementation {
 					winrt::apartment_context ui_thread;
 					co_await winrt::resume_background();
 
-					MasterQian::Media::GDI::Image front_image{ front_path }, back_image{ back_path };
-					MasterQian::Media::GDI::Image combine_image{ front_image.Combine<false>(back_image,
+					Media::GDI::Image front_image{ front_path }, back_image{ back_path };
+					Media::GDI::Image combine_image{ front_image.Combine<false>(back_image,
 						{ 0U, 0U, front_image.Width(), front_image.Height() / 2U },
 						{ 0U, back_image.Height() / 2U, back_image.Width(), back_image.Height() / 2U },
-						MasterQian::Media::GDI::FAST_MODE).Thumbnail({ 280, 350 }) };
+						Media::GDI::FAST_MODE).Thumbnail(Global.c_IDCardPreviewSize) };
 
 					co_await ui_thread;
 
@@ -67,7 +67,7 @@ namespace winrt::hyzjkz::implementation {
 					sp->button_work.IsEnabled(true);
 					sp->preview_text.Text(util::RDString<hstring>(L"IDCardSubPage.Preview.Text"));
 
-					sp->image_preview.Source(util::StreamToBMP(combine_image.SaveToUnsafeStream(MasterQian::Media::GDI::ImageFormat::BMP)));
+					sp->image_preview.Source(util::StreamToBMP(combine_image.SaveToUnsafeStream(Media::GDI::ImageFormat::BMP)));
 				}
 			}
 		}
@@ -91,7 +91,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 合成
-	static Windows::Foundation::IAsyncAction IDCard_Work_Click(ToolsPage::IDCardSubPage* sp) noexcept {
+	static IAsyncAction IDCard_Work_Click(ToolsPage::IDCardSubPage* sp) noexcept {
 		if (sp->button_front.Tag().as<hstring>() == L"true" && sp->button_back.Tag().as<hstring>() == L"true") {
 			Windows::Storage::Pickers::FileSavePicker savePicker;
 			savePicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
@@ -109,11 +109,11 @@ namespace winrt::hyzjkz::implementation {
 				winrt::apartment_context ui_thread;
 				co_await winrt::resume_background();
 
-				MasterQian::Media::GDI::Image front_image{ front_path }, back_image{ back_path };
+				Media::GDI::Image front_image{ front_path }, back_image{ back_path };
 				front_image.Combine<false>(back_image,
 					{ 0U, 0U, front_image.Width(), front_image.Height() / 2U },
 					{ 0U, back_image.Height() / 2U, back_image.Width(), back_image.Height() / 2U },
-					MasterQian::Media::GDI::QUALITY_MODE).Save(file.Path(), MasterQian::Media::GDI::ImageFormat::JPG);
+					Media::GDI::QUALITY_MODE).Save(file.Path(), Media::GDI::ImageFormat::JPG);
 
 				co_await ui_thread;
 			}
@@ -126,7 +126,7 @@ namespace winrt::hyzjkz::implementation {
 	// 初始化
 	static void InitializeIDCardSubPage(IInspectable* subPage) noexcept {
 		auto sp{ ToolsPage::IDCardSubPage::From(subPage) };
-		Application::LoadComponent(*sp, Windows::Foundation::Uri{ L"ms-appx:///Xaml/Tools/IDCardSubPage.xaml" });
+		Application::LoadComponent(*sp, Uri{ L"ms-appx:///Xaml/Tools/IDCardSubPage.xaml" });
 		sp->Bind(sp->button_front, L"Button_Front");
 		sp->Bind(sp->button_back, L"Button_Back");
 		sp->Bind(sp->button_clear, L"Button_Clear");
@@ -134,16 +134,16 @@ namespace winrt::hyzjkz::implementation {
 		sp->Bind(sp->preview_text, L"Preview_Text");
 		sp->Bind(sp->image_preview, L"Image_Preview");
 
-		sp->button_front.Click([sp] (IInspectable const& sender, auto) -> Windows::Foundation::IAsyncAction {
+		sp->button_front.Click([sp] (IInspectable const& sender, auto) -> IAsyncAction {
 			co_await IDCard_Select_Click(sp, sender);
 			});
-		sp->button_back.Click([sp] (IInspectable const& sender, auto) -> Windows::Foundation::IAsyncAction {
+		sp->button_back.Click([sp] (IInspectable const& sender, auto) -> IAsyncAction {
 			co_await IDCard_Select_Click(sp, sender);
 			});
 		sp->button_clear.Click([sp] (auto, auto) {
 			IDCard_Clear_Click(sp);
 			});
-		sp->button_work.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
+		sp->button_work.Click([sp] (auto, auto) -> IAsyncAction {
 			co_await IDCard_Work_Click(sp);
 			});
 	}
@@ -167,34 +167,30 @@ namespace winrt::hyzjkz::implementation {
 			static_cast<mqf64>(Global.c_printCanvasSize.width) / Global.c_printCanvasSize.height // A6
 			: static_cast<mqf64>(Global.c_A4Size.width) / Global.c_A4Size.height }; // A4
 		canvas.Width(canvas.ActualHeight() * scale);
-		Media::RectangleGeometry rg;
+		Microsoft::UI::Xaml::Media::RectangleGeometry rg;
 		rg.Rect({ 0.0f, 0.0f, static_cast<mqf32>(canvas.ActualWidth()), static_cast<mqf32>(canvas.ActualHeight()) });
 		canvas.Clip(rg);
 	}
 
 	// 导入
-	static Windows::Foundation::IAsyncAction Canvas_Jigsaw_Import(ToolsPage::JigsawSubPage* sp) noexcept {
-		using namespace winrt::Windows::Storage;
-
-		Pickers::FileOpenPicker openPicker;
-		openPicker.SuggestedStartLocation(Pickers::PickerLocationId::Desktop);
-		openPicker.ViewMode(Pickers::PickerViewMode::Thumbnail);
+	static IAsyncAction Canvas_Jigsaw_Import(ToolsPage::JigsawSubPage* sp) noexcept {
+		Windows::Storage::Pickers::FileOpenPicker openPicker;
+		openPicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
+		openPicker.ViewMode(Windows::Storage::Pickers::PickerViewMode::Thumbnail);
 		auto filters{ openPicker.FileTypeFilter() };
 		filters.Append(L".jpg");
 		filters.Append(L".png");
 		filters.Append(L".bmp");
 		util::InitializeDialog(openPicker, Global.ui_hwnd);
 
-		if (Windows::Foundation::Collections::IVectorView<StorageFile>
+		if (Windows::Foundation::Collections::IVectorView<Windows::Storage::StorageFile>
 			files_view{ co_await openPicker.PickMultipleFilesAsync() }; files_view.Size() > 0U) {
 			std::vector<std::wstring> files;
 			for (auto file_view : files_view) {
 				files.emplace_back(file_view.Path());
 			}
-			auto items{ sp->canvas.Children() };
 
-			using namespace MasterQian::Media;
-			auto canvas_width{ sp->canvas.ActualWidth() }; // 画布实际宽度
+			auto items{ sp->canvas.Children() };
 			auto canvas_height{ sp->canvas.ActualHeight() }; // 画布实际高度
 
 			winrt::apartment_context ui_thread;
@@ -202,20 +198,20 @@ namespace winrt::hyzjkz::implementation {
 			for (auto& file : files) {
 				co_await winrt::resume_background();
 
-				GDI::Image image(file);
+				Media::GDI::Image image(file);
 				auto image_size{ image.Size() };
 				if (image_size != mqsize{ }) {
 					auto thumb_height{ static_cast<mqui32>(canvas_height / 3) }; // 高度缩放到画布高度的1/3
 					auto thumb_width{ thumb_height * image_size.width / image_size.height }; // 宽度按比例缩放
-					image = image.Resample({ thumb_width, thumb_height }, GDI::FAST_MODE); // 重新采样
-					auto stream{ image.SaveToUnsafeStream(GDI::ImageFormat::BMP) }; // 保存到流
+					image = image.Resample({ thumb_width, thumb_height }, Media::GDI::FAST_MODE); // 重新采样
+					auto stream{ image.SaveToUnsafeStream(Media::GDI::ImageFormat::BMP) }; // 保存到流
 					// 更新UI
 					co_await ui_thread;
 
 					Controls::Image drag_image;
 					drag_image.Width(thumb_width);
 					drag_image.Height(thumb_height);
-					drag_image.Stretch(Media::Stretch::Fill);
+					drag_image.Stretch(Microsoft::UI::Xaml::Media::Stretch::Fill);
 					drag_image.Source(util::StreamToBMP(stream));
 					drag_image.Tag(box_value(file)); // 记录照片路径
 					// 移动事件
@@ -268,7 +264,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 拼图
-	static Windows::Foundation::IAsyncAction Canvas_Jigsaw_Save(ToolsPage::JigsawSubPage* sp) noexcept {
+	static IAsyncAction Canvas_Jigsaw_Save(ToolsPage::JigsawSubPage* sp) noexcept {
 		Windows::Storage::Pickers::FileSavePicker savePicker;
 		savePicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
 		auto filters{ savePicker.FileTypeChoices() };
@@ -278,30 +274,28 @@ namespace winrt::hyzjkz::implementation {
 
 		if (Windows::Storage::StorageFile file{ co_await savePicker.PickSaveFileAsync() }) {
 			auto print_canvas_size{ sp->switch_mode.IsOn() ? Global.c_printCanvasSize : Global.c_A4Size };
-			auto canvas{ sp->canvas };
-			auto canvas_width{ sp->canvas.ActualWidth() }; // 画布实际宽度
-			auto scale{ print_canvas_size.width / canvas_width }; // 缩放比例
+			auto scale{ print_canvas_size.width / sp->canvas.ActualWidth() }; // 缩放比例
 			std::vector<std::pair<std::wstring, mqrect>> rects;
-			for (auto item : canvas.Children()) {
+			for (auto item : sp->canvas.Children()) {
 				auto drag_image{ item.as<Controls::Image>() };
 				rects.emplace_back(drag_image.Tag().as<hstring>(), mqrect{
-					static_cast<mqui32>(Controls::Canvas::GetLeft(drag_image) * scale),
-					static_cast<mqui32>(Controls::Canvas::GetTop(drag_image) * scale),
-					static_cast<mqui32>(drag_image.ActualWidth() * scale),
-					static_cast<mqui32>(drag_image.ActualHeight() * scale) });
+					static_cast<mqui32>(Controls::Canvas::GetLeft(drag_image)),
+					static_cast<mqui32>(Controls::Canvas::GetTop(drag_image)),
+					static_cast<mqui32>(drag_image.ActualWidth()),
+					static_cast<mqui32>(drag_image.ActualHeight()) } * scale);
 			}
 
 			winrt::apartment_context ui_thread;
 			co_await winrt::resume_background();
 
-			MasterQian::Media::GDI::Image print_canvas(print_canvas_size, MasterQian::Media::Colors::White); // 打印画布
+			Media::GDI::Image print_canvas(print_canvas_size, Media::Colors::White); // 打印画布
 			print_canvas.DPI({ 300U, 300U });
 			for (auto& [file, rect] : rects) {
-				MasterQian::Media::GDI::Image image{ file };
+				Media::GDI::Image image{ file };
 				image.DPI({ 300U, 300U });
-				print_canvas.DrawImage(image, { rect.left, rect.top }, { rect.width, rect.height }, MasterQian::Media::GDI::QUALITY_MODE);
+				print_canvas.DrawImage(image, { rect.left, rect.top }, { rect.width, rect.height }, Media::GDI::QUALITY_MODE);
 			}
-			print_canvas.Save(file.Path(), MasterQian::Media::GDI::ImageFormat::JPG);
+			print_canvas.Save(file.Path(), Media::GDI::ImageFormat::JPG);
 
 			co_await ui_thread;
 		}
@@ -310,7 +304,7 @@ namespace winrt::hyzjkz::implementation {
 	// 初始化
 	static void InitializeJigsawSubPage(IInspectable* subPage) noexcept {
 		auto sp{ ToolsPage::JigsawSubPage::From(subPage) };
-		Application::LoadComponent(*sp, Windows::Foundation::Uri{ L"ms-appx:///Xaml/Tools/JigsawSubPage.xaml" });
+		Application::LoadComponent(*sp, Uri{ L"ms-appx:///Xaml/Tools/JigsawSubPage.xaml" });
 		sp->Bind(sp->canvas, L"Canvas_Jigsaw");
 		sp->Bind(sp->switch_mode, L"Switch_Mode");
 		sp->Bind(sp->button_import, L"Button_Import");
@@ -324,13 +318,13 @@ namespace winrt::hyzjkz::implementation {
 		sp->canvas.SizeChanged([sp] (auto, auto) {
 			Canvas_Jigsaw_Resize(sp);
 			});
-		sp->button_import.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
+		sp->button_import.Click([sp] (auto, auto) -> IAsyncAction {
 			co_await Canvas_Jigsaw_Import(sp);
 			});
 		sp->button_clear.Click([sp] (auto, auto) {
 			Canvas_Jigsaw_Clear(sp);
 			});
-		sp->button_save.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
+		sp->button_save.Click([sp] (auto, auto) -> IAsyncAction {
 			co_await Canvas_Jigsaw_Save(sp);
 			});
 	}
@@ -349,19 +343,17 @@ namespace winrt::hyzjkz::implementation {
 	/*  导出PDF  */
 
 	// 导入
-	static Windows::Foundation::IAsyncAction ToPDF_Import(ToolsPage::ToPDFSubPage* sp) noexcept {
-		using namespace winrt::Windows::Storage;
-
-		Pickers::FileOpenPicker openPicker;
-		openPicker.SuggestedStartLocation(Pickers::PickerLocationId::Desktop);
-		openPicker.ViewMode(Pickers::PickerViewMode::Thumbnail);
+	static IAsyncAction ToPDF_Import(ToolsPage::ToPDFSubPage* sp) noexcept {
+		Windows::Storage::Pickers::FileOpenPicker openPicker;
+		openPicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
+		openPicker.ViewMode(Windows::Storage::Pickers::PickerViewMode::Thumbnail);
 		auto filters{ openPicker.FileTypeFilter() };
 		filters.Append(L".jpg");
 		filters.Append(L".png");
 		filters.Append(L".bmp");
 		util::InitializeDialog(openPicker, Global.ui_hwnd);
 
-		if (Windows::Foundation::Collections::IVectorView<StorageFile>
+		if (Windows::Foundation::Collections::IVectorView<Windows::Storage::StorageFile>
 			files_view{ co_await openPicker.PickMultipleFilesAsync() }; files_view.Size() > 0U) {
 			auto items{ sp->gv_pdf.Items() };
 			for (auto file_view : files_view) {
@@ -377,7 +369,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 保存
-	static Windows::Foundation::IAsyncAction ToPDF_Save(ToolsPage::ToPDFSubPage* sp) noexcept {
+	static IAsyncAction ToPDF_Save(ToolsPage::ToPDFSubPage* sp) noexcept {
 		Windows::Storage::Pickers::FileSavePicker savePicker;
 		savePicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
 		auto filters{ savePicker.FileTypeChoices() };
@@ -393,13 +385,11 @@ namespace winrt::hyzjkz::implementation {
 			winrt::apartment_context ui_thread;
 			co_await winrt::resume_background();
 
-			MasterQian::Storage::PDF pdf;
+			Storage::PDF pdf;
 			for (auto& file : files) {
-				MasterQian::Media::GDI::Image image{ file };
+				Media::GDI::Image image{ file };
 				auto scale{ image.DPI().width / 72.0 };
-				auto size{ image.Size() };
-				size.width = static_cast<mqui32>(size.width / scale);
-				size.height = static_cast<mqui32>(size.height / scale);
+				auto size{ image.Size() / scale };
 
 				auto page{ pdf.AddPage(MasterQian::Storage::PDF::PageConfig{ .page_size = { size.width, size.height } }) };
 				auto page_image{ pdf.LoadPNGImage(image.Save(MasterQian::Media::GDI::ImageFormat::PNG)) };
@@ -414,13 +404,13 @@ namespace winrt::hyzjkz::implementation {
 	// 初始化
 	static void InitializeToPDFSubPage(IInspectable* subPage) noexcept {
 		auto sp{ ToolsPage::ToPDFSubPage::From(subPage) };
-		Application::LoadComponent(*sp, Windows::Foundation::Uri{ L"ms-appx:///Xaml/Tools/ToPDFSubPage.xaml" });
+		Application::LoadComponent(*sp, Uri{ L"ms-appx:///Xaml/Tools/ToPDFSubPage.xaml" });
 		sp->Bind(sp->button_import, L"Button_Import");
 		sp->Bind(sp->button_delete, L"Button_Delete");
 		sp->Bind(sp->button_clear, L"Button_Clear");
 		sp->Bind(sp->button_save, L"Button_Save");
 		sp->Bind(sp->gv_pdf, L"GV_PDF");
-		sp->button_import.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
+		sp->button_import.Click([sp] (auto, auto) -> IAsyncAction {
 			co_await ToPDF_Import(sp);
 			});
 		sp->button_delete.Click([sp] (auto, auto) {
@@ -431,7 +421,7 @@ namespace winrt::hyzjkz::implementation {
 		sp->button_clear.Click([sp] (auto, auto) {
 			sp->gv_pdf.Items().Clear();
 			});
-		sp->button_save.Click([sp] (auto, auto) -> Windows::Foundation::IAsyncAction {
+		sp->button_save.Click([sp] (auto, auto) -> IAsyncAction {
 			co_await ToPDF_Save(sp);
 			});
 	}
@@ -445,15 +435,14 @@ namespace winrt::hyzjkz::implementation {
 
 namespace winrt::hyzjkz::implementation {
 	ToolsPage::ToolsPage() {
-		using Args = MasterQian::WinRT::Args;
 		InitializeComponent();
-		NVI_Home().Tag(Args::box(&Home, nullptr));
+		NVI_Home().Tag(WinRT::Args::box(&Home, nullptr));
 		InitializeHomeSubPage(&Home);
-		NVI_IDCard().Tag(Args::box(&IDCard, &UpdateIDCardSubPage));
+		NVI_IDCard().Tag(WinRT::Args::box(&IDCard, &UpdateIDCardSubPage));
 		InitializeIDCardSubPage(&IDCard);
-		NVI_Jigsaw().Tag(Args::box(&Jigsaw, &UpdateJigsawSubPage));
+		NVI_Jigsaw().Tag(WinRT::Args::box(&Jigsaw, &UpdateJigsawSubPage));
 		InitializeJigsawSubPage(&Jigsaw);
-		NVI_ToPDF().Tag(Args::box(&ToPDF, &UpdateToPDFSubPage));
+		NVI_ToPDF().Tag(WinRT::Args::box(&ToPDF, &UpdateToPDFSubPage));
 		InitializeToPDFSubPage(&ToPDF);
 
 		Loaded([this] (auto, auto) {
@@ -465,8 +454,8 @@ namespace winrt::hyzjkz::implementation {
 	F_EVENT void ToolsPage::NV_Main_SelectionChanged(Controls::NavigationView const&, Controls::NavigationViewSelectionChangedEventArgs const& args) {
 		auto tag{ args.SelectedItem().as<Controls::NavigationViewItem>().Tag() };
 		if (tag != nullptr) {
-			auto args{ tag.as<MasterQian::WinRT::Args>() };
-			auto [subPage, func] = args.unbox<IInspectable*, MasterQian::WinRT::SubPageFunc>();
+			auto args{ tag.as<WinRT::Args>() };
+			auto [subPage, func] = args.unbox<IInspectable*, WinRT::SubPageFunc>();
 			Frame_Main().Content(*subPage);
 			if (func) {
 				func(subPage);

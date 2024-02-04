@@ -19,7 +19,7 @@ namespace winrt::hyzjkz::implementation {
 		return hstring(std::wstring_view(path));
 	}
 
-	Media::Imaging::BitmapImage ModelPhoto::PhotoSource() const {
+	Microsoft::UI::Xaml::Media::Imaging::BitmapImage ModelPhoto::PhotoSource() const {
 		auto path{ Global.c_thumbPath };
 		path /= mDateStr;
 		path /= mFilename;

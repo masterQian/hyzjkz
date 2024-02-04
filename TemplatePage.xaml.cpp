@@ -1,36 +1,33 @@
 #include "pch.h"
+#include <queue>
 #include "TemplatePage.xaml.h"
 #if __has_include("TemplatePage.g.cpp")
 #include "TemplatePage.g.cpp"
 #endif
 
-#include <queue>
-
 namespace winrt::hyzjkz::implementation {
 	// 预览模板
 	static void PreviewTemplate(TemplatePage* page) noexcept {
-		using namespace MasterQian::Media;
-
 		auto image{ page->CanvasImage() };
 		auto canvas_width{ image.ActualWidth() };
 		auto canvas_height{ image.ActualHeight() };
 		auto canvas_scale{ Global.c_printCanvasSize.height / canvas_height };
 		// 画布
-		GDI::Image canvas({ static_cast<mqui32>(canvas_width), static_cast<mqui32>(canvas_height) }, Colors::Pink);
+		Media::GDI::Image canvas({ static_cast<mqui32>(canvas_width), static_cast<mqui32>(canvas_height) }, Media::Colors::Pink);
 		// 画矩形
 		auto items{ page->LV_TemplateData().Items() };
 		std::vector<mqrect> rects{ items.Size() };
 		for (auto item_ : items) {
 			auto item{ item_.as<hyzjkz::ModelTemplateData>() };
-			rects.emplace_back(
-				static_cast<mqui32>(item.TLeft() / canvas_scale),
-				static_cast<mqui32>(item.TTop() / canvas_scale),
-				static_cast<mqui32>(item.TWidth() / canvas_scale),
-				static_cast<mqui32>(item.THeight() / canvas_scale));
+			rects.emplace_back(mqrect{
+				static_cast<mqui32>(item.TLeft()),
+				static_cast<mqui32>(item.TTop()),
+				static_cast<mqui32>(item.TWidth()),
+				static_cast<mqui32>(item.THeight()) } / canvas_scale);
 		}
-		canvas.FillRectangles(rects, Colors::Orange, GDI::FAST_MODE);
-		canvas.DrawRectangles(rects, Colors::Black, 1.0, GDI::FAST_MODE);
-		image.Source(util::StreamToBMP(canvas.SaveToUnsafeStream(GDI::ImageFormat::BMP)));
+		canvas.FillRectangles(rects, Media::Colors::Orange, Media::GDI::FAST_MODE);
+		canvas.DrawRectangles(rects, Media::Colors::Black, 1.0, Media::GDI::FAST_MODE);
+		image.Source(util::StreamToBMP(canvas.SaveToUnsafeStream(Media::GDI::ImageFormat::BMP)));
 	}
 
 	// 刷新模板
@@ -92,7 +89,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 创建模板
-	static Windows::Foundation::IAsyncAction CreateTemplate(TemplatePage* page) noexcept {
+	static IAsyncAction CreateTemplate(TemplatePage* page) noexcept {
 		std::wstring name{ co_await Global.ui_window->as<hyzjkz::MainWindow>()
 			.ShowInputDialog(util::RDString<hstring>(L"TemplatePage.Tip.InputNewTemplateName")) };
 		if (name.empty()) {
@@ -103,7 +100,7 @@ namespace winrt::hyzjkz::implementation {
 				.ShowTipDialog(util::RDString<hstring>(L"TemplatePage.Tip.TemplateNameExists"));
 		}
 		// 分配0项的模板
-		MasterQian::Bin bin(PrintTemplate::CalcSize(0U));
+		Bin bin(PrintTemplate::CalcSize(0U));
 		auto& pt{ *reinterpret_cast<PrintTemplate*>(bin.data()) };
 		pt.size = sizeof(PrintTemplate);
 		pt.count = 0U;
@@ -127,7 +124,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 删除模板
-	static Windows::Foundation::IAsyncAction DeleteTemplate(TemplatePage* page) noexcept {
+	static IAsyncAction DeleteTemplate(TemplatePage* page) noexcept {
 		auto item{ page->LV_Templates().SelectedItem() };
 		if (item == nullptr) {
 			co_return;
@@ -162,7 +159,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 重命名模板
-	static Windows::Foundation::IAsyncAction RenameTemplate(TemplatePage* page) noexcept {
+	static IAsyncAction RenameTemplate(TemplatePage* page) noexcept {
 		auto item{ page->LV_Templates().SelectedItem() };
 		if (item == nullptr) {
 			co_return;
@@ -179,7 +176,7 @@ namespace winrt::hyzjkz::implementation {
 		}
 
 		// 获得模板数据
-		MasterQian::Bin bin{ std::move(Global.templateList.get(old_name)) };
+		Bin bin{ std::move(Global.templateList.get(old_name)) };
 
 		// 修改名称
 		auto& pt{ *reinterpret_cast<PrintTemplate*>(bin.data()) };
@@ -204,7 +201,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 保存模板
-	static Windows::Foundation::IAsyncAction SaveTemplate(TemplatePage* page) noexcept {
+	static IAsyncAction SaveTemplate(TemplatePage* page) noexcept {
 		auto lv_templates{ page->LV_Templates() };
 		auto selected_item{ lv_templates.SelectedItem() };
 		if (selected_item == nullptr) {
@@ -218,7 +215,7 @@ namespace winrt::hyzjkz::implementation {
 		auto new_template_size{ PrintTemplate::CalcSize(new_template_count) };
 
 		// 创建新模板
-		MasterQian::Bin new_template_data(new_template_size);
+		Bin new_template_data(new_template_size);
 		auto& pt{ *reinterpret_cast<PrintTemplate*>(new_template_data.data()) };
 
 		// 拷贝基础数据
@@ -256,7 +253,7 @@ namespace winrt::hyzjkz::implementation {
 	TemplatePage::TemplatePage() {
 		InitializeComponent();
 		
-		Loaded([this] (auto, auto) -> Windows::Foundation::IAsyncAction {
+		Loaded([this] (auto, auto) -> IAsyncAction {
 			if (Global.cfg.Get<GlobalConfig::USE_PASSWORD>()) {
 				auto grid_main{ Grid_Main() };
 				grid_main.Visibility(Visibility::Collapsed);
@@ -276,7 +273,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 按钮单击
-	F_EVENT Windows::Foundation::IAsyncAction TemplatePage::AppBarButton_Click(IInspectable const& sender, RoutedEventArgs const&) {
+	F_EVENT IAsyncAction TemplatePage::AppBarButton_Click(IInspectable const& sender, RoutedEventArgs const&) {
 		auto label{ sender.as<Controls::AppBarButton>().Label() };
 		if (label == util::RDString<hstring>(L"TemplatePage.Bar.Add")) {
 			co_await CreateTemplate(this);

@@ -52,9 +52,13 @@
     <x:String x:Key="HistoryPage.AddCopyData.Plus3">+3</x:String>
     <x:String x:Key="HistoryPage.AddCopyData.Plus4">+4</x:String>
     <x:String x:Key="HistoryPage.AddCopyData.Plus5">+5</x:String>
-    <x:String x:Key="HistoryPage.AddCopyData.Plus6">+10</x:String>
-    <x:String x:Key="HistoryPage.AddCopyData.Plus7">+15</x:String>
-    <x:String x:Key="HistoryPage.AddCopyData.Plus8">+20</x:String>
+    <x:String x:Key="HistoryPage.AddCopyData.Plus6">+6</x:String>
+    <x:String x:Key="HistoryPage.AddCopyData.Plus7">+7</x:String>
+    <x:String x:Key="HistoryPage.AddCopyData.Plus8">+8</x:String>
+    <x:String x:Key="HistoryPage.AddCopyData.Plus9">+9</x:String>
+    <x:String x:Key="HistoryPage.AddCopyData.Plus10">+10</x:String>
+    <x:String x:Key="HistoryPage.AddCopyData.Plus11">+15</x:String>
+    <x:String x:Key="HistoryPage.AddCopyData.Plus12">+20</x:String>
     <x:String x:Key="HistoryPage.AddCopyData.UserText">自定义</x:String>
     <x:String x:Key="HistoryPage.AddCopyData.OKText">确定</x:String>
 

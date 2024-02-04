@@ -14,6 +14,18 @@ import MasterQian.Parser.Config;
 import MasterQian.System;
 import MasterQian.WinRT;
 
+using namespace MasterQian;
+namespace Controls = winrt::Microsoft::UI::Xaml::Controls;
+namespace Input = winrt::Microsoft::UI::Xaml::Input;
+using Application = winrt::Microsoft::UI::Xaml::Application;
+using RoutedEventArgs = winrt::Microsoft::UI::Xaml::RoutedEventArgs;
+using FrameworkElement = winrt::Microsoft::UI::Xaml::FrameworkElement;
+using Visibility = winrt::Microsoft::UI::Xaml::Visibility;
+using Uri = winrt::Windows::Foundation::Uri;
+using IAsyncAction = winrt::Windows::Foundation::IAsyncAction;
+template<typename T>
+using IAsyncOperation = winrt::Windows::Foundation::IAsyncOperation<T>;
+
 // 运行时函数
 #define F_RT
 // 事件函数
@@ -36,11 +48,11 @@ struct RecordData {
 	PhotoYearData photoData;
 	CopyYearData copyData;
 
-	static bool CheckSize(MasterQian::BinView bv) noexcept {
+	static bool CheckSize(BinView bv) noexcept {
 		return bv.size() == sizeof(RecordData);
 	}
 
-	static RecordData& From(MasterQian::Bin& bin) noexcept {
+	static RecordData& From(Bin& bin) noexcept {
 		return *reinterpret_cast<RecordData*>(bin.data());
 	}
 
@@ -72,9 +84,7 @@ struct PrintTemplate {
 	}flag;
 	mqui32 order; // 模板序
 	mqbyte unused[28]; // 未用
-	struct DATA {
-		mqui32 left, top, width, height; // 左边，顶边，宽度，高度
-	}data[1];
+	mqrect data[1]; // 尺寸
 
 	static constexpr mqui32 CalcSize(mqui32 count) noexcept {
 		if (count < 2U) {
@@ -82,19 +92,19 @@ struct PrintTemplate {
 		}
 		else {
 			return static_cast<mqui32>(sizeof(PrintTemplate) + static_cast<mqui64>(
-				count - 1U) * sizeof(PrintTemplate::DATA));
+				count - 1U) * sizeof(mqrect));
 		}
 	}
 
 	static constexpr bool IsCorrect(mqui32 size) noexcept {
 		if (static_cast<mqui64>(size) < sizeof(PrintTemplate)) return false;
-		return (static_cast<mqui64>(size) - sizeof(PrintTemplate)) % sizeof(PrintTemplate::DATA) == 0ULL;
+		return (static_cast<mqui64>(size) - sizeof(PrintTemplate)) % sizeof(mqrect) == 0ULL;
 	}
 };
 
 // 模板列表
-struct TemplateList : private std::unordered_map<std::wstring, MasterQian::Bin, MasterQian::freestanding::isomerism_hash, MasterQian::freestanding::isomerism_equal> {
-	using BaseT = std::unordered_map<std::wstring, MasterQian::Bin, MasterQian::freestanding::isomerism_hash, MasterQian::freestanding::isomerism_equal>;
+struct TemplateList : private std::unordered_map<std::wstring, Bin, freestanding::isomerism_hash, freestanding::isomerism_equal> {
+	using BaseT = std::unordered_map<std::wstring, Bin, freestanding::isomerism_hash, freestanding::isomerism_equal>;
 	
 	TemplateList() = default;
 
@@ -105,11 +115,11 @@ struct TemplateList : private std::unordered_map<std::wstring, MasterQian::Bin, 
 	using BaseT::contains;
 	using BaseT::erase;
 
-	void add(std::wstring_view name, MasterQian::Bin&& bin) noexcept {
+	void add(std::wstring_view name, Bin&& bin) noexcept {
 		BaseT::emplace(name, std::move(bin));
 	}
 
-	void set(std::wstring_view name, MasterQian::Bin&& bin) noexcept {
+	void set(std::wstring_view name, Bin&& bin) noexcept {
 		if (auto iter{ BaseT::find(name) }; iter != BaseT::cend()) {
 			iter->second = std::move(bin);
 		}
@@ -118,7 +128,7 @@ struct TemplateList : private std::unordered_map<std::wstring, MasterQian::Bin, 
 		}
 	}
 
-	MasterQian::Bin& get(std::wstring_view name) noexcept {
+	Bin& get(std::wstring_view name) noexcept {
 		return BaseT::find(name)->second;
 	}
 
@@ -174,7 +184,7 @@ concept ConfigItem = requires() {
 };
 
 // 全局配置结构
-struct GlobalConfig : private MasterQian::Parser::Config {
+struct GlobalConfig : private Parser::Config {
 	template<ConfigItem T>
 	auto Get() const noexcept { return get(T::name, T::def_value); }
 	auto Get(std::wstring_view name) const noexcept { return get_config(name); }
@@ -183,11 +193,11 @@ struct GlobalConfig : private MasterQian::Parser::Config {
 	void Set(typename T::Type t = T::def_value) noexcept { set(T::name, t); }
 	template<typename U, ConfigItem T>
 	void Set(U u) noexcept { set(T::name, static_cast<T::Type>(u)); }
-	void Set(std::wstring_view name, MasterQian::Parser::Config const& config) noexcept { set(name, config); }
+	void Set(std::wstring_view name, Parser::Config const& config) noexcept { set(name, config); }
 
-	using MasterQian::Parser::Config::Config;
-	using MasterQian::Parser::Config::load;
-	using MasterQian::Parser::Config::save;
+	using Parser::Config::Config;
+	using Parser::Config::load;
+	using Parser::Config::save;
 
 	struct EOS_PATH {
 		using Type = std::wstring_view;
@@ -246,14 +256,14 @@ inline struct GlobalStruct {
 	TemplateList templateList; // 模板列表
 
 	// 全局常量
-	MasterQian::Storage::Path c_runPath; // 运行路径
-	MasterQian::Storage::Path c_photoPath; // 照片路径
-	MasterQian::Storage::Path c_thumbPath; // 缓存路径
-	MasterQian::Storage::Path c_templatePath; // 模板路径
-	MasterQian::Storage::Path c_dataPath; // 数据路径
-	MasterQian::Storage::Path c_configFilePath; // 配置路径
-	MasterQian::Storage::Path c_tempPhotoPath; // 临时照片路径
-	MasterQian::Storage::Path c_cameraPhotoPath; // 相机照片路径
+	Storage::Path c_runPath; // 运行路径
+	Storage::Path c_photoPath; // 照片路径
+	Storage::Path c_thumbPath; // 缓存路径
+	Storage::Path c_templatePath; // 模板路径
+	Storage::Path c_dataPath; // 数据路径
+	Storage::Path c_configFilePath; // 配置路径
+	Storage::Path c_tempPhotoPath; // 临时照片路径
+	Storage::Path c_cameraPhotoPath; // 相机照片路径
 
 	mqsize c_photoThumbSize; // 缩略图尺寸
 	mqsize c_photoPreviewSize; // 预览图尺寸
@@ -263,8 +273,8 @@ inline struct GlobalStruct {
 	mqsize c_ToPDFImageSize; // 导出PDF导入图像尺寸
 
 	// 全局资源
-	MasterQian::BinView res_icon; // 图标
-	MasterQian::BinView res_default_img; // 默认照片
+	BinView res_icon; // 图标
+	BinView res_default_img; // 默认照片
 
 	// UI
 	HWND ui_hwnd{ }; // 窗口句柄
@@ -276,7 +286,7 @@ inline struct GlobalStruct {
 namespace util {
 	// 字节集转图像
 	winrt::Microsoft::UI::Xaml::Media::Imaging::BitmapImage
-		BinToBMP(MasterQian::BinView, mqsize size = { }, bool hasCache = false) noexcept;
+		BinToBMP(BinView, mqsize size = { }, bool hasCache = false) noexcept;
 
 	// 文件转图像
 	winrt::Microsoft::UI::Xaml::Media::Imaging::BitmapImage
@@ -290,8 +300,8 @@ namespace util {
 	void InitializeDialog(winrt::Windows::Foundation::IInspectable const&, HWND) noexcept;
 
 	// DateTime转LocalTime
-	inline MasterQian::Time DateTimeToLocal(winrt::Windows::Foundation::DateTime dt) noexcept {
-		return MasterQian::Timestamp{ static_cast<mqui64>(dt.time_since_epoch().count()), MasterQian::Timestamp::Type::microsecond, true }.local();
+	inline Time DateTimeToLocal(winrt::Windows::Foundation::DateTime dt) noexcept {
+		return Timestamp{ static_cast<mqui64>(dt.time_since_epoch().count()), Timestamp::Type::microsecond, true }.local();
 	}
 
 	// 注册拖放钩子
@@ -300,7 +310,7 @@ namespace util {
 	// 读取资源字典
 	template<typename T, mqui32 N>
 	inline T RD(winrt::hstring const& key) noexcept {
-		auto rd{ winrt::Microsoft::UI::Xaml::Application::Current().Resources().MergedDictionaries().GetAt(N) };
+		auto rd{ Application::Current().Resources().MergedDictionaries().GetAt(N) };
 		return rd.Lookup(winrt::box_value(key)).as<T>();
 	}
 

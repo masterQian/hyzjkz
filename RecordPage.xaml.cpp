@@ -1,10 +1,9 @@
 #include "pch.h"
+#include <queue>
 #include "RecordPage.xaml.h"
 #if __has_include("RecordPage.g.cpp")
 #include "RecordPage.g.cpp"
 #endif
-
-#include <queue>
 
 struct RecordYearStatistics { // 年统计
 	mqui32 photo_year_num; // 照相年数量
@@ -94,7 +93,7 @@ namespace winrt::hyzjkz::implementation {
 			mqchar buf[256]{ };
 			for (mqui32 i{ }; i < 12U; ++i) {
 				Controls::Grid grid;
-				Application::LoadComponent(grid, Windows::Foundation::Uri{ L"ms-appx:///Xaml/RecordMonthItem.xaml" });
+				Application::LoadComponent(grid, Uri{ L"ms-appx:///Xaml/RecordMonthItem.xaml" });
 				auto text1{ grid.FindName(L"TB1").as<Controls::TextBlock>() };
 				auto text2{ grid.FindName(L"TB2").as<Controls::TextBlock>() };
 				auto text3{ grid.FindName(L"TB3").as<Controls::TextBlock>() };
@@ -162,7 +161,7 @@ namespace winrt::hyzjkz::implementation {
 			mqchar buf[256]{ };
 			for (mqui32 i{ }; i < 31U; ++i) {
 				Controls::Grid grid;
-				Application::LoadComponent(grid, Windows::Foundation::Uri{ L"ms-appx:///Xaml/RecordDayItem.xaml" });
+				Application::LoadComponent(grid, Uri{ L"ms-appx:///Xaml/RecordDayItem.xaml" });
 				auto text1{ grid.FindName(L"TB1").as<Controls::TextBlock>() };
 				auto text2{ grid.FindName(L"TB2").as<Controls::TextBlock>() };
 				auto text3{ grid.FindName(L"TB3").as<Controls::TextBlock>() };
@@ -205,7 +204,7 @@ namespace winrt::hyzjkz::implementation {
 	RecordPage::RecordPage() {
 		InitializeComponent();
 
-		Loaded([this] (auto, auto) -> Windows::Foundation::IAsyncAction {
+		Loaded([this] (auto, auto) -> IAsyncAction {
 			if (Global.cfg.Get<GlobalConfig::USE_PASSWORD>()) {
 				auto sp_main{ Grid_Main() };
 				sp_main.Visibility(Visibility::Collapsed);

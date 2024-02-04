@@ -2,14 +2,11 @@
 
 #include "App.xaml.g.h"
 
-using namespace winrt::Microsoft::UI::Xaml;
-
 namespace winrt::hyzjkz::implementation {
     struct App : AppT<App> {
-        Window window{ nullptr };
+        Microsoft::UI::Xaml::Window window{ nullptr };
 
         App();
-
-        void OnLaunched(LaunchActivatedEventArgs const&);
+        void OnLaunched(Microsoft::UI::Xaml::LaunchActivatedEventArgs const&);
     };
 }
