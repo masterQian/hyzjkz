@@ -89,24 +89,17 @@ namespace winrt::hyzjkz::implementation {
 			auto grid_year{ page->Grid_Year() };
 			auto grid_month{ page->Grid_Month() };
 			auto items{ grid_year.Children() };
-			items.Clear();
-			mqchar buf[256]{ };
 			for (mqui32 i{ }; i < 12U; ++i) {
-				Controls::Grid grid;
-				Application::LoadComponent(grid, Uri{ L"ms-appx:///Xaml/RecordMonthItem.xaml" });
+				auto grid{ items.GetAt(i).as<Controls::Grid>() };
 				auto text1{ grid.FindName(L"TB1").as<Controls::TextBlock>() };
 				auto text2{ grid.FindName(L"TB2").as<Controls::TextBlock>() };
 				auto text3{ grid.FindName(L"TB3").as<Controls::TextBlock>() };
 				auto text4{ grid.FindName(L"TB4").as<Controls::TextBlock>() };
-				wsprintfW(buf, L"%u月", i + 1U);
-				text1.Text(buf);
-				wsprintfW(buf, L"照相 %u 张  %u 元", stat.photo_month_nums[i], stat.photo_month_values[i]);
-				text2.Text(buf);
-				wsprintfW(buf, L"复印    %u 元", stat.copy_month_values[i]);
-				text3.Text(buf);
+				text1.Text(winrt::format(L"{}月", i + 1U));
+				text2.Text(winrt::format(L"照相 {} 张  {} 元", stat.photo_month_nums[i], stat.photo_month_values[i]));
+				text3.Text(winrt::format(L"复印    {} 元", stat.copy_month_values[i]));
 				auto total_month_value{ stat.photo_month_values[i] + stat.copy_month_values[i] };
-				wsprintfW(buf, L"总计    %u 元", total_month_value);
-				text4.Text(buf);
+				text4.Text(winrt::format(L"总计    {} 元", total_month_value));
 				if (total_month_value == stat.max_month_value) {
 					grid.Background(page->MaxBrush());
 				}
@@ -116,16 +109,10 @@ namespace winrt::hyzjkz::implementation {
 				else {
 					grid.Background(page->NormalBrush());
 				}
-				grid.Tag(box_value(i + 1U));
-				grid.Tapped({ page, &RecordPage::Month_Clicked });
-				Controls::Grid::SetRow(grid, i / 4U);
-				Controls::Grid::SetColumn(grid, i % 4U);
-				items.Append(grid);
 			}
-			wsprintfW(buf, L"%s年    [照相 %u 张  %u元] [复印 %u 元] [总计 %u 元]",
-				page->curYear.data(), stat.photo_year_num, stat.photo_year_value, stat.copy_year_value,
-				stat.photo_year_value + stat.copy_year_value);
-			page->TotalText().Text(buf);
+			page->TotalText().Text(winrt::format(L"{}年    [照相 {} 张  {} 元] [复印 {} 元] [总计 {} 元]",
+				page->curYear.data(), stat.photo_year_num, stat.photo_year_value,
+				stat.copy_year_value, stat.photo_year_value + stat.copy_year_value));
 
 			grid_year.Visibility(Visibility::Visible);
 			grid_month.Visibility(Visibility::Collapsed);
@@ -157,24 +144,17 @@ namespace winrt::hyzjkz::implementation {
 			// 更新UI
 			auto grid_year{ page->Grid_Year() }, grid_month{ page->Grid_Month() };
 			auto items{ grid_month.Children() };
-			items.Clear();
-			mqchar buf[256]{ };
 			for (mqui32 i{ }; i < 31U; ++i) {
-				Controls::Grid grid;
-				Application::LoadComponent(grid, Uri{ L"ms-appx:///Xaml/RecordDayItem.xaml" });
+				auto grid{ items.GetAt(i).as<Controls::Grid>() };
 				auto text1{ grid.FindName(L"TB1").as<Controls::TextBlock>() };
 				auto text2{ grid.FindName(L"TB2").as<Controls::TextBlock>() };
 				auto text3{ grid.FindName(L"TB3").as<Controls::TextBlock>() };
 				auto text4{ grid.FindName(L"TB4").as<Controls::TextBlock>() };
-				wsprintfW(buf, L"%u日", i + 1U);
-				text1.Text(buf);
-				wsprintfW(buf, L"照相 %u 张  %u 元", stat.photo_day_nums[i], stat.photo_day_values[i]);
-				text2.Text(buf);
-				wsprintfW(buf, L"复印    %u 元", stat.copy_day_values[i]);
-				text3.Text(buf);
+				text1.Text(winrt::format(L"{}日", i + 1U));
+				text2.Text(winrt::format(L"照相 {} 张  {} 元", stat.photo_day_nums[i], stat.photo_day_values[i]));
+				text3.Text(winrt::format(L"复印    {} 元", stat.copy_day_values[i]));
 				auto total_day_value{ stat.photo_day_values[i] + stat.copy_day_values[i] };
-				wsprintfW(buf, L"总计    %u 元", total_day_value);
-				text4.Text(buf);
+				text4.Text(winrt::format(L"总计    {} 元", total_day_value));
 				if (total_day_value == stat.max_day_value) {
 					grid.Background(page->MaxBrush());
 				}
@@ -184,15 +164,10 @@ namespace winrt::hyzjkz::implementation {
 				else {
 					grid.Background(page->NormalBrush());
 				}
-				grid.Tapped({ page, &RecordPage::Day_Clicked });
-				Controls::Grid::SetRow(grid, i / 7U);
-				Controls::Grid::SetColumn(grid, i % 7U);
-				items.Append(grid);
 			}
-			wsprintfW(buf, L"%s年%u月    [照相 %u 张  %u元] [复印 %u 元] [总计 %u 元]",
+			page->TotalText().Text(winrt::format(L"{}年{}月    [照相 {} 张  {} 元] [复印 {} 元] [总计 {} 元]",
 				page->curYear.data(), page->curMonth, stat.photo_month_num, stat.photo_month_value,
-				stat.copy_month_value, stat.photo_month_value + stat.copy_month_value);
-			page->TotalText().Text(buf);
+				stat.copy_month_value, stat.photo_month_value + stat.copy_month_value));
 
 			grid_year.Visibility(Visibility::Collapsed);
 			grid_month.Visibility(Visibility::Visible);
@@ -204,11 +179,31 @@ namespace winrt::hyzjkz::implementation {
 	RecordPage::RecordPage() {
 		InitializeComponent();
 
-		Loaded([this] (auto, auto) -> IAsyncAction {
+		auto grid_year_items{ Grid_Year().Children() };
+		for (mqui32 i{ }; i < 12U; ++i) {
+			Controls::Grid grid;
+			Application::LoadComponent(grid, Uri{ L"ms-appx:///Xaml/RecordMonthItem.xaml" });
+			grid.Tag(box_value(i + 1U));
+			grid.Tapped({ this, &RecordPage::Month_Clicked });
+			Controls::Grid::SetRow(grid, i / 4U);
+			Controls::Grid::SetColumn(grid, i % 4U);
+			grid_year_items.Append(grid);
+		}
+		auto grid_month_items{ Grid_Month().Children() };
+		for (mqui32 i{ }; i < 31U; ++i) {
+			Controls::Grid grid;
+			Application::LoadComponent(grid, Uri{ L"ms-appx:///Xaml/RecordDayItem.xaml" });
+			grid.Tapped({ this, &RecordPage::Day_Clicked });
+			Controls::Grid::SetRow(grid, i / 7U);
+			Controls::Grid::SetColumn(grid, i % 7U);
+			grid_month_items.Append(grid);
+		}
+
+		Loaded([this] (auto...) -> IAsyncAction {
 			if (Global.cfg.Get<GlobalConfig::USE_PASSWORD>()) {
 				auto sp_main{ Grid_Main() };
 				sp_main.Visibility(Visibility::Collapsed);
-				co_await Global.ui_window->as<hyzjkz::MainWindow>().ShowPasswordDialog();
+				co_await Global.ui_window.ShowPasswordDialog();
 				sp_main.Visibility(Visibility::Visible);
 			}
 			UpdateYear(this);

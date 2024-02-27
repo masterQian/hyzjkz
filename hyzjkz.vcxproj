@@ -131,10 +131,6 @@
       <DependentUpon>ModelPhoto.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClInclude>
-    <ClInclude Include="ModelTemplateData.h">
-      <DependentUpon>ModelTemplateData.idl</DependentUpon>
-      <SubType>Code</SubType>
-    </ClInclude>
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.xaml.h">
       <DependentUpon>App.xaml</DependentUpon>
@@ -172,6 +168,7 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="MainWindow.xaml" />
+    <Page Include="MQControls\MQControls.xaml" />
     <Page Include="PrintPage.xaml">
       <SubType>Designer</SubType>
     </Page>
@@ -270,18 +267,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="include\MasterQian.WinRT.ixx">
-      <UseStandardPreprocessor Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</UseStandardPreprocessor>
-      <UseStandardPreprocessor Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</UseStandardPreprocessor>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="ModelPhoto.cpp">
       <DependentUpon>ModelPhoto.idl</DependentUpon>
-      <SubType>Code</SubType>
-    </ClCompile>
-    <ClCompile Include="ModelTemplateData.cpp">
-      <DependentUpon>ModelTemplateData.idl</DependentUpon>
       <SubType>Code</SubType>
     </ClCompile>
     <ClCompile Include="pch.cpp">
@@ -325,7 +312,6 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
     </Midl>
     <Midl Include="ModelPhoto.idl" />
-    <Midl Include="ModelTemplateData.idl" />
     <Midl Include="PrintPage.idl">
       <DependentUpon>PrintPage.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -356,6 +342,12 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="hyzjkz.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MQControls">
+      <HintPath>MQControls\MQControls.winmd</HintPath>
+      <IsWinMDFile>true</IsWinMDFile>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
     <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>

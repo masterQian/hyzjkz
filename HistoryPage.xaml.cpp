@@ -7,8 +7,12 @@
 namespace winrt::hyzjkz::implementation {
 	// 更新工具链菜单
 	static void UpdateToolChain(HistoryPage* page) noexcept {
-		auto items{ page->GV_Photos_Menu_Link().Items() };
-		items.Clear();
+		auto items{ page->GV_Photos_Menu().Items() };
+		uint32_t index{ };
+		items.IndexOf(page->GV_Photos_Menu_Links(), index);
+		for (uint32_t i{ }; i < index; ++i) {
+			items.RemoveAt(0U);
+		}
 		auto tools{ Global.cfg.Get(GlobalConfig::TOOLS) };
 		for (auto& [name, _] : tools) {
 			Storage::Path path{ tools.get(name) };
@@ -20,7 +24,7 @@ namespace winrt::hyzjkz::implementation {
 				menu.Text(name);
 				menu.Tag(box_value(L"Link|" + name));
 				menu.Click({ page, &HistoryPage::MenuItem_Click });
-				items.Append(menu);
+				items.InsertAt(0U, menu);
 			}
 		}
 	}
@@ -147,8 +151,7 @@ namespace winrt::hyzjkz::implementation {
 
 	// 打印照片
 	static void Menu_Print(hyzjkz::ModelPhoto item) noexcept {
-		Global.ui_window->as<hyzjkz::MainWindow>().NavigateToPrivatePage(
-			UpdateFlag::PRIVATE_PRINT, box_value(item.PhotoPath()));
+		Global.ui_window.NavigateToPrivatePage(UpdateFlag::PRIVATE_PRINT, box_value(item.PhotoPath()));
 	}
 
 	// 旋转
@@ -185,8 +188,7 @@ namespace winrt::hyzjkz::implementation {
 	// DPI
 	static IAsyncAction Menu_DPI(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
 		std::wstring photo_path{ item.PhotoPath() };
-		hstring str{ co_await Global.ui_window->as<hyzjkz::MainWindow>()
-			.ShowInputDialog(util::RDString<hstring>(L"HistoryPage.Tip.InputDPI")) };
+		hstring str{ co_await Global.ui_window.ShowInputDialog(util::RDString<hstring>(L"HistoryPage.Tip.InputDPI")) };
 		if (!str.empty()) {
 			mqstr end{ };
 			auto dpi{ wcstoul(str.data(), &end, 10) };
@@ -201,23 +203,22 @@ namespace winrt::hyzjkz::implementation {
 				co_await ui_thread;
 			}
 			else {
-				co_await Global.ui_window->as<hyzjkz::MainWindow>()
-					.ShowTipDialog(util::RDString<hstring>(L"HistoryPage.Tip.InputInvalid"));
+				co_await Global.ui_window.ShowTipDialog(util::RDString<hstring>(L"HistoryPage.Tip.InputInvalid"));
 			}
 		}
 	}
 
+	// 边框实现
+	static Media::GDI::Image ImageBorderImpl(Media::GDI::Image& image, mqui32 size, Windows::UI::Color color, Media::GDI::AlgorithmModes mode) {
+		auto border_x{ (image.Width() >> 8) * size };
+		auto border_y{ (image.Height() >> 8) * size };
+		if (border_x == 0) border_x = 1;
+		if (border_y == 0) border_y = 1;
+		return image.Border({ border_x, border_y, border_x, border_y }, { color.R, color.G, color.B, color.A }, mode);
+	};
+
 	// 边框
 	static IAsyncAction Menu_Border(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
-		static auto ImageBorderImpl = [ ] (Media::GDI::Image& image,
-			mqui32 size, Windows::UI::Color color, Media::GDI::AlgorithmModes mode) {
-				auto border_x{ (image.Width() >> 8) * size };
-				auto border_y{ (image.Height() >> 8) * size };
-				if (border_x == 0) border_x = 1;
-				if (border_y == 0) border_y = 1;
-				return image.Border({ border_x, border_y, border_x, border_y }, { color.R, color.G, color.B, color.A }, mode);
-			};
-
 		std::wstring photo_path{ item.PhotoPath() };
 		std::wstring thumb_path{ item.ThumbPath() };
 
@@ -229,19 +230,6 @@ namespace winrt::hyzjkz::implementation {
 		border_box.Value(1.0);
 		auto border_color{ page->MBD_BorderColor() };
 		border_color.Color(Windows::UI::Colors::White());
-
-		dialog.PrimaryButtonClick([page] (auto,
-			Controls::ContentDialogButtonClickEventArgs const& args) {
-				// 图像边框预览
-				auto size{ static_cast<mqui32>(page->MBD_BorderWidth().Value()) };
-				auto color{ page->MBD_BorderColor().Color() };
-
-				Media::GDI::Image image{ unbox_value<hstring>(page->MBD_Image().Tag()) };
-				auto stream{ ImageBorderImpl(image, size, color, Media::GDI::FAST_MODE).
-					Thumbnail(Global.c_photoPreviewSize).SaveToUnsafeStream(Media::GDI::ImageFormat::BMP) };
-				page->MBD_Image().Source(util::StreamToBMP(stream));
-				args.Cancel(true);
-			});
 
 		auto result{ co_await dialog.ShowAsync() };
 		if (result == Controls::ContentDialogResult::Secondary) {
@@ -317,39 +305,6 @@ namespace winrt::hyzjkz::implementation {
 
 		auto idcard_mode{ page->MIDD_IDCardMode() };
 		idcard_mode.IsOn(false);
-
-		page->MIDD_IDCardPlusX().Click([page] (auto, auto) {
-			auto idcard_box{ page->MIDD_IDCardNumber() };
-			auto id_number{ idcard_box.Text() };
-			if (id_number.size() < 18U) {
-				idcard_box.Text(id_number + L"X");
-				idcard_box.Focus(Microsoft::UI::Xaml::FocusState::Keyboard);
-				idcard_box.Select(id_number.size() + 1ULL, 0);
-			}
-			});
-
-		dialog.PrimaryButtonClick([page] (auto,
-			Controls::ContentDialogButtonClickEventArgs const& args) {
-				// 图像身份证预览
-				Media::GDI::Image image{ unbox_value<hstring>(page->MIDD_Image().Tag()) };
-				auto color{ page->MIDD_IDCardColor().Color() };
-				Media::GDI::GDIText textInfo{ page->MIDD_IDCardNumber().Text().data(),
-					static_cast<mqui32>(page->MIDD_IDCardFontSize().Value()),
-					Media::Color(color.R, color.G, color.B, color.A), L"黑体" };
-				auto bottom{ static_cast<mqui32>(page->MIDD_IDCardBottom().Value()) };
-				auto isExtend{ page->MIDD_IDCardMode().IsOn() };
-
-				auto extend_height{ image.Height() * 5U / 64U };
-				if (isExtend) {
-					image = image.Border({ 0, 0, 0, extend_height }, Media::Colors::White, Media::GDI::FAST_MODE);
-					bottom += extend_height;
-				}
-				mqpoint point{ image.Width() / 2, bottom };
-				image.DrawString(point, textInfo, Media::GDI::FAST_MODE);
-				auto stream{ image.Thumbnail(Global.c_photoPreviewSize).SaveToUnsafeStream(Media::GDI::ImageFormat::BMP) };
-				page->MIDD_Image().Source(util::StreamToBMP(stream));
-				args.Cancel(true);
-			});
 
 		auto result{ co_await dialog.ShowAsync() };
 		if (result == Controls::ContentDialogResult::Secondary) {
@@ -446,7 +401,7 @@ namespace winrt::hyzjkz::implementation {
 	}
 
 	// 文件监控
-	static IAsyncAction StartFileSpy(HistoryPage* page) noexcept {
+	static fire_and_forget StartFileSpy(HistoryPage* page) noexcept {
 		winrt::apartment_context ui_thread;
 		HANDLE hDir{ CreateFileW(std::wstring_view{ Global.c_cameraPhotoPath }.data(),
 			FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
@@ -480,7 +435,8 @@ namespace winrt::hyzjkz::implementation {
 						auto photo_path{ Global.c_photoPath / date_str };
 						auto thumb_path{ Global.c_thumbPath / date_str };
 						auto file{ Global.c_cameraPhotoPath / filename };
-						file.Move(photo_path);
+						file.Copy(photo_path);
+						file.Delete();
 						Media::GDI::Image thumb_image(photo_path / filename);
 						thumb_image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path / filename, Media::GDI::ImageFormat::JPG);
 
@@ -525,6 +481,46 @@ namespace winrt::hyzjkz::implementation {
 		}
 		copy_grid.FindName(L"Button_AddCopyData_Set").as<Controls::Button>().Click({ this, &HistoryPage::AddCopyData_Set_Click });
 
+		// 设置子控件事件
+		MenuBorderDialog().PrimaryButtonClick([this] (auto, Controls::ContentDialogButtonClickEventArgs const& args) {
+			auto size{ static_cast<mqui32>(MBD_BorderWidth().Value()) };
+			auto color{ MBD_BorderColor().Color() };
+			Media::GDI::Image image{ unbox_value<hstring>(MBD_Image().Tag()) };
+			auto stream{ ImageBorderImpl(image, size, color, Media::GDI::FAST_MODE).
+				Thumbnail(Global.c_photoPreviewSize).SaveToUnsafeStream(Media::GDI::ImageFormat::BMP) };
+			MBD_Image().Source(util::StreamToBMP(stream));
+			args.Cancel(true);
+		});
+		MIDD_IDCardPlusX().Click([this] (auto...) {
+			auto idcard_box{ MIDD_IDCardNumber() };
+			auto id_number{ idcard_box.Text() };
+			if (id_number.size() < 18U) {
+				idcard_box.Text(id_number + L"X");
+				idcard_box.Focus(Microsoft::UI::Xaml::FocusState::Keyboard);
+				idcard_box.Select(id_number.size() + 1ULL, 0);
+			}
+		});
+		MenuIDCardDialog().PrimaryButtonClick([this] (auto, Controls::ContentDialogButtonClickEventArgs const& args) {
+			Media::GDI::Image image{ unbox_value<hstring>(MIDD_Image().Tag()) };
+			auto color{ MIDD_IDCardColor().Color() };
+			Media::GDI::GDIText textInfo{ MIDD_IDCardNumber().Text().data(),
+				static_cast<mqui32>(MIDD_IDCardFontSize().Value()),
+				Media::Color(color.R, color.G, color.B, color.A), L"黑体" };
+			auto bottom{ static_cast<mqui32>(MIDD_IDCardBottom().Value()) };
+			auto isExtend{ MIDD_IDCardMode().IsOn() };
+
+			auto extend_height{ image.Height() * 5U / 64U };
+			if (isExtend) {
+				image = image.Border({ 0, 0, 0, extend_height }, Media::Colors::White, Media::GDI::FAST_MODE);
+				bottom += extend_height;
+			}
+			mqpoint point{ image.Width() / 2, bottom };
+			image.DrawString(point, textInfo, Media::GDI::FAST_MODE);
+			auto stream{ image.Thumbnail(Global.c_photoPreviewSize).SaveToUnsafeStream(Media::GDI::ImageFormat::BMP) };
+			MIDD_Image().Source(util::StreamToBMP(stream));
+			args.Cancel(true);
+		});
+
 		// 设置日期为今天
 		CDP_Main().Date(winrt::clock::now());
 
@@ -554,9 +550,7 @@ namespace winrt::hyzjkz::implementation {
 		}
 		else if (old_date != nullptr) {
 			auto t{ util::DateTimeToLocal(old_date.Value()) };
-			mqchar buf[32]{ };
-			wsprintfW(buf, L"%hu年%u月%u日", t.year, t.month, t.day);
-			CDP_Main().PlaceholderText(buf);
+			CDP_Main().PlaceholderText(winrt::format(L"{}年{}月{}日", t.year, t.month, t.day));
 		}
 	}
 
@@ -600,6 +594,7 @@ namespace winrt::hyzjkz::implementation {
 		if (Windows::Foundation::Collections::IVectorView<Windows::Storage::StorageFile>
 			files_view{ co_await openPicker.PickMultipleFilesAsync() }; files_view.Size() > 0U) {
 			std::vector<std::wstring> files;
+			files.reserve(files_view.Size());
 			for (auto file_view : files_view) {
 				files.emplace_back(file_view.Path());
 			}
@@ -633,17 +628,12 @@ namespace winrt::hyzjkz::implementation {
 		auto dialog{ ShowPictureDialog() };
 		Storage::Path photo_path{ GV_Photos().SelectedItem().as<hyzjkz::ModelPhoto>().PhotoPath() };
 		Media::GDI::Image image(photo_path);
-		mqchar image_information[32]{ };
 		auto size{ image.Size() };
-		wsprintfW(image_information, L"尺寸: %u × %u 像素", size.width, size.height);
-		SPD_Text1().Text(image_information);
 		auto dpi{ image.DPI() };
-		wsprintfW(image_information, L"分辨率: %u × %u dpi", dpi.width, dpi.height);
-		SPD_Text2().Text(image_information);
-		wsprintfW(image_information, L"位深度: %u", image.BitDepth());
-		SPD_Text3().Text(image_information);
-		wsprintfW(image_information, L"大小: %u KB", static_cast<mqui32>(photo_path.Size()) / 1024U);
-		SPD_Text4().Text(image_information);
+		SPD_Text1().Text(winrt::format(L"尺寸: {} × {} 像素", size.width, size.height));
+		SPD_Text2().Text(winrt::format(L"分辨率: {} × {} dpi", dpi.width, dpi.height));
+		SPD_Text3().Text(winrt::format(L"位深度: {}", image.BitDepth()));
+		SPD_Text4().Text(winrt::format(L"大小: {} KB", static_cast<mqui32>(photo_path.Size()) / 1024U));
 		SPD_Image().Source(util::StreamToBMP(image.SaveToUnsafeStream(Media::GDI::ImageFormat::BMP)));
 		co_await dialog.ShowAsync();
 	}

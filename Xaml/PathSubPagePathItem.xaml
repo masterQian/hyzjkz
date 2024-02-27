@@ -1,9 +1,7 @@
-﻿<Grid xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" ColumnDefinitions="Auto, Auto, *">
+﻿<Grid xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Padding="3" ColumnDefinitions="Auto, Auto, *">
     <Button x:Name="Button_Delete" Grid.Column="0" Margin="0,0,3,0">
         <SymbolIcon Symbol="Delete" />
     </Button>
     <Button x:Name="Button_Name" Grid.Column="1" Margin="3,0,3,0" />
-    <Button x:Name="Button_Path" Grid.Column="2"
-            Margin="3,0,0,0" HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch" />
+    <Button x:Name="Button_Path" Grid.Column="2" Margin="3,0,0,0" HorizontalAlignment="Stretch" />
 </Grid>

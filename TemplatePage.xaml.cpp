@@ -6,6 +6,16 @@
 #endif
 
 namespace winrt::hyzjkz::implementation {
+	// 创建正则输入框
+	static MQControls::RegexTextBox MakeRegexTextBox(mqrect rect) noexcept {
+		MQControls::RegexTextBox rtb;
+		rtb.Text(winrt::format(L"{}  {}  {}  {}", rect.left, rect.top, rect.width, rect.height));
+		rtb.Regex(LR"(\d+\s+\d+\s+\d+\s+\d+)");
+		rtb.FontSize(18.0);
+		rtb.Margin({ 10, 5, 0, 5 });
+		return rtb;
+	}
+
 	// 预览模板
 	static void PreviewTemplate(TemplatePage* page) noexcept {
 		auto image{ page->CanvasImage() };
@@ -15,15 +25,15 @@ namespace winrt::hyzjkz::implementation {
 		// 画布
 		Media::GDI::Image canvas({ static_cast<mqui32>(canvas_width), static_cast<mqui32>(canvas_height) }, Media::Colors::Pink);
 		// 画矩形
-		auto items{ page->LV_TemplateData().Items() };
-		std::vector<mqrect> rects{ items.Size() };
-		for (auto item_ : items) {
-			auto item{ item_.as<hyzjkz::ModelTemplateData>() };
-			rects.emplace_back(mqrect{
-				static_cast<mqui32>(item.TLeft()),
-				static_cast<mqui32>(item.TTop()),
-				static_cast<mqui32>(item.TWidth()),
-				static_cast<mqui32>(item.THeight()) } / canvas_scale);
+		mqlist<mqrect> rects;
+		for (auto item : page->LV_TemplateData().Items()) {
+			auto rtb{ item.as<MQControls::RegexTextBox>() };
+			if (rtb.IsMatched()) {
+				std::wstringstream stream(rtb.Text().data());
+				mqrect rect{ };
+				stream >> rect.left >> rect.top >> rect.width >> rect.height;
+				rects.add(rect / canvas_scale);
+			}
 		}
 		canvas.FillRectangles(rects, Media::Colors::Orange, Media::GDI::FAST_MODE);
 		canvas.DrawRectangles(rects, Media::Colors::Black, 1.0, Media::GDI::FAST_MODE);
@@ -43,10 +53,7 @@ namespace winrt::hyzjkz::implementation {
 		auto items{ page->LV_TemplateData().Items() };
 		items.Clear();
 		for (mqui32 i{ }; i < template_data.count; ++i) {
-			auto& data{ template_data.data[i] };
-			items.Append(hyzjkz::ModelTemplateData{ static_cast<mqf64>(data.left),
-				static_cast<mqf64>(data.top), static_cast<mqf64>(data.width),
-				static_cast<mqf64>(data.height) });
+			items.Append(MakeRegexTextBox(template_data.data[i]));
 		}
 
 		PreviewTemplate(page);
@@ -54,8 +61,7 @@ namespace winrt::hyzjkz::implementation {
 
 	// 刷新模板列表
 	static void RefreshTemplates(TemplatePage* page) noexcept {
-		auto lv_templates{ page->LV_Templates() };
-		auto items{ lv_templates.Items() };
+		auto items{ page->LV_Templates().Items() };
 		items.Clear();
 
 		struct TemplateItem {
@@ -90,14 +96,12 @@ namespace winrt::hyzjkz::implementation {
 
 	// 创建模板
 	static IAsyncAction CreateTemplate(TemplatePage* page) noexcept {
-		std::wstring name{ co_await Global.ui_window->as<hyzjkz::MainWindow>()
-			.ShowInputDialog(util::RDString<hstring>(L"TemplatePage.Tip.InputNewTemplateName")) };
+		std::wstring name{ co_await Global.ui_window.ShowInputDialog(util::RDString<hstring>(L"TemplatePage.Tip.InputNewTemplateName")) };
 		if (name.empty()) {
 			co_return;
 		}
 		if (Global.templateList.contains(name)) { // 检查模板是否已存在
-			co_return co_await Global.ui_window->as<hyzjkz::MainWindow>()
-				.ShowTipDialog(util::RDString<hstring>(L"TemplatePage.Tip.TemplateNameExists"));
+			co_return co_await Global.ui_window.ShowTipDialog(util::RDString<hstring>(L"TemplatePage.Tip.TemplateNameExists"));
 		}
 		// 分配0项的模板
 		Bin bin(PrintTemplate::CalcSize(0U));
@@ -135,13 +139,11 @@ namespace winrt::hyzjkz::implementation {
 		auto& pt{ Global.templateList[name] };
 
 		if (!pt.flag.canDelete) { // 检查模板是否允许删除
-			co_return co_await Global.ui_window->as<hyzjkz::MainWindow>()
-				.ShowTipDialog(util::RDString<hstring>(L"TemplatePage.Tip.CannotDeleteTemplate"));
+			co_return co_await Global.ui_window.ShowTipDialog(util::RDString<hstring>(L"TemplatePage.Tip.CannotDeleteTemplate"));
 		}
 
 		// 二次确认
-		if (bool result{ co_await Global.ui_window->as<hyzjkz::MainWindow>()
-			.ShowConfirmDialog(util::RDString<hstring>(L"TemplatePage.Tip.ConfirmDeleteTemplate") + name) }) {
+		if (bool result{ co_await Global.ui_window.ShowConfirmDialog(util::RDString<hstring>(L"TemplatePage.Tip.ConfirmDeleteTemplate") + name) }) {
 			// 更新文件
 			Global.c_templatePath.Concat(name + L".template").Delete();
 
@@ -165,14 +167,12 @@ namespace winrt::hyzjkz::implementation {
 			co_return;
 		}
 		std::wstring old_name{ item.as<hstring>() };
-		std::wstring new_name{ co_await Global.ui_window->as<hyzjkz::MainWindow>()
-			.ShowInputDialog(util::RDString<hstring>(L"TemplatePage.Tip.InputNewTemplateName")) };
+		std::wstring new_name{ co_await Global.ui_window.ShowInputDialog(util::RDString<hstring>(L"TemplatePage.Tip.InputNewTemplateName")) };
 		if (new_name.empty()) {
 			co_return;
 		}
 		if (Global.templateList.contains(new_name)) { // 检查模板是否已存在
-			co_return co_await Global.ui_window->as<hyzjkz::MainWindow>()
-				.ShowTipDialog(util::RDString<hstring>(L"TemplatePage.Tip.TemplateNameExists"));
+			co_return co_await Global.ui_window.ShowTipDialog(util::RDString<hstring>(L"TemplatePage.Tip.TemplateNameExists"));
 		}
 
 		// 获得模板数据
@@ -229,9 +229,17 @@ namespace winrt::hyzjkz::implementation {
 		pt.flag.isAutoCut = page->TA_AutoCut().IsChecked().as<bool>();
 
 		for (mqui32 index{ }; index < new_template_count; ++index) {
-			auto item{ data_items.GetAt(index).as<hyzjkz::ModelTemplateData>() };
-			pt.data[index] = { static_cast<mqui32>(item.TLeft()), static_cast<mqui32>(item.TTop()),
-				static_cast<mqui32>(item.TWidth()), static_cast<mqui32>(item.THeight()) };
+			auto rtb{ data_items.GetAt(index).as<MQControls::RegexTextBox>() };
+			if (rtb.IsMatched()) {
+				std::wstringstream stream(rtb.Text().data());
+				mqrect rect{ };
+				stream >> rect.left >> rect.top >> rect.width >> rect.height;
+				pt.data[index] = rect;
+			}
+			else {
+				co_await Global.ui_window.ShowTipDialog(util::RDString<hstring>(L"TemplatePage.Tip.TemplateDataError"));
+				co_return;
+			}
 		}
 
 		// 更新文件
@@ -244,8 +252,7 @@ namespace winrt::hyzjkz::implementation {
 		RefreshTemplates(page);
 		lv_templates.SelectedItem(box_value(name));
 
-		co_await Global.ui_window->as<hyzjkz::MainWindow>()
-			.ShowTipDialog(util::RDString<hstring>(L"TemplatePage.Tip.SaveSuccess"));
+		co_await Global.ui_window.ShowTipDialog(util::RDString<hstring>(L"TemplatePage.Tip.SaveSuccess"));
 	}
 }
 
@@ -257,7 +264,7 @@ namespace winrt::hyzjkz::implementation {
 			if (Global.cfg.Get<GlobalConfig::USE_PASSWORD>()) {
 				auto grid_main{ Grid_Main() };
 				grid_main.Visibility(Visibility::Collapsed);
-				co_await Global.ui_window->as<hyzjkz::MainWindow>().ShowPasswordDialog();
+				co_await Global.ui_window.ShowPasswordDialog();
 				grid_main.Visibility(Visibility::Visible);
 			}
 			RefreshTemplates(this);
@@ -293,7 +300,7 @@ namespace winrt::hyzjkz::implementation {
 		else if (label == util::RDString<hstring>(L"TemplatePage.Bar.AddItem")) {
 			auto lv_template_data{ LV_TemplateData() };
 			auto items{ lv_template_data.Items() };
-			hyzjkz::ModelTemplateData item{ 0.0, 0.0, 1.0, 1.0 };
+			auto item{ MakeRegexTextBox({ 0, 0, 1, 1 }) };
 			items.Append(item);
 			lv_template_data.SelectedItem(item);
 		}
@@ -309,8 +316,6 @@ namespace winrt::hyzjkz::implementation {
 namespace winrt::hyzjkz::implementation {
 	// 获取画布尺寸
 	F_RT hstring TemplatePage::CanvasSizeString() const {
-		mqchar canvas_size_string[32]{ };
-		wsprintfW(canvas_size_string, L"画布大小: %u × %u", Global.c_printCanvasSize.width, Global.c_printCanvasSize.height);
-		return canvas_size_string;
+		return winrt::format(L"画布大小: {} × {}", Global.c_printCanvasSize.width, Global.c_printCanvasSize.height);
 	}
 }

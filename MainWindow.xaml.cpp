@@ -5,58 +5,18 @@
 #endif
 
 namespace winrt::hyzjkz::implementation {
-    // [异步] 照片清理
-    static IAsyncAction ClearPhotos() noexcept {
-        co_await winrt::resume_background();
-
-        mqchar clear_month[3]{ L'0', L'0', L'\0' };
-        auto month{ static_cast<mqui32>(Timestamp{ }.local().month) };
-        auto resetMonth{ Global.cfg.Get<GlobalConfig::RESET_MONTH>() };
-
-        if (resetMonth == 0U || resetMonth >= 12U) resetMonth = 1U;
-        if (month <= resetMonth) {
-            month = month + 12U - resetMonth;
-        }
-        else {
-            month = month - resetMonth;
-        }
-        if (month < 10) {
-            clear_month[1] = L'0' + month;
-        }
-        else {
-            clear_month[0] = L'1';
-            clear_month[1] = L'0' + month - 10U;
-        }
-
-        for (auto& folder : Global.c_photoPath.EnumFolder()) {
-            auto name{ folder.Name() };
-            if (name.size() == 8ULL && name.substr(4ULL, 2ULL) == clear_month) { // 如20231231 -> 12
-                // 删除照片文件夹及对应缩略图文件夹
-                folder.Delete();
-                Global.c_thumbPath.Concat(name).Delete();
-            }
-        }
-    }
-
     // 初始化全局
     static void InitializeGlobal() noexcept {
         // 开启GDI
         Media::GDI::StartupGDI();
         // 创建文件监控事件
         Global.file_spy_event = CreateEventW(nullptr, true, false, nullptr);
-        // 照片转储
-        auto date_str{ Timestamp{ }.local().formatDate() };
-        auto photo_path{ Global.c_photoPath / date_str };
-        auto thumb_path{ Global.c_thumbPath / date_str };
-        for (auto& file : Global.c_cameraPhotoPath.EnumFolder(L"*.jpg")) {
-            Media::GDI::Image thumb_image(file);
-            thumb_image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path / file.Name(), Media::GDI::ImageFormat::JPG);
-            file.Move(photo_path);
-        }
     }
 
     // 清理全局
     static void UninitializeGlobal(IInspectable const&, Microsoft::UI::Xaml::WindowEventArgs const&) noexcept {
+        // 取消引用
+        Global.ui_window = nullptr;
         // 发送停止文件监控事件
         SetEvent(Global.file_spy_event);
         // 关闭GDI
@@ -77,6 +37,13 @@ namespace winrt::hyzjkz::implementation {
         // 关闭事件 --- 清理全局
         Closed(&UninitializeGlobal);
 
+        // 设置子控件事件
+        PasswordDialog().PrimaryButtonClick([ ] (Controls::ContentDialog const& dialog, Controls::ContentDialogButtonClickEventArgs const& args) {
+            if (dialog.Content().as<Controls::PasswordBox>().Password() != Global.cfg.Get<GlobalConfig::PASSWORD>()) {
+                args.Cancel(true);
+            }
+        });
+
         // 设置自定义标题栏
         ExtendsContentIntoTitleBar(true);
         SetTitleBar(SP_TitleBar());
@@ -93,9 +60,6 @@ namespace winrt::hyzjkz::implementation {
 
         // 加载图标
         Image_Icon().Source(util::BinToBMP(Global.res_icon, { }, true));
-        
-        // 异步任务
-        ClearPhotos();
 
         // 设置页面标签
         auto nv_main{ NV_Main() };
@@ -170,11 +134,6 @@ namespace winrt::hyzjkz::implementation {
     F_RT IAsyncAction MainWindow::ShowPasswordDialog() {
         auto dialog{ PasswordDialog() };
         dialog.Content().as<Controls::PasswordBox>().Password(L"");
-        dialog.PrimaryButtonClick([ ] (Controls::ContentDialog const& dialog, Controls::ContentDialogButtonClickEventArgs const& args) {
-            if (dialog.Content().as<Controls::PasswordBox>().Password() != Global.cfg.Get<GlobalConfig::PASSWORD>()) {
-                args.Cancel(true);
-            }
-            });
         auto result{ Controls::ContentDialogResult::None };
         while (result != Controls::ContentDialogResult::Primary) {
             result = co_await dialog.ShowAsync();

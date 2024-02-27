@@ -1,5 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Grid xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" ColumnDefinitions="Auto, Auto, Auto, *" RowDefinitions="Auto, *">
+<Grid xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mq="using:MQControls"
+      ColumnDefinitions="Auto, Auto, Auto, *"
+      RowDefinitions="Auto, *">
     <TextBlock Grid.Row="0" Grid.Column="0" Margin="20,0,20,0"
                Style="{StaticResource Style.Text.Small}"
                Text="{StaticResource JigsawSubPage.Mode.Text}" />
@@ -22,5 +26,6 @@
     </CommandBar>
     <Canvas x:Name="Canvas_Jigsaw" Grid.Row="1"
             Grid.Column="0" Grid.ColumnSpan="4"
-            HorizontalAlignment="Left" Background="Pink" />
+            HorizontalAlignment="Left"
+            mq:Property.ClipToBounds="True" Background="Pink" />
 </Grid>

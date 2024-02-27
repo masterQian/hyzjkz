@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="using:hyzjkz">
     <x:String x:Key="App.Name">鸿宇证件快照</x:String>
-    <x:String x:Key="App.Version">2024013100</x:String>
+    <x:String x:Key="App.Version">2024022300</x:String>
 
     <!--  MainWindow  -->
     <x:String x:Key="MainWindow.AttachCamera.Text">连接相机</x:String>
@@ -15,7 +15,6 @@
     <x:String x:Key="MainWindow.Tip.NoEOSPath">EOS相机软件路径不正确，请在设置中修改!</x:String>
 
     <!--  HistoryPage  -->
-    <x:String x:Key="HistoryPage.Menu.Link">外链</x:String>
     <x:String x:Key="HistoryPage.Menu.AIEdit">智能操作</x:String>
     <x:String x:Key="HistoryPage.Menu.Rotate">旋转</x:String>
     <x:String x:Key="HistoryPage.Menu.RotateLeft">左转90度</x:String>
@@ -79,6 +78,7 @@
     <x:String x:Key="SettingsPage.NVI_Print.Text">打印</x:String>
 
     <x:String x:Key="SettingsPage.Set.Text">设置</x:String>
+    <x:String x:Key="SettingsPage.SaveSuccess">保存成功!</x:String>
 
     <x:String x:Key="AboutSubPage.About.Text">客户端版本</x:String>
     <x:String x:Key="AboutSubPage.Version1.Text">证件快照       1.0    二〇二〇年七月三十日</x:String>
@@ -98,6 +98,7 @@
     <x:String x:Key="BusinessSubPage.Password.Message">只有在开启密码登录且设置非空的密码后才能生效，进入高权限界面时需要输入密码确认身份。</x:String>
     <x:String x:Key="BusinessSubPage.Password.Off">关闭密码登录</x:String>
     <x:String x:Key="BusinessSubPage.Password.On">开启密码登录</x:String>
+    <x:String x:Key="BusinessSubPage.Tip.PasswordEmpty">密码不能为空</x:String>
 
     <x:String x:Key="PathSubPage.EOSPath.Text">EOS相机软件路径</x:String>
     <x:String x:Key="PathSubPage.EOSPath.Message">设置启动EOS软件相机的路径，若不正确则无法连接相机。</x:String>
@@ -106,11 +107,9 @@
     <x:String x:Key="PathSubPage.Tip.ConfirmDeleleLink" xml:space="preserve">确定要删除外链 </x:String>
     <x:String x:Key="PathSubPage.Tip.InputLinkName">请输入外链工具的名称</x:String>
     <x:String x:Key="PathSubPage.Tip.LinkExists" xml:space="preserve">已存在外链工具 </x:String>
-    <x:String x:Key="PathSubPage.Tip.SaveSuccess">保存成功!</x:String>
-    <x:String x:Key="PathSubPage.Tip.PasswordEmpty">密码不能为空</x:String>
 
     <x:String x:Key="PrintSubPage.PrinterName.Text">打印机名称</x:String>
-    <x:String x:Key="PrintSubPage.PrinterName.Message">设置照相打印机名称，使用模板打印时会自动切换到该打印机，打印开始后会切换回原打印机。</x:String>
+    <x:String x:Key="PrintSubPage.PrinterName.Message">设置照相打印机名称，打印时会自动切换到该打印机，打印开始后会切换回原打印机。</x:String>
     <x:String x:Key="PrintSubPage.AutoCutEPS.Text">自动裁剪容忍误差</x:String>
     <x:String x:Key="PrintSubPage.AutoCutEPS.Message">设置打印时自动裁剪的最大容忍误差, 当照片宽高比超出模板宽高比指定误差后才会自动裁剪。</x:String>
 
@@ -126,11 +125,12 @@
     <x:String x:Key="TemplatePage.Level">优先级</x:String>
     <x:String x:Key="TemplatePage.Rotate">旋转</x:String>
     <x:String x:Key="TemplatePage.AutoCut">自动裁剪</x:String>
-    <x:String x:Key="TemplatePage.ItemInfo" xml:space="preserve">左边  顶边&#xA;&#xA;宽度  高度</x:String>
+    <x:String x:Key="TemplatePage.ItemInfo" xml:space="preserve">左边  顶边  宽度  高度</x:String>
     <x:String x:Key="TemplatePage.Tip.InputNewTemplateName">请输入新模板名称</x:String>
     <x:String x:Key="TemplatePage.Tip.TemplateNameExists">模板名称已存在!</x:String>
     <x:String x:Key="TemplatePage.Tip.CannotDeleteTemplate">模板已锁定不允许删除!</x:String>
     <x:String x:Key="TemplatePage.Tip.ConfirmDeleteTemplate" xml:space="preserve">请确定要删除模板 </x:String>
+    <x:String x:Key="TemplatePage.Tip.TemplateDataError">模板数据不合法，请检查红色标识框的数据</x:String>
     <x:String x:Key="TemplatePage.Tip.SaveSuccess">保存成功!</x:String>
 
     <!--  ToolsPage  -->

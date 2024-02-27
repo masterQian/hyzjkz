@@ -5,6 +5,52 @@
 #include "app.h"
 
 namespace winrt::hyzjkz::implementation {
+    // [异步] 照片清理
+    static fire_and_forget ClearPhotos() noexcept {
+        co_await winrt::resume_background();
+
+        mqchar clear_month[3]{ L'0', L'0', L'\0' };
+        auto month{ static_cast<mqui32>(Timestamp{ }.local().month) };
+        auto resetMonth{ Global.cfg.Get<GlobalConfig::RESET_MONTH>() };
+
+        if (resetMonth == 0U || resetMonth >= 12U) resetMonth = 1U;
+        if (month <= resetMonth) {
+            month = month + 12U - resetMonth;
+        }
+        else {
+            month = month - resetMonth;
+        }
+        if (month < 10) {
+            clear_month[1] = L'0' + month;
+        }
+        else {
+            clear_month[0] = L'1';
+            clear_month[1] = L'0' + month - 10U;
+        }
+
+        for (auto& folder : Global.c_photoPath.EnumFolder()) {
+            auto name{ folder.Name() };
+            if (name.size() == 8ULL && name.substr(4ULL, 2ULL) == clear_month) { // 如20231231 -> 12
+                // 删除照片文件夹及对应缩略图文件夹
+                folder.Delete();
+                Global.c_thumbPath.Concat(name).Delete();
+            }
+        }
+    }
+
+    // 照片转储
+    static void RestorePhotos() noexcept {
+        auto date_str{ Timestamp{ }.local().formatDate() };
+        auto photo_path{ Global.c_photoPath / date_str };
+        auto thumb_path{ Global.c_thumbPath / date_str };
+        for (auto& file : Global.c_cameraPhotoPath.EnumFolder(L"*.jpg")) {
+            Media::GDI::Image thumb_image(file);
+            thumb_image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path / file.Name(), Media::GDI::ImageFormat::JPG);
+            file.Copy(photo_path);
+            file.Delete();
+        }
+    }
+
     // 取默认配置
     static Bin GetDefaultConfig() noexcept {
         GlobalConfig config;
@@ -25,7 +71,7 @@ namespace winrt::hyzjkz::implementation {
     }
 
     // 取默认报表数据
-    inline static Bin GetDefaultRecordData() noexcept {
+    inline Bin GetDefaultRecordData() noexcept {
         return Bin(sizeof(RecordData));
     }
 
@@ -221,9 +267,15 @@ namespace winrt::hyzjkz::implementation {
             InitializeConfig();
             InitializeData();
 
+            // 照片转储
+            RestorePhotos();
+
+            // 异步任务
+            ClearPhotos();
+
             // 显示主窗口
-            window = make<MainWindow>();
-            Global.ui_window = &window;
+            Global.ui_window = make<MainWindow>();
+            window = Global.ui_window;
             window.Activate();
         }
         else {

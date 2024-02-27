@@ -1,7 +1,6 @@
 module;
 #include "MasterQian.Meta.h"
 #include <string>
-#include <vector>
 #define MasterQianModuleName(name) MasterQian_Media_GDI_##name
 #define MasterQianModuleNameString(name) "MasterQian_Media_GDI_"#name
 #ifdef _DEBUG
@@ -214,12 +213,18 @@ namespace MasterQian::Media::GDI {
 		}
 
 		Image& operator = (Image&& image) noexcept {
-			std::swap(handle, image.handle);
+			if (this != &image) {
+				std::swap(handle, image.handle);
+			}
 			return *this;
 		}
 
 		~Image() noexcept {
 			details::MasterQian_Media_GDI_DeleteImage(handle);
+		}
+
+		[[nodiscard]] mqhandle unsafe_handle() const noexcept {
+			return handle;
 		}
 
 		/// <summary>
@@ -239,7 +244,7 @@ namespace MasterQian::Media::GDI {
 			Bin bin;
 			mqui32 size{ };
 			if (auto hStream{ details::MasterQian_Media_GDI_SaveToStream(handle, format, &size) }) {
-				bin.resize(size);
+				bin.reserve(size);
 				details::MasterQian_Media_GDI_StreamReadRelease(hStream, bin.data(), size);
 			}
 			return bin;
@@ -442,8 +447,8 @@ namespace MasterQian::Media::GDI {
 		/// <param name="color">线条颜色</param>
 		/// <param name="thickness">线条粗细</param>
 		/// <param name="mode">算法</param>
-		Image& DrawRectangles(std::vector<mqrect> const& rects, Color color, mqf64 thickness = 1.0, AlgorithmModes mode = FAST_MODE) noexcept {
-			details::MasterQian_Media_GDI_DrawRectangles(handle, rects.data(), static_cast<mqui32>(rects.size()), color, thickness, mode);
+		Image& DrawRectangles(mqlist<mqrect> const& rects, Color color, mqf64 thickness = 1.0, AlgorithmModes mode = FAST_MODE) noexcept {
+			details::MasterQian_Media_GDI_DrawRectangles(handle, rects.data(), rects.size32(), color, thickness, mode);
 			return *this;
 		}
 
@@ -502,8 +507,8 @@ namespace MasterQian::Media::GDI {
 		/// <param name="rects">矩形区域集合</param>
 		/// <param name="color">填充颜色</param>
 		/// <param name="mode">算法</param>
-		Image& FillRectangles(std::vector<mqrect> const& rects, Color color, AlgorithmModes mode = FAST_MODE) noexcept {
-			details::MasterQian_Media_GDI_FillRectangles(handle, rects.data(), static_cast<mqui32>(rects.size()), color, mode);
+		Image& FillRectangles(mqlist<mqrect> const& rects, Color color, AlgorithmModes mode = FAST_MODE) noexcept {
+			details::MasterQian_Media_GDI_FillRectangles(handle, rects.data(), rects.size32(), color, mode);
 			return *this;
 		}
 

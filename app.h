@@ -4,6 +4,8 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Microsoft.UI.Xaml.h>
 #include <winrt/Microsoft.UI.Xaml.Media.Imaging.h>
+#include <winrt/hyzjkz.h>
+#include "MQControls/MQControls.Main.h"
 
 #include "resource.h"
 
@@ -12,7 +14,6 @@ import MasterQian.Storage.Path;
 import MasterQian.Storage.PDF;
 import MasterQian.Parser.Config;
 import MasterQian.System;
-import MasterQian.WinRT;
 
 using namespace MasterQian;
 namespace Controls = winrt::Microsoft::UI::Xaml::Controls;
@@ -278,7 +279,7 @@ inline struct GlobalStruct {
 
 	// UI
 	HWND ui_hwnd{ }; // 窗口句柄
-	winrt::Microsoft::UI::Xaml::Window* ui_window{ }; // 主窗口
+	winrt::hyzjkz::MainWindow ui_window{ nullptr }; // 主窗口
 
 	HANDLE file_spy_event; // 文件监控事件
 }Global;
@@ -316,16 +317,16 @@ namespace util {
 
 	template<typename T>
 	inline T RDString(winrt::hstring const& key) noexcept {
-		return RD<T, 1U>(key);
-	}
-
-	template<typename T>
-	inline T RDValue(winrt::hstring const& key) noexcept {
 		return RD<T, 2U>(key);
 	}
 
 	template<typename T>
-	inline T RDStyle(winrt::hstring const& key) noexcept {
+	inline T RDValue(winrt::hstring const& key) noexcept {
 		return RD<T, 3U>(key);
+	}
+
+	template<typename T>
+	inline T RDStyle(winrt::hstring const& key) noexcept {
+		return RD<T, 4U>(key);
 	}
 }

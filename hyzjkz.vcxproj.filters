@@ -65,13 +65,11 @@
     <Page Include="Xaml\CopyDataDialog.xaml">
       <Filter>Pages\Xaml</Filter>
     </Page>
+    <Page Include="MQControls\MQControls.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="MainWindow.idl" />
     <Midl Include="ModelPhoto.idl">
-      <Filter>Models</Filter>
-    </Midl>
-    <Midl Include="ModelTemplateData.idl">
       <Filter>Models</Filter>
     </Midl>
   </ItemGroup>
@@ -108,9 +106,6 @@
       <Filter>Modules</Filter>
     </ClCompile>
     <ClCompile Include="include\MasterQian.Time.ixx">
-      <Filter>Modules</Filter>
-    </ClCompile>
-    <ClCompile Include="include\MasterQian.WinRT.ixx">
       <Filter>Modules</Filter>
     </ClCompile>
   </ItemGroup>

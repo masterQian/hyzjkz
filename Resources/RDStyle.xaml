@@ -73,32 +73,4 @@
         <Setter Property="FontSize" Value="18" />
         <Setter Property="Margin" Value="2,2,2,2" />
     </Style>
-
-    <!--  Grid  -->
-    <Style x:Key="Style.Grid.Settings" TargetType="Grid">
-        <Setter Property="Margin" Value="10,5,10,5" />
-        <Setter Property="CornerRadius" Value="5" />
-        <Setter Property="BorderBrush">
-            <Setter.Value>
-                <SolidColorBrush Color="AliceBlue" />
-            </Setter.Value>
-        </Setter>
-        <Setter Property="BorderThickness" Value="2" />
-    </Style>
-
-    <!--  InfoBar  -->
-    <Style x:Key="Style.InfoBar.SettingsInfo" TargetType="InfoBar">
-        <Setter Property="IsClosable" Value="False" />
-        <Setter Property="IsIconVisible" Value="True" />
-        <Setter Property="IsOpen" Value="True" />
-    </Style>
-    <Style x:Key="Style.InfoBar.SettingsWarning" BasedOn="{StaticResource Style.InfoBar.SettingsInfo}" TargetType="InfoBar">
-        <Setter Property="Severity" Value="Warning" />
-    </Style>
-    <Style x:Key="Style.InfoBar.SettingsSuccess" BasedOn="{StaticResource Style.InfoBar.SettingsInfo}" TargetType="InfoBar">
-        <Setter Property="Severity" Value="Success" />
-    </Style>
-    <Style x:Key="Style.InfoBar.SettingsError" BasedOn="{StaticResource Style.InfoBar.SettingsInfo}" TargetType="InfoBar">
-        <Setter Property="Severity" Value="Error" />
-    </Style>
 </ResourceDictionary>

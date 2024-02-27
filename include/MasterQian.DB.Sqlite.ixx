@@ -1,7 +1,6 @@
 module;
 #include "MasterQian.Meta.h"
 #include <string>
-#include <vector>
 #include <unordered_map>
 #define MasterQianModuleName(name) MasterQian_DB_Sqlite_##name
 #define MasterQianModuleNameString(name) "MasterQian_DB_Sqlite_"#name
@@ -62,14 +61,16 @@ namespace MasterQian::DB {
 		using ColDef = std::unordered_map<std::wstring, mqui32, freestanding::isomerism_hash, freestanding::isomerism_equal>;
 
 		// 行
-		struct Row : protected std::vector<std::wstring> {
-			using BaseT = std::vector<std::wstring>;
+		struct Row : protected mqlist<std::wstring> {
+			using BaseT = mqlist<std::wstring>;
 		protected:
 			ColDef& colName;
 
 			inline static std::wstring _EMPTYSTRING{ };
 		public:
-			Row(mqui64 count, ColDef& colDef) : BaseT{ count }, colName{ colDef } {}
+			Row(mqui64 count, ColDef& colDef) : BaseT{ count }, colName{ colDef } {
+				BaseT::init(count);
+			}
 
 			using BaseT::begin;
 			using BaseT::end;
@@ -91,8 +92,8 @@ namespace MasterQian::DB {
 		};
 
 		// 表
-		struct Table : protected std::vector<Row> {
-			using BaseT = std::vector<Row>;
+		struct Table : protected mqlist<Row> {
+			using BaseT = mqlist<Row>;
 			ColDef colName;
 
 			Table(mqhandle handle) : BaseT{ } {
@@ -102,7 +103,7 @@ namespace MasterQian::DB {
 						colName.emplace(details::MasterQian_DB_Sqlite_QueryColumnName(handle, i), i);
 					}
 					while (details::MasterQian_DB_Sqlite_QueryHasRow(handle)) {
-						Row& rv{ BaseT::emplace_back(count, colName) };
+						auto& rv{ BaseT::add(count, colName) };
 						for (mqui32 j{ }; j < count; ++j) {
 							rv[j] = details::MasterQian_DB_Sqlite_QueryRow(handle, j);
 						}
@@ -128,8 +129,19 @@ namespace MasterQian::DB {
 			details::MasterQian_DB_Sqlite_Close(&handle);
 		}
 
-		Sqlite(Sqlite const&) = delete;
-		Sqlite& operator = (Sqlite const&) = delete;
+		Sqlite(Sqlite const&) noexcept = delete;
+		Sqlite& operator = (Sqlite const&) noexcept = delete;
+
+		Sqlite(Sqlite&& sqlite) noexcept {
+			freestanding::swap(handle, sqlite.handle);
+		}
+
+		Sqlite& operator = (Sqlite&& sqlite) noexcept {
+			if (this != &sqlite) {
+				freestanding::swap(handle, sqlite.handle);
+			}
+			return *this;
+		}
 
 		/// <summary>
 		/// 打开数据库
@@ -171,10 +183,10 @@ namespace MasterQian::DB {
 		/// 取所有表名
 		/// </summary>
 		/// <returns>数据库内所有表名</returns>
-		[[nodiscard]] std::vector<std::wstring> TablesName() const noexcept {
-			std::vector<std::wstring> container;
+		[[nodiscard]] mqlist<std::wstring> TablesName() const noexcept {
+			mqlist<std::wstring> container;
 			for (auto& row : Query(L"select name from sqlite_master where type = 'table'")) {
-				container.emplace_back(row[0ULL]);
+				container.add(row[0ULL]);
 			}
 			return container;
 		}

@@ -42,26 +42,25 @@
             Content="{StaticResource HistoryPage.AddCopyData.Plus8}"
             Style="{StaticResource Style.Button.CopyData}"
             Tag="CopyData" />
-    <Button Grid.Row="2" Grid.Column="0"
-        Background="Violet"
-        Content="{StaticResource HistoryPage.AddCopyData.Plus9}"
-        Style="{StaticResource Style.Button.CopyData}"
-        Tag="CopyData" />
+    <Button Grid.Row="2" Grid.Column="0" Background="Violet"
+            Content="{StaticResource HistoryPage.AddCopyData.Plus9}"
+            Style="{StaticResource Style.Button.CopyData}"
+            Tag="CopyData" />
     <Button Grid.Row="2" Grid.Column="1"
-        Background="MediumVioletRed"
-        Content="{StaticResource HistoryPage.AddCopyData.Plus10}"
-        Style="{StaticResource Style.Button.CopyData}"
-        Tag="CopyData" />
+            Background="MediumVioletRed"
+            Content="{StaticResource HistoryPage.AddCopyData.Plus10}"
+            Style="{StaticResource Style.Button.CopyData}"
+            Tag="CopyData" />
     <Button Grid.Row="2" Grid.Column="2"
-        Background="BlueViolet"
-        Content="{StaticResource HistoryPage.AddCopyData.Plus11}"
-        Style="{StaticResource Style.Button.CopyData}"
-        Tag="CopyData" />
+            Background="BlueViolet"
+            Content="{StaticResource HistoryPage.AddCopyData.Plus11}"
+            Style="{StaticResource Style.Button.CopyData}"
+            Tag="CopyData" />
     <Button Grid.Row="2" Grid.Column="3"
-        Background="Goldenrod"
-        Content="{StaticResource HistoryPage.AddCopyData.Plus12}"
-        Style="{StaticResource Style.Button.CopyData}"
-        Tag="CopyData" />
+            Background="Goldenrod"
+            Content="{StaticResource HistoryPage.AddCopyData.Plus12}"
+            Style="{StaticResource Style.Button.CopyData}"
+            Tag="CopyData" />
     <TextBlock Grid.Row="3" Grid.Column="0" Margin="5,5,5,0"
                Style="{StaticResource Style.Text.Middle}"
                Text="{StaticResource HistoryPage.AddCopyData.UserText}" />

@@ -65,7 +65,8 @@ namespace util {
 			HDROP hDropInfo{ reinterpret_cast<HDROP>(pcs->wParam) };
 			mqui32 nFileCount{ DragQueryFileW(hDropInfo, static_cast<mqui32>(-1), nullptr, 0U) };
 			mqchar szFileName[MAX_PATH]{ };
-			std::vector<std::wstring> files(nFileCount);
+			std::vector<std::wstring> files;
+			files.reserve(nFileCount);
 			for (mqui32 i{ }; i < nFileCount; ++i) {
 				DragQueryFileW(hDropInfo, i, szFileName, MAX_PATH);
 				files.emplace_back(szFileName);

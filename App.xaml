@@ -7,9 +7,10 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
-                <ResourceDictionary Source="Resources/RDString.xaml" />
-                <ResourceDictionary Source="Resources/RDValue.xaml" />
-                <ResourceDictionary Source="Resources/RDStyle.xaml" />
+                <ResourceDictionary Source="ms-appx:///MQControls/MQControls.xaml" />
+                <ResourceDictionary Source="ms-appx:///Resources/RDString.xaml" />
+                <ResourceDictionary Source="ms-appx:///Resources/RDValue.xaml" />
+                <ResourceDictionary Source="ms-appx:///Resources/RDStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

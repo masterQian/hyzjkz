@@ -192,6 +192,17 @@ namespace MasterQian::Storage {
 		PDF(PDF const&) noexcept = delete;
 		PDF& operator = (PDF const&) noexcept = delete;
 
+		PDF(PDF&& pdf) noexcept {
+			freestanding::swap(handle, pdf.handle);
+		}
+
+		PDF& operator = (PDF&& pdf) noexcept {
+			if (this != &pdf) {
+				freestanding::swap(handle, pdf.handle);
+			}
+			return *this;
+		}
+
 		~PDF() noexcept {
 			details::MasterQian_Storage_PDF_Delete(handle);
 		}
@@ -211,7 +222,7 @@ namespace MasterQian::Storage {
 		[[nodiscard]] Bin Save() const noexcept {
 			Bin bin;
 			if (mqui32 size{ details::MasterQian_Storage_PDF_SaveToMemory(handle) }) {
-				bin.resize(static_cast<mqui64>(size));
+				bin.reserve(static_cast<mqui64>(size));
 				details::MasterQian_Storage_PDF_ReadFromMemory(handle, bin.data(), size);
 			}
 			return bin;

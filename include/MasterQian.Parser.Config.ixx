@@ -25,7 +25,7 @@ namespace MasterQian::Parser {
 		inline mqcbytes ReadImpl(mqcbytes data, Bin& t) noexcept {
 			mqui64 count{ };
 			data = ReadImpl(data, count);
-			t.resize(count);
+			t.reserve(count);
 			freestanding::copy(t.data(), data, count);
 			return data + count;
 		}
@@ -33,7 +33,9 @@ namespace MasterQian::Parser {
 		template<typename T, typename... Args>
 		inline mqcbytes Read(mqcbytes data, T& arg, Args&... args) noexcept {
 			data = ReadImpl(data, arg);
-			if constexpr (sizeof...(Args) > 0ULL) data = Read(data, args...);
+			if constexpr (sizeof...(Args) > 0ULL) {
+				data = Read(data, args...);
+			}
 			return data;
 		}
 
@@ -69,9 +71,9 @@ namespace MasterQian::Parser {
 	
 	// ≈‰÷√∂‘œÛ
 	export struct Config : protected std::unordered_map<std::wstring, Bin, freestanding::isomerism_hash, freestanding::isomerism_equal> {
-		using PointT = Bin::PointerT;
-		using ConstPointT = Bin::ConstPointerT;
-		using SizeT = Bin::SizeT;
+		using PointT = mqbytes;
+		using ConstPointT = mqcbytes;
+		using SizeT = mqui64;
 		using BaseT = std::unordered_map<std::wstring, Bin, freestanding::isomerism_hash, freestanding::isomerism_equal>;
 	public:
 		Config() = default;

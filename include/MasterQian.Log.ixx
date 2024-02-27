@@ -185,6 +185,17 @@ export namespace MasterQian {
 		Logger(Logger const&) = delete;
 		Logger& operator = (Logger const&) = delete;
 
+		Logger(Logger&& logger) noexcept : handle{ } {
+			freestanding::swap(handle, logger.handle);
+		}
+
+		Logger& operator = (Logger&& logger) noexcept {
+			if (this != &logger) {
+				freestanding::swap(handle, logger.handle);
+			}
+			return *this;
+		}
+
 		~Logger() noexcept {
 			close();
 		}
@@ -217,7 +228,9 @@ export namespace MasterQian {
 		void log(Args&&... args) const noexcept {
 			if (handle) {
 				std::wstring buf{ LogTagString[static_cast<mqui32>(tag)] };
-				(details::LoggerLogValue(buf, freestanding::forward<Args>(args)), ...);
+				freestanding::rangefor_constexpr([&buf](auto&& arg) {
+					details::LoggerLogValue(buf, freestanding::forward<decltype(arg)>(arg));
+					}, freestanding::forward<Args>(args)...);
 				if (newLine) {
 					buf += (type == LogType::FILE ? L"\r\n" : L"\n");
 				}
@@ -286,14 +299,14 @@ export inline void Log(std::wstring& buf, mqsize size) noexcept {
 	buf += str;
 }
 
-// mqpoint
+// mqrect
 export inline void Log(std::wstring& buf, mqrect rect) noexcept {
 	mqchar str[128]{ };
 	MasterQian::api::wsprintfW(str, L"(%u, %u, %u, %u)", rect.left, rect.top, rect.width, rect.height);
 	buf += str;
 }
 
-// mqpoint
+// mqrange
 export inline void Log(std::wstring& buf, mqrange range) noexcept {
 	mqchar str[128]{ };
 	MasterQian::api::wsprintfW(str, L"(%u, %u, %u, %u)", range.left, range.top, range.right, range.bottom);

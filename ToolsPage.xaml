@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="using:hyzjkz"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:mq="using:MQControls"
       NavigationCacheMode="Required" mc:Ignorable="d">
     <NavigationView x:Name="NV_Main" IsBackButtonVisible="Collapsed"
                     IsSettingsVisible="False" PaneDisplayMode="Left"
@@ -16,14 +17,9 @@
                 <NavigationViewItem.MenuItems>
                     <NavigationViewItem x:Name="NVI_IDCard" Content="{StaticResource ToolsPage.NVI_IDCard.Text}" Icon="People" />
                     <NavigationViewItem x:Name="NVI_Jigsaw" Content="{StaticResource ToolsPage.NVI_Jigsaw.Text}" Icon="Pictures" />
-                    <NavigationViewItem x:Name="NVI_ToPDF" Content="{StaticResource ToolsPage.NVI_ToPDF.Text}">
-                        <NavigationViewItem.Icon>
-                            <FontIcon Glyph="&#xEA90;" />
-                        </NavigationViewItem.Icon>
-                    </NavigationViewItem>
+                    <NavigationViewItem x:Name="NVI_ToPDF" Content="{StaticResource ToolsPage.NVI_ToPDF.Text}" Icon="{mq:FontIcon Glyph={StaticResource Glyph_PDF}}" />
                 </NavigationViewItem.MenuItems>
             </NavigationViewItem>
         </NavigationView.MenuItems>
-        <Frame x:Name="Frame_Main" />
     </NavigationView>
 </Page>

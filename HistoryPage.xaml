@@ -5,11 +5,12 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="using:hyzjkz"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:mq="using:MQControls"
       NavigationCacheMode="Required" mc:Ignorable="d">
     <Page.Resources>
         <!--  菜单  -->
-        <MenuFlyout x:Name="GV_Photos_Menu">
-            <MenuFlyoutSubItem x:Name="GV_Photos_Menu_Link" Icon="Repair" IsEnabled="{x:Bind NotAtExternalLink, Mode=OneWay}" Text="{StaticResource HistoryPage.Menu.Link}" />
+        <MenuFlyout x:Name="GV_Photos_Menu" AreOpenCloseAnimationsEnabled="False">
+            <MenuFlyoutSeparator x:Name="GV_Photos_Menu_Links" />
             <MenuFlyoutSubItem Icon="Edit" IsEnabled="{x:Bind NotAtExternalLink, Mode=OneWay}" Text="{StaticResource HistoryPage.Menu.AIEdit}">
                 <MenuFlyoutSubItem Icon="Rotate" Text="旋转">
                     <MenuFlyoutItem Click="MenuItem_Click" Icon="Rotate" Tag="Auto|RotateLeft" Text="{StaticResource HistoryPage.Menu.RotateLeft}" />
@@ -22,7 +23,6 @@
                 <MenuFlyoutItem Click="MenuItem_Click" Icon="Target" Tag="Auto|BWPhoto" Text="{StaticResource HistoryPage.Menu.BWPhoto}" />
                 <MenuFlyoutItem Click="MenuItem_Click" Icon="People" Tag="Auto|IDCard" Text="{StaticResource HistoryPage.Menu.IDCard}" />
             </MenuFlyoutSubItem>
-            <MenuFlyoutSeparator />
             <MenuFlyoutItem Click="MenuItem_Click" Icon="Print"
                             IsEnabled="{x:Bind NotAtExternalLink, Mode=OneWay}"
                             Tag="Main|Print"
@@ -46,7 +46,7 @@
                                 IsEnabled="{x:Bind NotAtExternalLink, Mode=OneWay}"
                                 IsTodayHighlighted="False" PlaceholderText="" />
             <AppBarToggleButton Icon="View" IsChecked="{x:Bind CoverTurnover, Mode=TwoWay}" LabelPosition="Collapsed" />
-            <FontIcon Margin="8,0,8,0" Glyph="&#xE91B;" />
+            <FontIcon Margin="8,0,8,0" Glyph="{StaticResource Glyph_Photo}" />
             <Canvas Width="54" Height="24" Background="Transparent">
                 <Rectangle Width="54" Height="24" Canvas.ZIndex="4"
                            Fill="White"
@@ -61,7 +61,7 @@
                        Source="{x:Bind GetPVBSource(PhotoNum, 3, x:True), Mode=OneWay}"
                        Visibility="{x:Bind GetPVBVisibility(PhotoNum, 3, x:True), Mode=OneWay}" />
             </Canvas>
-            <FontIcon Margin="8,0,8,0" Glyph="&#xE825;" />
+            <FontIcon Margin="8,0,8,0" Glyph="{StaticResource Glyph_Bank}" />
             <Canvas Width="72" Height="24" Background="Transparent">
                 <Rectangle Width="72" Height="24" Canvas.ZIndex="5"
                            Fill="White"
@@ -82,29 +82,21 @@
             <!--  命令组  -->
             <CommandBar Margin="8,0,8,0" Background="Transparent" DefaultLabelPosition="Right" IsOpen="False">
                 <AppBarSeparator />
-                <AppBarButton Click="Refresh_Click" Icon="Refresh" Label="{StaticResource HistoryPage.Bar.Refresh}">
-                    <AppBarButton.KeyboardAccelerators>
-                        <KeyboardAccelerator Key="F5" />
-                    </AppBarButton.KeyboardAccelerators>
-                </AppBarButton>
+                <AppBarButton mq:Property.ShortCutKey="{mq:ShortCutKey Key=F5}" Click="Refresh_Click" Icon="Refresh" Label="{StaticResource HistoryPage.Bar.Refresh}" />
                 <AppBarButton Click="AddDefault_Click" Icon="Add" Label="{StaticResource HistoryPage.Bar.AddDefault}" />
                 <AppBarButton Click="Import_Click" Icon="Upload" Label="{StaticResource HistoryPage.Bar.Import}" />
-                <AppBarButton Click="AddCopyData_Click" Label="{StaticResource HistoryPage.Bar.AddCopyData}">
-                    <AppBarButton.Icon>
-                        <FontIcon Glyph="&#xED0E;" />
-                    </AppBarButton.Icon>
-                </AppBarButton>
+                <AppBarButton Click="AddCopyData_Click" Icon="{mq:FontIcon Glyph={StaticResource Glyph_SubscriptionAdd}}" Label="{StaticResource HistoryPage.Bar.AddCopyData}" />
             </CommandBar>
         </StackPanel>
         <!--  列表框  -->
         <GridView x:Name="GV_Photos" Grid.Row="1" Margin="8,0,8,0"
-                  DoubleTapped="GV_Photos_DoubleClick"
                   IsItemClickEnabled="True" IsSwipeEnabled="False"
                   SelectionMode="Single">
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="local:ModelPhoto">
                     <Image Width="{StaticResource PhotoThumbWidth}"
                            Height="{StaticResource PhotoThumbHeight}"
+                           DoubleTapped="GV_Photos_DoubleClick"
                            RightTapped="ModelPhoto_RightClick"
                            Source="{x:Bind PhotoSource}"
                            Stretch="Fill"

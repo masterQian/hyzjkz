@@ -1,7 +1,6 @@
 module;
 #include "MasterQian.Meta.h"
 #include <string>
-#include <vector>
 #define MasterQianModuleVersion 20240131ULL
 
 export module MasterQian.Bin;
@@ -10,32 +9,25 @@ export import MasterQian.freestanding;
 namespace MasterQian {
 	// 字节集视图
 	export struct BinView {
-		using ValueT = mqbyte;
-		using SizeT = mqui64;
-		using PointerT = ValueT const*;
-
-		PointerT mData{ };
-		SizeT mSize{ };
+		mqcbytes mData{ };
+		mqui64 mSize{ };
 
 		constexpr BinView() noexcept = default;
+
+		constexpr BinView(std::initializer_list<mqbyte> bin) noexcept : mData{ bin.begin() }, mSize{ bin.size() } {}
 		
-		/// <param name="data">字节集首址</param>
-		/// <param name="size">字节集长度</param>
-		BinView(PointerT data, SizeT size) noexcept : mData{ data }, mSize{ size } {}
+		BinView(mqcbytes data, mqui64 size) noexcept : mData{ data }, mSize{ size } {}
 
 		[[nodiscard]] bool operator == (BinView bv) const noexcept {
 			if (mSize != bv.mSize) return false;
-			return std::equal(mData, mData + mSize, bv.mData, bv.mData + bv.mSize);
+			return freestanding::memcmp(mData, bv.mData, mSize) == 0;
 		}
 
-		[[nodiscard]] ValueT operator [] (SizeT pos) const noexcept {
+		[[nodiscard]] mqbyte operator [] (mqui64 pos) const noexcept {
 			return mData[pos];
 		}
 
-		/// <summary>
-		/// 取长度
-		/// </summary>
-		[[nodiscard]] SizeT size() const noexcept {
+		[[nodiscard]] mqui64 size() const noexcept {
 			return mSize;
 		}
 
@@ -46,70 +38,50 @@ namespace MasterQian {
 			return static_cast<mqui32>(mSize);
 		}
 
-		/// <summary>
-		/// 取首址
-		/// </summary>
-		[[nodiscard]] PointerT data() const noexcept {
+		[[nodiscard]] mqcbytes data() const noexcept {
 			return mData;
 		}
 
-		/// <summary>
-		/// 是否为空
-		/// </summary>
 		[[nodiscard]] bool empty() const noexcept {
 			return mSize;
 		}
 
-		/// <summary>
-		/// 迭代器首
-		/// </summary>
-		[[nodiscard]] PointerT begin() const noexcept {
+		[[nodiscard]] mqcbytes begin() const noexcept {
 			return mData;
 		}
 
-		/// <summary>
-		/// 迭代器尾
-		/// </summary>
-		[[nodiscard]] PointerT end() const noexcept {
+		[[nodiscard]] mqcbytes end() const noexcept {
 			return mData + mSize;
 		}
 	};
 
 	// 字节集
-	export struct Bin : private std::vector<mqbyte> {
-		using ValueT = mqbyte;
-		using SizeT = mqui64;
-		using PointerT = ValueT*;
-		using ConstPointerT = ValueT const*;
-		using BaseT = std::vector<mqbyte>;
-		using StructT = Bin;
-		using ReferenceT = Bin&;
-		using ConstReferenceT = Bin const&;
-
-		constexpr Bin() noexcept {}
+	export struct Bin : private mqbuffer {
+		Bin() noexcept = default;
 
 		/// <summary>
 		/// 创建指定长度的空字节集
 		/// </summary>
 		/// <param name="len">长度</param>
-		explicit Bin(SizeT len) noexcept : BaseT::vector(len) {}
+		explicit Bin(mqui64 len) noexcept : mqbuffer{ len, true } {}
 
 		/// <summary>
 		/// 创建内存首址与长度确定的字节集
 		/// </summary>
 		/// <param name="data">首址</param>
 		/// <param name="len">长度</param>
-		Bin(ConstPointerT data, SizeT len) noexcept : BaseT::vector(data, data + len) {}
+		Bin(mqcbytes data, mqui64 len) noexcept : mqbuffer{ len, false } {
+			freestanding::copy(mData, data, len);
+		}
 
 		/// <summary>
 		/// 重复指定字节集一定次数
 		/// </summary>
 		/// <param name="bin">字节集</param>
 		/// <param name="count">重复次数</param>
-		Bin(ConstReferenceT bin, SizeT count) noexcept {
-			reserve(bin.size() * count);
-			for (SizeT i{ }; i < count; ++i) {
-				insert(end(), bin.begin(), bin.end());
+		Bin(Bin const& bin, mqui64 count) noexcept : mqbuffer{ bin.mSize * count, false } {
+			for (mqui64 i{ }; i < count; ++i) {
+				freestanding::copy(mData + i * bin.mSize, bin.mData, bin.mSize);
 			}
 		}
 
@@ -117,17 +89,16 @@ namespace MasterQian {
 		/// 初始化列表构造字节集
 		/// </summary>
 		/// <param name="bin">初始化列表</param>
-		Bin(std::initializer_list<ValueT> bin) noexcept : BaseT::vector(bin) {}
+		Bin(std::initializer_list<mqbyte> bin) noexcept : Bin{ bin.begin(), bin.size() } {}
 
 		/// <summary>
 		/// 重复指定初始化列表一定次数
 		/// </summary>
 		/// <param name="bin">初始化列表</param>
 		/// <param name="count">重复次数</param>
-		Bin(std::initializer_list<ValueT> bin, SizeT count) noexcept {
-			reserve(bin.size() * count);
-			for (SizeT i{ }; i < count; ++i) {
-				insert(end(), bin.begin(), bin.end());
+		Bin(std::initializer_list<mqbyte> bin, mqui64 count) noexcept : mqbuffer{ bin.size() * count, false } {
+			for (mqui64 i{ }; i < count; ++i) {
+				freestanding::copy(mData + i * bin.size(), bin.begin(), bin.size());
 			}
 		}
 
@@ -135,42 +106,74 @@ namespace MasterQian {
 		/// 从字节集视图构造字节集
 		/// </summary>
 		/// <param name="bv">字节集视图</param>
-		explicit Bin(BinView bv) noexcept : BaseT::vector(bv.mData, bv.mData + bv.mSize) {}
+		explicit Bin(BinView bv) noexcept : Bin{ bv.mData, bv.mSize } {}
 
-		[[nodiscard]] StructT operator + (ConstReferenceT bin) const noexcept {
-			StructT tmp;
-			tmp.reserve(size() + bin.size());
-			tmp.insert(tmp.end(), begin(), end());
-			tmp.insert(tmp.end(), bin.begin(), bin.end());
+		[[nodiscard]] Bin operator + (BinView bv) const noexcept {
+			Bin tmp;
+			tmp.reserve(mSize + bv.mSize);
+			freestanding::copy(tmp.mData, mData, mSize);
+			freestanding::copy(tmp.mData + mSize, bv.mData, bv.mSize);
 			return tmp;
 		}
 
-		ReferenceT operator += (ConstReferenceT bin) noexcept {
-			insert(end(), bin.begin(), bin.end());
+		Bin& operator += (BinView bv) noexcept {
+			Bin tmp;
+			tmp.reserve(mSize + bv.mSize);
+			freestanding::copy(tmp.mData, mData, mSize);
+			freestanding::copy(tmp.mData + mSize, bv.mData, bv.mSize);
+			freestanding::swap(*this, tmp);
 			return *this;
 		}
 
-		[[nodiscard]] bool operator == (ConstReferenceT bin) const noexcept {
-			return std::operator==(*this, bin);
+		[[nodiscard]] bool operator == (Bin const& bin) const noexcept {
+			if (mSize != bin.mSize) return false;
+			return freestanding::memcmp(mData, bin.mData, mSize) == 0;
 		}
 
-		using BaseT::operator[];
-		using BaseT::size;
-		using BaseT::data;
-		using BaseT::empty;
-		using BaseT::begin;
-		using BaseT::end;
-		using BaseT::cbegin;
-		using BaseT::cend;
-		using BaseT::rbegin;
-		using BaseT::rend;
-		using BaseT::crbegin;
-		using BaseT::crend;
-		using BaseT::clear;
-		using BaseT::resize;
+		[[nodiscard]] mqbyte operator [] (mqui64 index) const noexcept {
+			return mData[index];
+		}
+
+		[[nodiscard]] mqbyte& operator [] (mqui64 index) noexcept {
+			return mData[index];
+		}
+
+		using mqbuffer::size;
+
+		[[nodiscard]] mqcbytes data() const noexcept {
+			return mqbuffer::data<mqbyte>();
+		}
+
+		[[nodiscard]] mqbytes data() noexcept {
+			return mqbuffer::data<mqbyte>();
+		}
+
+		[[nodiscard]] bool empty() const noexcept {
+			return mSize != 0ULL;
+		}
+
+		[[nodiscard]] mqbytes begin() const noexcept {
+			return mData;
+		}
+
+		[[nodiscard]] mqbytes end() const noexcept {
+			return mData + mSize;
+		}
+
+		[[nodiscard]] mqcbytes cbegin() const noexcept {
+			return mData;
+		}
+
+		[[nodiscard]] mqcbytes cend() const noexcept {
+			return mData + mSize;
+		}
+
+		void reserve(mqui64 size) noexcept {
+			mqbuffer::reserve(size, false);
+		}
 
 		[[nodiscard]] operator BinView() const noexcept {
-			return BinView{ data(), size() };
+			return BinView{ mData, mSize };
 		}
 
 		/// <summary>
@@ -180,15 +183,23 @@ namespace MasterQian {
 			return static_cast<mqui32>(size());
 		}
 
+		void unsafe_shrink(mqui64 size) noexcept {
+			if (mSize > size) {
+				mSize = size;
+			}
+		}
+
 		/// <summary>
 		/// 取字节集左边
 		/// </summary>
 		/// <param name="num">字节数</param>
-		[[nodiscard]] StructT left(SizeT num) const noexcept {
-			StructT tmp;
-			if (num <= size()) {
-				tmp.insert(tmp.end(), begin(), begin() + num);
+		[[nodiscard]] Bin left(mqui64 num) const noexcept {
+			Bin tmp;
+			if (num > mSize) {
+				num = mSize;
 			}
+			tmp.reserve(num);
+			freestanding::copy(tmp.mData, mData, num);
 			return tmp;
 		}
 
@@ -196,11 +207,13 @@ namespace MasterQian {
 		/// 取字节集右边
 		/// </summary>
 		/// <param name="num">字节数</param>
-		[[nodiscard]] StructT right(SizeT num) const noexcept {
-			StructT tmp;
-			if (num <= size()) {
-				tmp.insert(tmp.end(), begin() + size() - num, end());
+		[[nodiscard]] Bin right(mqui64 num) const noexcept {
+			Bin tmp;
+			if (num > mSize) {
+				num = mSize;
 			}
+			tmp.reserve(num);
+			freestanding::copy(tmp.mData, mData + mSize - num, num);
 			return tmp;
 		}
 
@@ -209,11 +222,14 @@ namespace MasterQian {
 		/// </summary>
 		/// <param name="start">起始位置</param>
 		/// <param name="num">字节数</param>
-		[[nodiscard]] StructT middle(SizeT start, SizeT num) const noexcept {
-			StructT tmp;
-			if (start + num <= size()) {
-				tmp.insert(tmp.end(), begin() + start, begin() + start + num);
+		[[nodiscard]] Bin middle(mqui64 start, mqui64 num) const noexcept {
+			Bin tmp;
+			if (start + num > mSize) {
+				start = 0ULL;
+				num = mSize;
 			}
+			tmp.reserve(num);
+			freestanding::copy(tmp.mData, mData + start, num);
 			return tmp;
 		}
 
@@ -271,7 +287,7 @@ namespace MasterQian {
 		Bin tmp;
 		if (auto len{ api::WideCharToMultiByte(static_cast<mqui32>(cp), 0, sv.data(),
 			static_cast<mqui32>(sv.size()), nullptr, 0, nullptr, nullptr) }; len > 0) {
-			tmp.resize(len);
+			tmp.reserve(len);
 			api::WideCharToMultiByte(static_cast<mqui32>(cp), 0, sv.data(), static_cast<mqui32>(sv.size()),
 				reinterpret_cast<mqstra>(tmp.data()), len, nullptr, nullptr);
 		}

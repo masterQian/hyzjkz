@@ -1,9 +1,10 @@
 #include "pch.h"
-#include <queue>
 #include "PrintPage.xaml.h"
 #if __has_include("PrintPage.g.cpp")
 #include "PrintPage.g.cpp"
 #endif
+
+#include <queue>
 
 namespace winrt::hyzjkz::implementation {
 	// 所有同宽同高的项归为一类, 由其位置数组及对应缩略图构成
@@ -177,8 +178,7 @@ namespace winrt::hyzjkz::implementation {
 			}
 		}
 		if (failed) {
-			co_await Global.ui_window->as<hyzjkz::MainWindow>()
-				.ShowTipDialog(util::RDString<hstring>(L"PrintPage.Tip.NoPrinter"));
+			co_await Global.ui_window.ShowTipDialog(util::RDString<hstring>(L"PrintPage.Tip.NoPrinter"));
 		}
 	}
 
@@ -207,7 +207,7 @@ namespace winrt::hyzjkz::implementation {
 	PrintPage::PrintPage() {
 		InitializeComponent();
 
-		Loaded([this] (auto, auto) {
+		Loaded([this] (auto...) {
 			// 因为画布尺寸在切换导航前未确定, 必须等到完成加载后才能预览模板
 			RefreshTemplates(this);
 			});

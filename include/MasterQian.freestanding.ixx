@@ -1,5 +1,6 @@
 module;
 #include "MasterQian.Meta.h"
+#include <initializer_list>
 #define MasterQianModuleVersion 20240131ULL
 
 export module MasterQian.freestanding;
@@ -170,6 +171,9 @@ namespace MasterQian::freestanding {
 
 	export template<typename T1, typename T2> concept same = __same_v<T1, T2>&& __same_v<T2, T1>;
 
+	// instanceof
+	export template <typename Derived, typename Base> concept instanceof = __is_base_of(Base, Derived) && __is_convertible_to(const volatile Derived*, const volatile Base*);
+
 	// any_of
 	export template <typename T, typename... Args> concept any_of = (same<T, Args> || ...);
 
@@ -195,9 +199,28 @@ namespace MasterQian::freestanding {
 	export template<typename T> concept numeric = integral<T> || floating_point<T>;
 
 	// arg_size
-	export template<typename T, typename... Args> constexpr mqui64 arg_size = arg_size<Args...> + sizeof(remove_cvref<T>);
+	export template<typename T, typename... Args> constexpr mqui64 arg_size = arg_size<Args...> +sizeof(remove_cvref<T>);
 
 	export template<typename T> constexpr mqui64 arg_size<T> = sizeof(remove_cvref<T>);
+
+	// index_squence
+	export template<mqui64... Args> struct index_sequence {};
+
+	export template<mqui64 N, mqui64... M> struct make_index_sequence : public make_index_sequence<N - 1, N - 1, M...> {};
+
+	export template<mqui64... M> struct make_index_sequence<0, M...> : public index_sequence<M...> {};
+
+	// for_constexpr
+	export template<mqui64 N, typename F> inline constexpr void for_constexpr(F&& f) noexcept {
+		[] <mqui64... Is, typename Func>(index_sequence<Is...>, Func && func) noexcept {
+			(func(Is), ...);
+		}(make_index_sequence<N>{}, forward<F>(f));
+	}
+
+	// rangefor_constexpr
+	export template<typename Func, typename... Args> inline constexpr void rangefor_constexpr(Func&& func, Args&&... args) noexcept {
+		(forward<Func>(func)(forward<Args>(args)), ...);
+	}
 
 	// isomerism_hash   isomerism_equal
 	template <typename T>
@@ -368,7 +391,7 @@ export namespace MasterQian::freestanding {
 
 	// bit_cast
 	template<typename To, typename From>
-	requires (sizeof(To) == sizeof(From) && copyable_memory<To> && trivial<From>)
+		requires (sizeof(To) == sizeof(From) && copyable_memory<To> && trivial<From>)
 	[[nodiscard]] inline
 #if ___memcpy___ || ___bit_cast___
 		constexpr
@@ -832,18 +855,474 @@ export template<MasterQian::freestanding::numeric T>
 
 /*    freestanding struct    */
 
-namespace MasterQian::freestanding {
-	// 初始化器
-	export template<copyable_memory T> struct mqinit {
-		T value;
-		explicit mqinit(T(*func)() noexcept) noexcept : value{ func() } {}
-		template<typename U>
-		mqinit(T(*func)(U&& u) noexcept, U&& u) noexcept : value{ func(forward<U>(u)) } {}
-		[[nodiscard]] operator T () const noexcept {
-			return value;
+// 初始化器
+export template<MasterQian::freestanding::copyable_memory T> struct mqinit {
+	T value;
+	explicit mqinit(T(*func)() noexcept) noexcept : value{ func() } {}
+	template<typename U>
+	mqinit(T(*func)(U&& u) noexcept, U&& u) noexcept : value{ func(forward<U>(u)) } {}
+	[[nodiscard]] operator T () const noexcept {
+		return value;
+	}
+};
+
+// 固定大小数组
+export template<typename T> struct mqarray {
+protected:
+	T* mData;
+	mqui64 mSize;
+
+	void free_memory() noexcept {
+		if (mData) {
+			if constexpr (!MasterQian::freestanding::trivial<T>) {
+				for (mqui64 i{ mSize }; i > 0ULL; --i) {
+					(mData + i - 1ULL)->~T();
+				}
+			}
+			::operator delete(mData);
+			mData = nullptr;
+			mSize = 0ULL;
 		}
-	};
-}
+	}
+
+	void construct_memory(mqui64 size) noexcept {
+		mSize = size;
+		if (mSize) {
+			mData = static_cast<T*>(::operator new(mSize * sizeof(T)));
+			if constexpr (MasterQian::freestanding::trivial<T>) {
+				MasterQian::freestanding::initialize(mData, 0, mSize * sizeof(T));
+			}
+			else {
+				for (mqui64 i{ }; i < mSize; ++i) {
+					new (mData + i)T{ };
+				}
+			}
+		}
+		else {
+			mData = nullptr;
+		}
+	}
+
+	void copy_memory(T const* data, mqui64 size) noexcept {
+		mSize = size;
+		if (mSize) {
+			mData = static_cast<T*>(::operator new(mSize * sizeof(T)));
+			if constexpr (MasterQian::freestanding::trivial<T>) {
+				MasterQian::freestanding::copy(mData, data, mSize * sizeof(T));
+			}
+			else {
+				for (mqui64 i{ }; i < mSize; ++i) {
+					new (mData + i)T{ data[i] };
+				}
+			}
+		}
+		else {
+			mData = nullptr;
+		}
+	}
+public:
+	mqarray() noexcept : mSize{ }, mData{ } {}
+
+	explicit mqarray(mqui64 size) noexcept {
+		construct_memory(size);
+	}
+
+	mqarray(std::initializer_list<T> arr) noexcept {
+		copy_memory(arr.begin(), arr.size());
+	}
+
+	mqarray(mqarray const& arr) noexcept {
+		copy_memory(arr.mData, arr.mSize);
+	}
+
+	mqarray& operator = (mqarray const& arr) noexcept {
+		if (this != &arr) {
+			free_memory();
+			copy_memory(arr.mData, arr.mSize);
+		}
+		return *this;
+	}
+
+	mqarray(mqarray&& arr) noexcept : mSize{ }, mData{ } {
+		MasterQian::freestanding::swap(mSize, arr.mSize);
+		MasterQian::freestanding::swap(mData, arr.mData);
+	}
+
+	mqarray& operator = (mqarray&& arr) noexcept {
+		if (this != &arr) {
+			MasterQian::freestanding::swap(mSize, arr.mSize);
+			MasterQian::freestanding::swap(mData, arr.mData);
+		}
+		return *this;
+	}
+
+	~mqarray() noexcept {
+		free_memory();
+	}
+
+	[[nodiscard]] mqui64 size() const noexcept {
+		return mSize;
+	}
+
+	[[nodiscard]] mqui32 size32() const noexcept {
+		return static_cast<mqui32>(mSize);
+	}
+
+	[[nodiscard]] bool empty() const noexcept {
+		return mSize != 0ULL;
+	}
+
+	void clear() noexcept {
+		free_memory();
+	}
+
+	void resize(mqui64 size) noexcept {
+		free_memory();
+		construct_memory(size);
+	}
+
+	[[nodiscard]] T* data() noexcept {
+		return mData;
+	}
+
+	[[nodiscard]] T const* data() const noexcept {
+		return mData;
+	}
+
+	[[nodiscard]] T* begin() const noexcept {
+		return mData;
+	}
+
+	[[nodiscard]] T* end() const noexcept {
+		return mData + mSize;
+	}
+
+	[[nodiscard]] T const* cbegin() const noexcept {
+		return mData;
+	}
+
+	[[nodiscard]] T const* cend() const noexcept {
+		return mData + mSize;
+	}
+
+	[[nodiscard]] T const& operator [] (mqui64 index) const noexcept {
+		return mData[index];
+	}
+
+	[[nodiscard]] T& operator [] (mqui64 index) noexcept {
+		return mData[index];
+	}
+};
+
+// 动态数组
+export template<typename T> struct mqlist {
+protected:
+	T* mData;
+	mqui64 mSize;
+	mqui64 mCapacity;
+
+	static constexpr mqui64 DefaultCapacity = 4U;
+
+	void free_memory() noexcept {
+		if (mData) {
+			::operator delete(mData);
+			mData = nullptr;
+			mCapacity = 0ULL;
+		}
+	}
+
+	void clear_memory() noexcept {
+		if (mData) {
+			if constexpr (!MasterQian::freestanding::trivial<T>) {
+				for (mqui64 i{ mSize }; i > 0ULL; --i) {
+					(mData + i - 1ULL)->~T();
+				}
+			}
+			mSize = 0ULL;
+		}
+	}
+
+	void grow_memory(mqui64 capacity) noexcept {
+		if (capacity > mCapacity) {
+			auto data{ static_cast<T*>(::operator new(capacity * sizeof(T))) };
+			auto size{ mSize };
+			if (size) {
+				if constexpr (MasterQian::freestanding::trivial<T>) {
+					MasterQian::freestanding::copy(data, mData, size * sizeof(T));
+				}
+				else {
+					for (mqui64 i{ }; i < size; ++i) {
+						new (data + i)T{ mData[i] };
+					}
+				}
+			}
+			clear_memory();
+			free_memory();
+			mData = data;
+			mSize = size;
+			mCapacity = capacity;
+		}
+	}
+
+	void copy_memory(T const* data, mqui64 size) noexcept {
+		if (mCapacity < size) {
+			clear_memory();
+			mCapacity = size;
+			mData = static_cast<T*>(::operator new(mCapacity * sizeof(T)));
+		}
+		mSize = size;
+		if (mSize) {
+			if constexpr (MasterQian::freestanding::trivial<T>) {
+				MasterQian::freestanding::copy(mData, data, mSize * sizeof(T));
+			}
+			else {
+				for (mqui64 i{ }; i < mSize; ++i) {
+					new (mData + i)T{ data[i] };
+				}
+			}
+		}
+	}
+public:
+	mqlist() noexcept : mData{ }, mSize{ }, mCapacity{ } {}
+
+	explicit mqlist(mqui64 size) noexcept : mData{ }, mSize{ }, mCapacity{ } {
+		grow_memory(size);
+	}
+
+	mqlist(std::initializer_list<T> arr) noexcept : mSize{ }, mData{ }, mCapacity{ } {
+		copy_memory(arr.begin(), arr.size());
+	}
+
+	mqlist(mqlist const& arr) noexcept : mSize{ }, mData{ }, mCapacity{ } {
+		copy_memory(arr.mData, arr.mSize);
+	}
+
+	mqlist& operator = (mqlist const& arr) noexcept {
+		if (this != &arr) {
+			copy_memory(arr.mData, arr.mSize);
+		}
+		return *this;
+	}
+
+	mqlist(mqlist&& arr) noexcept : mSize{ }, mData{ }, mCapacity{ } {
+		MasterQian::freestanding::swap(mCapacity, arr.mCapacity);
+		MasterQian::freestanding::swap(mSize, arr.mSize);
+		MasterQian::freestanding::swap(mData, arr.mData);
+	}
+
+	mqlist& operator = (mqlist&& arr) noexcept {
+		if (this != &arr) {
+			MasterQian::freestanding::swap(mCapacity, arr.mCapacity);
+			MasterQian::freestanding::swap(mSize, arr.mSize);
+			MasterQian::freestanding::swap(mData, arr.mData);
+		}
+		return *this;
+	}
+
+	~mqlist() noexcept {
+		clear_memory();
+		free_memory();
+	}
+
+	[[nodiscard]] mqui64 size() const noexcept {
+		return mSize;
+	}
+
+	[[nodiscard]] mqui32 size32() const noexcept {
+		return static_cast<mqui32>(mSize);
+	}
+
+	[[nodiscard]] mqui64 capacity() const noexcept {
+		return mCapacity;
+	}
+
+	[[nodiscard]] bool empty() const noexcept {
+		return mSize != 0ULL;
+	}
+
+	void clear() noexcept {
+		clear_memory();
+	}
+
+	[[nodiscard]] T* data() noexcept {
+		return mData;
+	}
+
+	[[nodiscard]] T const* data() const noexcept {
+		return mData;
+	}
+
+	[[nodiscard]] T* begin() const noexcept {
+		return mData;
+	}
+
+	[[nodiscard]] T* end() const noexcept {
+		return mData + mSize;
+	}
+
+	[[nodiscard]] T const* cbegin() const noexcept {
+		return mData;
+	}
+
+	[[nodiscard]] T const* cend() const noexcept {
+		return mData + mSize;
+	}
+
+	[[nodiscard]] T const& operator [] (mqui64 index) const noexcept {
+		return mData[index];
+	}
+
+	[[nodiscard]] T& operator [] (mqui64 index) noexcept {
+		return mData[index];
+	}
+
+	[[nodiscard]] T const& front() const noexcept {
+		return *mData;
+	}
+
+	[[nodiscard]] T& front() noexcept {
+		return *mData;
+	}
+
+	[[nodiscard]] T const& back() const noexcept {
+		return *(mData + mSize - 1ULL);
+	}
+
+	[[nodiscard]] T& back() noexcept {
+		return *(mData + mSize - 1ULL);
+	}
+
+	void init(mqui64 size = 0ULL) noexcept {
+		if (!size || size > mCapacity) {
+			size = mCapacity;
+		}
+		mSize = size;
+		if constexpr (MasterQian::freestanding::trivial<T>) {
+			MasterQian::freestanding::initialize(mData, 0, mSize * sizeof(T));
+		}
+		else {
+			for (mqui64 i{ }; i < mSize; ++i) {
+				new (mData + i)T{ };
+			}
+		}
+	}
+
+	void reserve(mqui64 size) noexcept {
+		grow_memory(size);
+	}
+
+	template<typename... Args>
+	T& add(Args&&... args) noexcept {
+		if (mSize == mCapacity) {
+			grow_memory(mCapacity ? (mCapacity << 1ULL) : DefaultCapacity);
+		}
+		T* tmp{ new (mData + mSize)T{ MasterQian::freestanding::forward<Args>(args)... } };
+		++mSize;
+		return *tmp;
+	}
+
+	T pop() noexcept {
+		--mSize;
+		T tmp{ MasterQian::freestanding::move(mData[mSize]) };
+		if constexpr (!MasterQian::freestanding::trivial<T>) {
+			(mData + mSize)->~T();
+		}
+		return tmp;
+	}
+};
+
+// 可扩容缓冲区
+export struct mqbuffer {
+protected:
+	mqbytes mData;
+	mqui64 mSize;
+
+	void free_memory() noexcept {
+		::operator delete(mData);
+	}
+
+	void construct_memory(mqui64 size, bool init) noexcept {
+		mSize = size;
+		if (mSize) {
+			mData = static_cast<mqbytes>(::operator new(mSize));
+			if (init) {
+				MasterQian::freestanding::initialize(mData, 0, mSize);
+			}
+		}
+		else {
+			mData = nullptr;
+		}
+	}
+
+	void copy_memory(mqui64 size, mqcbytes data) noexcept {
+		mSize = size;
+		if (mSize) {
+			mData = static_cast<mqbytes>(::operator new(mSize));
+			MasterQian::freestanding::copy(mData, data, mSize);
+		}
+		else {
+			mData = nullptr;
+		}
+	}
+public:
+	explicit mqbuffer(mqui64 size = 0ULL, bool init = false) noexcept {
+		construct_memory(size, init);
+	}
+
+	~mqbuffer() noexcept {
+		free_memory();
+	}
+
+	mqbuffer(mqbuffer const& buffer) noexcept {
+		copy_memory(buffer.mSize, buffer.mData);
+	}
+
+	mqbuffer& operator = (mqbuffer const& buffer) noexcept {
+		if (this != &buffer) {
+			free_memory();
+			copy_memory(buffer.mSize, buffer.mData);
+		}
+		return *this;
+	}
+
+	mqbuffer(mqbuffer&& buffer) noexcept : mSize{ }, mData{ } {
+		MasterQian::freestanding::swap(mSize, buffer.mSize);
+		MasterQian::freestanding::swap(mData, buffer.mData);
+	}
+
+	mqbuffer& operator = (mqbuffer&& buffer) noexcept {
+		if (this != &buffer) {
+			MasterQian::freestanding::swap(mSize, buffer.mSize);
+			MasterQian::freestanding::swap(mData, buffer.mData);
+		}
+		return *this;
+	}
+
+	template<typename T = mqbyte>
+	[[nodiscard]] T* data() noexcept {
+		return mData;
+	}
+
+	template<typename T = mqbyte>
+	[[nodiscard]] T const* data() const noexcept {
+		return mData;
+	}
+
+	[[nodiscard]] mqui64 size() const noexcept {
+		return mSize;
+	}
+
+	[[nodiscard]] mqui32 size32() const noexcept {
+		return static_cast<mqui32>(mSize);
+	}
+
+	void reserve(mqui64 size, bool init = false) noexcept {
+		if (size > mSize) {
+			free_memory();
+			construct_memory(size, init);
+		}
+	}
+};
 
 /*    Win32 API    */
 

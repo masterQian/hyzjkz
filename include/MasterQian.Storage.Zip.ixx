@@ -35,7 +35,7 @@ namespace MasterQian::Storage {
 	namespace details {
 		META_IMPORT_API(mqui32, CompressBound, mqui32);
 		META_IMPORT_API(mqui32, Compress, mqcbytes, mqui32, mqbytes, mqui32, mqbool);
-		META_IMPORT_API(mqui32, UncompressBound, mqcbytes);
+		META_IMPORT_API(mqui32, UncompressBound, mqcbytes, mqui32);
 		META_IMPORT_API(mqbool, Uncompress, mqcbytes, mqui32, mqbytes, mqui32);
 
 		META_IMPORT_API(mqhandle, ZipStart, mqcstr, mqui32);
@@ -186,8 +186,21 @@ namespace MasterQian::Storage {
 		Zip(std::wstring_view fn, OpenMode mode) noexcept :
 			ZipBranch(details::MasterQian_Storage_Zip_ZipStart(fn.data(), static_cast<mqui32>(mode)), L"") {}
 
-		Zip(Zip const&) = delete;
-		Zip& operator = (Zip const&) = delete;
+		Zip(Zip const&) noexcept = delete;
+		Zip& operator = (Zip const&) noexcept = delete;
+
+		Zip(Zip&& zip) noexcept : ZipBranch{ nullptr, { } } {
+			freestanding::swap(handle, zip.handle);
+			freestanding::swap(branch, zip.branch);
+		}
+
+		Zip& operator = (Zip&& zip) noexcept {
+			if (this != &zip) {
+				freestanding::swap(handle, zip.handle);
+				freestanding::swap(branch, zip.branch);
+			}
+			return *this;
+		}
 
 		~Zip() noexcept {
 			Close();
@@ -229,7 +242,7 @@ namespace MasterQian::Storage {
 			auto des_size{ details::MasterQian_Storage_Zip_CompressBound(src.size32()) };
 			Bin des(des_size);
 			des_size = details::MasterQian_Storage_Zip_Compress(src.data(), src.size32(), des.data(), des_size, speedFirstly);
-			des.resize(des_size);
+			des.unsafe_shrink(des_size);
 			return des;
 		}
 	};
@@ -247,8 +260,19 @@ namespace MasterQian::Storage {
 			handle = details::MasterQian_Storage_Zip_UnZipStart(fn.data());
 		}
 
-		UnZip(UnZip const&) = delete;
-		UnZip& operator = (UnZip const&) = delete;
+		UnZip(UnZip const&) noexcept = delete;
+		UnZip& operator = (UnZip const&) noexcept = delete;
+
+		UnZip(UnZip&& unzip) noexcept {
+			freestanding::swap(handle, unzip.handle);
+		}
+
+		UnZip& operator = (UnZip&& unzip) noexcept {
+			if (this != &unzip) {
+				freestanding::swap(handle, unzip.handle);
+			}
+			return *this;
+		}
 
 		~UnZip() noexcept {
 			Close();
@@ -300,9 +324,9 @@ namespace MasterQian::Storage {
 		/// <returns>Ñ¹ËõÇ°Êý¾Ý</returns>
 		[[nodiscard]] static Bin Uncompress(BinView src) noexcept {
 			Bin des;
-			auto des_size{ details::MasterQian_Storage_Zip_UncompressBound(src.data()) };
+			auto des_size{ details::MasterQian_Storage_Zip_UncompressBound(src.data(), src.size32()) };
 			if (des_size) {
-				des.resize(des_size);
+				des.reserve(des_size);
 				if (!details::MasterQian_Storage_Zip_Uncompress(src.data(), src.size32(), des.data(), des.size32())) {
 					des = { };
 				}

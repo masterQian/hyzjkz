@@ -6,11 +6,11 @@
 
 namespace winrt::hyzjkz::implementation {
     struct ToolsPage : ToolsPageT<ToolsPage> {
-        struct HomeSubPage : WinRT::SubPage<Controls::Image, HomeSubPage> {
+        struct HomeSubPage : MQControls::SubPage<Controls::Image, HomeSubPage> {
 
         }Home;
 
-        struct IDCardSubPage : WinRT::SubPage<Controls::Grid, IDCardSubPage> {
+        struct IDCardSubPage : MQControls::SubPage<Controls::Grid, IDCardSubPage> {
             Controls::Button button_front{ nullptr };
             Controls::Button button_back{ nullptr };
             Controls::Image image_preview{ nullptr };
@@ -19,7 +19,7 @@ namespace winrt::hyzjkz::implementation {
             Controls::Button button_work{ nullptr };
         }IDCard;
 
-        struct JigsawSubPage : WinRT::SubPage<Controls::Grid, JigsawSubPage> {
+        struct JigsawSubPage : MQControls::SubPage<Controls::Grid, JigsawSubPage> {
             Controls::ToggleSwitch switch_mode{ nullptr };
             Controls::AppBarButton button_import{ nullptr };
             Controls::AppBarButton button_clear{ nullptr };
@@ -27,7 +27,7 @@ namespace winrt::hyzjkz::implementation {
             Controls::Canvas canvas{ nullptr };
         }Jigsaw;
 
-        struct ToPDFSubPage : WinRT::SubPage<Controls::Grid, ToPDFSubPage> {
+        struct ToPDFSubPage : MQControls::SubPage<Controls::Grid, ToPDFSubPage> {
             Controls::AppBarButton button_import{ nullptr };
             Controls::AppBarButton button_delete{ nullptr };
             Controls::AppBarButton button_clear{ nullptr };

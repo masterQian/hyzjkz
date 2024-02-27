@@ -17,11 +17,10 @@ namespace winrt::hyzjkz::implementation {
 	/*  身份证拼接  */
 
 	// 选择
-	static IAsyncAction IDCard_Select_Click(ToolsPage::IDCardSubPage* sp, IInspectable const& sender) noexcept {
+	static IAsyncAction IDCard_Select(ToolsPage::IDCardSubPage* sp, IInspectable const& sender) noexcept {
 		auto button{ sender.as<Controls::Button>() };
-
 		// 未导入照片状态
-		if (button.Tag().as<hstring>() == L"false") {
+		if (!button.Tag().as<bool>()) {
 			// 准备对话框
 			Windows::Storage::Pickers::FileOpenPicker openPicker;
 			openPicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
@@ -41,10 +40,10 @@ namespace winrt::hyzjkz::implementation {
 				image.Tag(box_value(file.Path()));
 				image.Source(util::FileToBMP(file.Path(), Global.c_IDCardPreviewSize, true));
 				button.Content(image);
-				button.Tag(box_value(L"true"));
+				button.Tag(box_value(true));
 
 				// 若两面都准备好
-				if (sp->button_front.Tag().as<hstring>() == L"true" && sp->button_back.Tag().as<hstring>() == L"true") {
+				if (sp->button_front.Tag().as<bool>() && sp->button_back.Tag().as<bool>()) {
 					auto front_path{ sp->button_front.Content().as<FrameworkElement>().Tag().as<hstring>() };
 					auto back_path{ sp->button_back.Content().as<FrameworkElement>().Tag().as<hstring>() };
 
@@ -75,24 +74,24 @@ namespace winrt::hyzjkz::implementation {
 
 	// 重置按钮
 	inline static void IDCard_Reset(Controls::Button const& button) noexcept {
-		if (button.Tag().as<hstring>() == L"true") {
+		if (button.Tag().as<bool>()) {
 			Controls::SymbolIcon icon;
 			icon.Symbol(Controls::Symbol::Add);
 			button.Content(icon);
-			button.Tag(box_value(L"false"));
+			button.Tag(box_value(false));
 		}
 	}
 
 	// 清除
-	static void IDCard_Clear_Click(ToolsPage::IDCardSubPage* sp) noexcept {
+	static void IDCard_Clear(ToolsPage::IDCardSubPage* sp) noexcept {
 		IDCard_Reset(sp->button_front);
 		IDCard_Reset(sp->button_back);
 		sp->image_preview.Source(nullptr);
 	}
 
 	// 合成
-	static IAsyncAction IDCard_Work_Click(ToolsPage::IDCardSubPage* sp) noexcept {
-		if (sp->button_front.Tag().as<hstring>() == L"true" && sp->button_back.Tag().as<hstring>() == L"true") {
+	static IAsyncAction IDCard_Work(ToolsPage::IDCardSubPage* sp) noexcept {
+		if (sp->button_front.Tag().as<bool>() && sp->button_back.Tag().as<bool>()) {
 			Windows::Storage::Pickers::FileSavePicker savePicker;
 			savePicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
 			auto filters{ savePicker.FileTypeChoices() };
@@ -104,7 +103,7 @@ namespace winrt::hyzjkz::implementation {
 			auto back_path{ sp->button_back.Content().as<FrameworkElement>().Tag().as<hstring>() };
 
 			if (Windows::Storage::StorageFile file{ co_await savePicker.PickSaveFileAsync() }) {
-				IDCard_Clear_Click(sp);
+				IDCard_Clear(sp);
 
 				winrt::apartment_context ui_thread;
 				co_await winrt::resume_background();
@@ -119,7 +118,7 @@ namespace winrt::hyzjkz::implementation {
 			}
 		}
 		else {
-			co_await Global.ui_window->as<hyzjkz::MainWindow>().ShowTipDialog(util::RDString<hstring>(L"IDCardSubPage.Tip.AddPhoto"));
+			co_await Global.ui_window.ShowTipDialog(util::RDString<hstring>(L"IDCardSubPage.Tip.AddPhoto"));
 		}
 	}
 
@@ -134,23 +133,24 @@ namespace winrt::hyzjkz::implementation {
 		sp->Bind(sp->preview_text, L"Preview_Text");
 		sp->Bind(sp->image_preview, L"Image_Preview");
 
-		sp->button_front.Click([sp] (IInspectable const& sender, auto) -> IAsyncAction {
-			co_await IDCard_Select_Click(sp, sender);
+		auto IDCard_Select_Click{ [sp](IInspectable const& sender, auto) -> IAsyncAction {
+			co_await IDCard_Select(sp, sender);
+		} };
+		sp->button_front.Click(IDCard_Select_Click);
+		sp->button_front.Tag(box_value(false));
+		sp->button_back.Click(IDCard_Select_Click);
+		sp->button_back.Tag(box_value(false));
+		sp->button_clear.Click([sp] (auto...) {
+			IDCard_Clear(sp);
 			});
-		sp->button_back.Click([sp] (IInspectable const& sender, auto) -> IAsyncAction {
-			co_await IDCard_Select_Click(sp, sender);
-			});
-		sp->button_clear.Click([sp] (auto, auto) {
-			IDCard_Clear_Click(sp);
-			});
-		sp->button_work.Click([sp] (auto, auto) -> IAsyncAction {
-			co_await IDCard_Work_Click(sp);
+		sp->button_work.Click([sp] (auto...) -> IAsyncAction {
+			co_await IDCard_Work(sp);
 			});
 	}
 
 	// 更新
 	static void UpdateIDCardSubPage(IInspectable* subPage) noexcept {
-		IDCard_Clear_Click(ToolsPage::IDCardSubPage::From(subPage));
+		IDCard_Clear(ToolsPage::IDCardSubPage::From(subPage));
 	}
 
 	/*  拼图  */
@@ -167,9 +167,6 @@ namespace winrt::hyzjkz::implementation {
 			static_cast<mqf64>(Global.c_printCanvasSize.width) / Global.c_printCanvasSize.height // A6
 			: static_cast<mqf64>(Global.c_A4Size.width) / Global.c_A4Size.height }; // A4
 		canvas.Width(canvas.ActualHeight() * scale);
-		Microsoft::UI::Xaml::Media::RectangleGeometry rg;
-		rg.Rect({ 0.0f, 0.0f, static_cast<mqf32>(canvas.ActualWidth()), static_cast<mqf32>(canvas.ActualHeight()) });
-		canvas.Clip(rg);
 	}
 
 	// 导入
@@ -186,6 +183,7 @@ namespace winrt::hyzjkz::implementation {
 		if (Windows::Foundation::Collections::IVectorView<Windows::Storage::StorageFile>
 			files_view{ co_await openPicker.PickMultipleFilesAsync() }; files_view.Size() > 0U) {
 			std::vector<std::wstring> files;
+			files.reserve(files_view.Size());
 			for (auto file_view : files_view) {
 				files.emplace_back(file_view.Path());
 			}
@@ -311,20 +309,20 @@ namespace winrt::hyzjkz::implementation {
 		sp->Bind(sp->button_clear, L"Button_Clear");
 		sp->Bind(sp->button_save, L"Button_Save");
 
-		sp->switch_mode.Toggled([sp] (auto, auto) {
+		sp->switch_mode.Toggled([sp] (auto...) {
 			Canvas_Jigsaw_Resize(sp);
 			Canvas_Jigsaw_Clear(sp);
 			});
-		sp->canvas.SizeChanged([sp] (auto, auto) {
+		sp->canvas.SizeChanged([sp] (auto...) {
 			Canvas_Jigsaw_Resize(sp);
 			});
-		sp->button_import.Click([sp] (auto, auto) -> IAsyncAction {
+		sp->button_import.Click([sp] (auto...) -> IAsyncAction {
 			co_await Canvas_Jigsaw_Import(sp);
 			});
-		sp->button_clear.Click([sp] (auto, auto) {
+		sp->button_clear.Click([sp] (auto...) {
 			Canvas_Jigsaw_Clear(sp);
 			});
-		sp->button_save.Click([sp] (auto, auto) -> IAsyncAction {
+		sp->button_save.Click([sp] (auto...) -> IAsyncAction {
 			co_await Canvas_Jigsaw_Save(sp);
 			});
 	}
@@ -410,18 +408,18 @@ namespace winrt::hyzjkz::implementation {
 		sp->Bind(sp->button_clear, L"Button_Clear");
 		sp->Bind(sp->button_save, L"Button_Save");
 		sp->Bind(sp->gv_pdf, L"GV_PDF");
-		sp->button_import.Click([sp] (auto, auto) -> IAsyncAction {
+		sp->button_import.Click([sp] (auto...) -> IAsyncAction {
 			co_await ToPDF_Import(sp);
 			});
-		sp->button_delete.Click([sp] (auto, auto) {
+		sp->button_delete.Click([sp] (auto...) {
 			if (auto index{ sp->gv_pdf.SelectedIndex() }; index != -1) {
 				sp->gv_pdf.Items().RemoveAt(index);
 			}
 			});
-		sp->button_clear.Click([sp] (auto, auto) {
+		sp->button_clear.Click([sp] (auto...) {
 			sp->gv_pdf.Items().Clear();
 			});
-		sp->button_save.Click([sp] (auto, auto) -> IAsyncAction {
+		sp->button_save.Click([sp] (auto...) -> IAsyncAction {
 			co_await ToPDF_Save(sp);
 			});
 	}
@@ -436,27 +434,24 @@ namespace winrt::hyzjkz::implementation {
 namespace winrt::hyzjkz::implementation {
 	ToolsPage::ToolsPage() {
 		InitializeComponent();
-		NVI_Home().Tag(WinRT::Args::box(&Home, nullptr));
+		NVI_Home().Tag(MQControls::Pair::box(&Home, nullptr));
 		InitializeHomeSubPage(&Home);
-		NVI_IDCard().Tag(WinRT::Args::box(&IDCard, &UpdateIDCardSubPage));
+		NVI_IDCard().Tag(MQControls::Pair::box(&IDCard, &UpdateIDCardSubPage));
 		InitializeIDCardSubPage(&IDCard);
-		NVI_Jigsaw().Tag(WinRT::Args::box(&Jigsaw, &UpdateJigsawSubPage));
+		NVI_Jigsaw().Tag(MQControls::Pair::box(&Jigsaw, &UpdateJigsawSubPage));
 		InitializeJigsawSubPage(&Jigsaw);
-		NVI_ToPDF().Tag(WinRT::Args::box(&ToPDF, &UpdateToPDFSubPage));
+		NVI_ToPDF().Tag(MQControls::Pair::box(&ToPDF, &UpdateToPDFSubPage));
 		InitializeToPDFSubPage(&ToPDF);
 
-		Loaded([this] (auto, auto) {
-			NV_Main().SelectedItem(NVI_Home());
-			});
+		NV_Main().SelectedItem(NVI_Home());
 	}
 
 	// 更换导航
 	F_EVENT void ToolsPage::NV_Main_SelectionChanged(Controls::NavigationView const&, Controls::NavigationViewSelectionChangedEventArgs const& args) {
 		auto tag{ args.SelectedItem().as<Controls::NavigationViewItem>().Tag() };
 		if (tag != nullptr) {
-			auto args{ tag.as<WinRT::Args>() };
-			auto [subPage, func] = args.unbox<IInspectable*, WinRT::SubPageFunc>();
-			Frame_Main().Content(*subPage);
+			auto [subPage, func] = tag.as<MQControls::Pair>().unbox<IInspectable*, MQControls::SubPageFunc>();
+			NV_Main().Content(*subPage);
 			if (func) {
 				func(subPage);
 			}

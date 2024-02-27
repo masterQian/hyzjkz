@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="using:hyzjkz"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d">
+        xmlns:mq="using:MQControls" mc:Ignorable="d">
     <Grid RowDefinitions="48, *">
         <!--  标题栏  -->
         <StackPanel x:Name="SP_TitleBar" Grid.Row="0" Background="Black" Orientation="Horizontal">
@@ -29,18 +29,14 @@
             </NavigationView.MenuItems>
             <NavigationView.PaneFooter>
                 <StackPanel Orientation="Horizontal">
-                    <HyperlinkButton Click="AttachCamera_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <FontIcon Margin="8,0,8,0" Glyph="&#xE8A2;" />
-                            <TextBlock Text="{StaticResource MainWindow.AttachCamera.Text}" />
-                        </StackPanel>
-                    </HyperlinkButton>
-                    <HyperlinkButton Click="CheckUpdate_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <FontIcon Margin="8,0,8,0" Glyph="&#xE781;" />
-                            <TextBlock Text="{StaticResource MainWindow.CheckUpdate.Text}" />
-                        </StackPanel>
-                    </HyperlinkButton>
+                    <mq:IconButton Padding="10,0,10,0" Click="AttachCamera_Click"
+                                   Foreground="MediumPurple"
+                                   Icon="{StaticResource Glyph_AttachCamera}"
+                                   Label="{StaticResource MainWindow.AttachCamera.Text}" />
+                    <mq:IconButton Padding="10,0,10,0" Click="CheckUpdate_Click"
+                                   Foreground="MediumPurple"
+                                   Icon="{StaticResource Glyph_LEDLight}"
+                                   Label="{StaticResource MainWindow.CheckUpdate.Text}" />
                 </StackPanel>
             </NavigationView.PaneFooter>
             <Frame x:Name="Frame_Main" />

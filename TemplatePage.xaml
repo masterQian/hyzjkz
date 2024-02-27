@@ -48,8 +48,8 @@
               Padding="20,0,0,0"
               ColumnDefinitions="Auto, Auto, Auto, *">
             <StackPanel Grid.Column="0" Margin="0,10,20,10" Orientation="Horizontal">
-                <TextBlock Margin="0,0,10,0" Style="{StaticResource Style.Text.Small}" Text="{StaticResource TemplatePage.Level}" />
-                <NumberBox x:Name="TA_Order" Minimum="0" Style="{StaticResource Style.NumberBox.Normal}" />
+                <TextBlock Style="{StaticResource Style.Text.Small}" Text="{StaticResource TemplatePage.Level}" />
+                <NumberBox x:Name="TA_Order" Margin="10,0,10,0" Minimum="0" Style="{StaticResource Style.NumberBox.Normal}" />
             </StackPanel>
             <CheckBox x:Name="TA_Rotate" Grid.Column="1" Content="{StaticResource TemplatePage.Rotate}" />
             <CheckBox x:Name="TA_AutoCut" Grid.Column="2" Content="{StaticResource TemplatePage.AutoCut}" />
@@ -67,37 +67,12 @@
         <ListView x:Name="LV_TemplateData" Grid.Row="2"
                   Grid.Column="2"
                   Height="{StaticResource CanvasPreviewHeight}"
-                  VerticalAlignment="Stretch" AllowDrop="True"
-                  CanReorderItems="True" IsItemClickEnabled="True"
-                  IsSwipeEnabled="False" SelectionMode="Single">
-            <ListView.ItemTemplate>
-                <DataTemplate x:DataType="local:ModelTemplateData">
-                    <Grid Margin="0,5,0,5" BorderBrush="LightSeaGreen"
-                          BorderThickness="1" ColumnDefinitions="Auto, *, *"
-                          RowDefinitions="*, *">
-                        <TextBlock Grid.Row="0" Grid.RowSpan="2" Grid.Column="0"
-                                   Margin="5,2,5,2"
-                                   Style="{StaticResource Style.Text.Small}"
-                                   Text="{StaticResource TemplatePage.ItemInfo}" />
-                        <NumberBox Grid.Row="0" Grid.Column="1" Margin="2,2,1,2"
-                                   Maximum="2000" Minimum="0"
-                                   Style="{StaticResource Style.NumberBox.Normal}"
-                                   Value="{x:Bind TLeft, Mode=TwoWay}" />
-                        <NumberBox Grid.Row="0" Grid.Column="2" Margin="1,2,2,2"
-                                   Maximum="2000" Minimum="0"
-                                   Style="{StaticResource Style.NumberBox.Normal}"
-                                   Value="{x:Bind TTop, Mode=TwoWay}" />
-                        <NumberBox Grid.Row="1" Grid.Column="1" Margin="2,2,1,2"
-                                   Maximum="2000" Minimum="1"
-                                   Style="{StaticResource Style.NumberBox.Normal}"
-                                   Value="{x:Bind TWidth, Mode=TwoWay}" />
-                        <NumberBox Grid.Row="1" Grid.Column="2" Margin="1,2,2,2"
-                                   Maximum="2000" Minimum="1"
-                                   Style="{StaticResource Style.NumberBox.Normal}"
-                                   Value="{x:Bind THeight, Mode=TwoWay}" />
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
+                  AllowDrop="True" CanReorderItems="True"
+                  IsItemClickEnabled="True" IsSwipeEnabled="False"
+                  SelectionMode="Single">
+            <ListView.Header>
+                <TextBlock Margin="5" Style="{StaticResource Style.Text.Middle}" Text="{StaticResource TemplatePage.ItemInfo}" />
+            </ListView.Header>
         </ListView>
     </Grid>
 </Page>

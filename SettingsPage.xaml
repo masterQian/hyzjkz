@@ -16,6 +16,5 @@
             <NavigationViewItem x:Name="NVI_Business" Content="{StaticResource SettingsPage.NVI_Business.Text}" Icon="Globe" />
             <NavigationViewItem x:Name="NVI_Print" Content="{StaticResource SettingsPage.NVI_Print.Text}" Icon="Print" />
         </NavigationView.MenuItems>
-        <Frame x:Name="Frame_Main" />
     </NavigationView>
 </Page>

@@ -1,7 +1,6 @@
 module;
 #include "MasterQian.Meta.h"
 #include <string>
-#include <vector>
 #define MasterQianModuleName(name) MasterQian_Storage_Path_##name
 #define MasterQianModuleNameString(name) "MasterQian_Storage_Path_"#name
 #ifdef _DEBUG
@@ -457,10 +456,10 @@ namespace MasterQian::Storage {
 		/// </summary>
 		/// <param name="ext">拓展名，如*.jpg表示仅枚举jpg格式的文件，*表示匹配所有文件及目录</param>
 		/// <returns>子路径集合</returns>
-		[[nodiscard]] std::vector<Path> EnumFolder(std::wstring_view ext = L"*") const noexcept {
-			std::vector<Path> subPaths;
+		[[nodiscard]] mqlist<Path> EnumFolder(std::wstring_view ext = L"*") const noexcept {
+			mqlist<Path> subPaths;
 			if (!details::MasterQian_Storage_Path_EnumFolder(mData.data(), [ ] (mqmem arg, mqcstr path) noexcept {
-				static_cast<std::vector<Path>*>(arg)->emplace_back(path);
+				static_cast<mqlist<Path>*>(arg)->add(path);
 				}, &subPaths, ext.data())) {
 				subPaths.clear();
 			}
@@ -471,10 +470,10 @@ namespace MasterQian::Storage {
 		/// 深度枚举目录，仅支持目录的调用，递归枚举目录及所有子目录中所有文件与目录
 		/// </summary>
 		/// <returns>子路径集合</returns>
-		[[nodiscard]] std::vector<Path> EnumFolderDepth() const noexcept {
-			std::vector<Path> subPaths;
+		[[nodiscard]] mqlist<Path> EnumFolderDepth() const noexcept {
+			mqlist<Path> subPaths;
 			if (!details::MasterQian_Storage_Path_EnumFolderDepth(mData.data(), [ ] (mqmem arg, mqcstr path) noexcept {
-				static_cast<std::vector<Path>*>(arg)->emplace_back(path);
+				static_cast<mqlist<Path>*>(arg)->add(path);
 				}, &subPaths)) {
 				subPaths.clear();
 			}
@@ -638,45 +637,26 @@ namespace MasterQian::Storage {
 
 	// 驱动器
 	export struct Driver {
-		// 名称
-		Path name;
-		// 总空间(GB)
-		mqf64 totalSpace{ };
-		// 剩余空间(GB)
-		mqf64 freeSpace{ };
+		Path name; // 名称
+		mqf64 totalSpace{ }; // 总空间(GB)
+		mqf64 freeSpace{ }; // 剩余空间(GB)
 	};
 
-	// 驱动器组操作对象
-	export struct Drivers : private std::vector<Driver> {
-		using std::vector<Driver>::empty;
-		using std::vector<Driver>::size;
-		using std::vector<Driver>::begin;
-		using std::vector<Driver>::end;
-		using std::vector<Driver>::cbegin;
-		using std::vector<Driver>::cend;
-		using std::vector<Driver>::rbegin;
-		using std::vector<Driver>::rend;
-		using std::vector<Driver>::crbegin;
-		using std::vector<Driver>::crend;
-		using std::vector<Driver>::operator[];
-
+	export [[nodiscard]] inline mqarray<Driver> Drivers() noexcept {
 		/// <summary>
 		/// 取驱动器组
 		/// </summary>
 		/// <returns>驱动器集合</returns>
-		[[nodiscard]] static Drivers Get() noexcept {
-			mqchar names[27]{ }, name[3]{ };
-			mqui32 count{ details::MasterQian_Storage_Path_GetDriversBitmap(names) };
-			Drivers drivers;
-			drivers.resize(count);
-			for (mqui32 i{ }; i < count; ++i) {
-				auto& driver{ drivers[i] };
-				details::MasterQian_Storage_Path_GetDriverSpaceInfo(names[i], name, &driver.totalSpace, &driver.freeSpace);
-				driver.name = std::wstring_view(name);
-			}
-			return drivers;
+		mqchar names[27]{ }, name[3]{ };
+		mqui32 count{ details::MasterQian_Storage_Path_GetDriversBitmap(names) };
+		mqarray<Driver> drivers(static_cast<mqui64>(count));
+		for (mqui32 i{ }; i < count; ++i) {
+			auto& driver{ drivers[i] };
+			details::MasterQian_Storage_Path_GetDriverSpaceInfo(names[i], name, &driver.totalSpace, &driver.freeSpace);
+			driver.name = std::wstring_view{ name };
 		}
-	};
+		return drivers;
+	}
 
 	// 回收站操作对象
 	export namespace RecycleBin {

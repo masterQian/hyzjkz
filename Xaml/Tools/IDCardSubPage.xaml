@@ -8,13 +8,13 @@
     <Button x:Name="Button_Front" Grid.Row="0" Grid.Column="0"
             Width="{StaticResource IDCardPreviewWidth}"
             Height="{StaticResource IDCardPreviewHeight}"
-            Padding="0,0,0,0" Tag="false">
+            Padding="0,0,0,0">
         <SymbolIcon Symbol="Add" />
     </Button>
     <Button x:Name="Button_Back" Grid.Row="0" Grid.Column="1"
             Width="{StaticResource IDCardPreviewWidth}"
             Height="{StaticResource IDCardPreviewHeight}"
-            Padding="0,0,0,0" Tag="false">
+            Padding="0,0,0,0">
         <SymbolIcon Symbol="Add" />
     </Button>
     <Image x:Name="Image_Preview" Grid.Row="0"

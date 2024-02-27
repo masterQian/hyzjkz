@@ -1,7 +1,6 @@
 module;
 #include "MasterQian.Meta.h"
 #include <string>
-#include <vector>
 #define MasterQianModuleName(name) MasterQian_System_##name
 #define MasterQianModuleNameString(name) "MasterQian_System_"#name
 #ifdef _DEBUG
@@ -63,12 +62,14 @@ namespace MasterQian::System {
 		META_IMPORT_API(mqui32, GetScreenHeight);
 		META_IMPORT_API(mqui32, GetTaskBarHeight);
 		META_IMPORT_API(void, GetCurrentUserName, mqstr);
+		META_IMPORT_API(void, GetCurrentComputerName, mqstr);
 
 		META_IMPORT_API(mqcbytes, GetResource, mqui32, mqcstr, mqui32*);
 		META_IMPORT_API(mqbool, SingleProcessLock);
 		META_IMPORT_API(mqui32, Execute, mqcstr, mqcstr, mqbool, mqbool);
 
 		META_IMPORT_API(void, ShowTaskBar, mqbool);
+		META_IMPORT_API(void, SetTaskBarProgress, mqhandle, mqenum, mqui32);
 
 		META_IMPORT_API(mqbool, RegOpen, mqhandle*, mqbool, mqhandle, mqcstr);
 		META_IMPORT_API(mqbool, RegClose, mqhandle*);
@@ -100,12 +101,14 @@ namespace MasterQian::System {
 			META_PROC_API(GetScreenHeight);
 			META_PROC_API(GetTaskBarHeight);
 			META_PROC_API(GetCurrentUserName);
+			META_PROC_API(GetCurrentComputerName);
 
 			META_PROC_API(GetResource);
 			META_PROC_API(SingleProcessLock);
 			META_PROC_API(Execute);
 
 			META_PROC_API(ShowTaskBar);
+			META_PROC_API(SetTaskBarProgress);
 
 			META_PROC_API(RegOpen);
 			META_PROC_API(RegClose);
@@ -210,7 +213,7 @@ namespace MasterQian::System {
 			mqui64 size{ };
 			Bin bin;
 			if (auto handle{ details::MasterQian_System_GetClipboardDataSize(8, &size) }) {
-				bin.resize(size + 2);
+				bin.reserve(size + 2);
 				auto pData{ bin.data() };
 				if (details::MasterQian_System_GetClipboardData(handle, pData + 2, size)) {
 					// BMP File
@@ -238,7 +241,7 @@ namespace MasterQian::System {
 		/// 置剪贴板文件，可用于在文件资源管理器复制粘贴等操作
 		/// </summary>
 		/// <param name="files">文件列表</param>
-		inline bool SetFiles(std::vector<std::wstring> const& files) noexcept {
+		inline bool SetFiles(mqlist<std::wstring> const& files) noexcept {
 			std::wstring buf;
 			for (auto& item : files) {
 				buf += item;
@@ -250,14 +253,14 @@ namespace MasterQian::System {
 		/// <summary>
 		/// 取剪贴板文件
 		/// </summary>
-		[[nodiscard]] inline std::vector<std::wstring> GetFiles() noexcept {
+		[[nodiscard]] inline mqlist<std::wstring> GetFiles() noexcept {
 			mqui64 size{ };
-			std::vector<std::wstring> files;
+			mqlist<std::wstring> files;
 			if (auto handle{ details::MasterQian_System_GetClipboardDataSize(15, &size) }) {
 				std::wstring buf(size >> 1, L'\0');
 				if (details::MasterQian_System_GetClipboardData(handle, buf.data(), size)) {
 					for (mqcstr p{ buf.data() + 20ULL / sizeof(mqchar) }; *p; p += files.back().size() + 1) {
-						files.emplace_back(p);
+						files.add(p);
 					}
 				}
 			}
@@ -293,6 +296,15 @@ namespace MasterQian::System {
 		[[nodiscard]] inline std::wstring GetCurrentUserName() noexcept {
 			mqchar buf[api::PATH_MAX_SIZE]{ };
 			details::MasterQian_System_GetCurrentUserName(buf);
+			return buf;
+		}
+
+		/// <summary>
+		/// 取当前计算机名
+		/// </summary>
+		[[nodiscard]] inline std::wstring GetCurrentComputerName() noexcept {
+			mqchar buf[api::PATH_MAX_SIZE]{ };
+			details::MasterQian_System_GetCurrentComputerName(buf);
 			return buf;
 		}
 	}
@@ -332,13 +344,22 @@ namespace MasterQian::System {
 		}
 	}
 
-	export namespace Window {
+	export namespace TaskBar {
 		/// <summary>
 		/// 显示任务栏
 		/// </summary>
 		/// <param name="status">是否显示任务栏</param>
-		inline void ShowTaskBar(bool status = true) noexcept {
+		inline void Show(bool status = true) noexcept {
 			details::MasterQian_System_ShowTaskBar(status);
+		}
+
+		enum class ProgressType : mqenum {
+			NOPROGRESS = 0U, BUSY = 1U, INFO = 2U, ERR = 4U, WARNING = 8U
+		};
+
+		template<ProgressType type = ProgressType::INFO>
+		inline void Progress(mqhandle hwnd, mqui32 value) noexcept {
+			details::MasterQian_System_SetTaskBarProgress(hwnd, static_cast<mqenum>(type), value);
 		}
 	}
 
@@ -381,12 +402,25 @@ namespace MasterQian::System {
 			Open(base, route);
 		}
 
+		Reg(Reg const&) noexcept = delete;
+		Reg& operator = (Reg const&) noexcept = delete;
+
+		Reg(Reg&& reg) noexcept {
+			freestanding::swap(handle, reg.handle);
+			freestanding::swap(bWOW64, reg.bWOW64);
+		}
+
+		Reg& operator = (Reg&& reg) noexcept {
+			if (this != &reg) {
+				freestanding::swap(handle, reg.handle);
+				freestanding::swap(bWOW64, reg.bWOW64);
+			}
+			return *this;
+		}
+
 		~Reg() noexcept {
 			Close();
 		}
-
-		Reg(Reg const&) = delete;
-		Reg& operator = (Reg const&) = delete;
 
 		/// <summary>
 		/// 置WOW64
@@ -452,12 +486,12 @@ namespace MasterQian::System {
 		/// 枚举项
 		/// </summary>
 		/// <returns>路径下的所有项集合</returns>
-		[[nodiscard]] std::vector<std::wstring> EnumItem() const noexcept {
-			std::vector<std::wstring> container;
+		[[nodiscard]] mqlist<std::wstring> EnumItem() const noexcept {
+			mqlist<std::wstring> container;
 			if (handle) {
 				mqchar buf[api::PATH_MAX_SIZE]{ };
 				for (mqui32 index{ }; details::MasterQian_System_RegEnumItem(handle, index, buf); ++index) {
-					container.emplace_back(buf);
+					container.add(buf);
 				}
 			}
 			return container;
@@ -496,7 +530,7 @@ namespace MasterQian::System {
 				mqui32 size;
 				if (details::MasterQian_System_RegGetValueTypeAndSize(handle, key.data(), reinterpret_cast<mqui32*>(&type), &size)) {
 					if (type == KeyType::Binary) {
-						bin.resize(static_cast<mqui64>(size));
+						bin.reserve(static_cast<mqui64>(size));
 						details::MasterQian_System_RegGetValue(handle, key.data(), bin.data(), &size);
 					}
 				}
@@ -622,8 +656,8 @@ namespace MasterQian::System {
 		/// 枚举键值对
 		/// </summary>
 		/// <returns>项下所有键值对的集合</returns>
-		[[nodiscard]] std::vector<std::pair<std::wstring, KeyType>> EnumKey() const noexcept {
-			std::vector<std::pair<std::wstring, KeyType>> container;
+		[[nodiscard]] mqlist<std::pair<std::wstring, KeyType>> EnumKey() const noexcept {
+			mqlist<std::pair<std::wstring, KeyType>> container;
 			if (handle) {
 				mqui32 maxKeySize{ };
 				if (details::MasterQian_System_RegGetKeyValueMaxSize(handle, &maxKeySize, nullptr)) {
@@ -634,7 +668,7 @@ namespace MasterQian::System {
 							handle, index, maxKeySize + 1U, buf.data(), 
 							reinterpret_cast<mqui32*>(&type))) != 0U;
 						++index) {
-						container.emplace_back(buf.data(), type);
+						container.add(buf.data(), type);
 					}
 				}
 			}
