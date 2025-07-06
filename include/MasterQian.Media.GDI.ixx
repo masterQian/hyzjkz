@@ -8,15 +8,15 @@ module;
 #else
 #define MasterQianLibString "MasterQian.Media.GDI.dll"
 #endif
-#define MasterQianModuleVersion 20240131ULL
-#pragma message("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª Please copy [" MasterQianLibString "] into your program folder ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª")
+#define MasterQianModuleVersion 20240306ULL
+#pragma message("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€” Please copy [" MasterQianLibString "] into your program folder â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”")
 
 export module MasterQian.Media.GDI;
 export import MasterQian.Bin;
 export import MasterQian.Media.Color;
 
 namespace MasterQian::Media::GDI {
-	// GDIÎÄ±¾
+	// GDIæ–‡æœ¬
 	export struct GDIText {
 		mqcstr content;
 		mqui32 size;
@@ -24,7 +24,7 @@ namespace MasterQian::Media::GDI {
 		mqcstr font;
 	};
 
-	// Í¼Ïñ¸ñÊ½
+	// å›¾åƒæ ¼å¼
 	export enum class ImageFormat : mqenum {
 		BMP = 0, JPG = 1, GIF = 2, TIFF = 5, PNG = 6,
 		ICO = 10,
@@ -35,23 +35,23 @@ namespace MasterQian::Media::GDI {
 		UNKNOWN = static_cast<mqenum>(-1),
 	};
 
-	// Ëã·¨Ä£Ê½
+	// ç®—æ³•æ¨¡å¼
 	export enum class AlgorithmMode : bool {
 		FAST, QUALITY
 	};
 
-	// Ëã·¨Ä£Ê½¼¯
+	// ç®—æ³•æ¨¡å¼é›†
 	export struct AlgorithmModes {
-		AlgorithmMode compositing; // »ìºÏËã·¨
-		AlgorithmMode pixeloffset; // ÏñËØÆ«ÒÆËã·¨
-		AlgorithmMode smoothing; // ¿¹¾â³İËã·¨
-		AlgorithmMode interpolation; // ²åÖµËã·¨
+		AlgorithmMode compositing; // æ··åˆç®—æ³•
+		AlgorithmMode pixeloffset; // åƒç´ åç§»ç®—æ³•
+		AlgorithmMode smoothing; // æŠ—é”¯é½¿ç®—æ³•
+		AlgorithmMode interpolation; // æ’å€¼ç®—æ³•
 	};
 
-	// ¿ìËÙÄ£Ê½
+	// å¿«é€Ÿæ¨¡å¼
 	export constexpr AlgorithmModes FAST_MODE{ AlgorithmMode::FAST, AlgorithmMode::FAST, AlgorithmMode::FAST, AlgorithmMode::FAST };
 	/// <summary>
-	/// ¸ßÖÊÁ¿Ä£Ê½
+	/// é«˜è´¨é‡æ¨¡å¼
 	/// </summary>
 	export constexpr AlgorithmModes QUALITY_MODE{ AlgorithmMode::QUALITY, AlgorithmMode::QUALITY, AlgorithmMode::QUALITY, AlgorithmMode::QUALITY };
 
@@ -139,17 +139,17 @@ namespace MasterQian::Media::GDI {
 		META_MODULE_END
 	}
 
-	// ¿ªÆôGDI
+	// å¼€å¯GDI
 	export inline void StartupGDI() noexcept {
 		details::MasterQian_Media_GDI_StartupGDI();
 	}
 
-	// ¹Ø±ÕGDI
+	// å…³é—­GDI
 	export inline void ShutdownGDI() noexcept {
 		details::MasterQian_Media_GDI_ShutdownGDI();
 	}
 
-	// Í¼Ïñ
+	// å›¾åƒ
 	export struct Image {
 		friend struct Printer;
 	private:
@@ -163,35 +163,35 @@ namespace MasterQian::Media::GDI {
 
 	public:
 		/// <summary>
-		/// ¹¹Ôì´¿É«Í¼Ïñ
+		/// æ„é€ çº¯è‰²å›¾åƒ
 		/// </summary>
-		/// <param name="size">³ß´ç</param>
-		/// <param name="color">ÑÕÉ«</param>
+		/// <param name="size">å°ºå¯¸</param>
+		/// <param name="color">é¢œè‰²</param>
 		Image(mqsize size, Color color) noexcept {
 			handle = details::MasterQian_Media_GDI_CreateImageFromSize(size, color);
 		}
 
 		/// <summary>
-		/// ´ÓÎÄ¼ş¹¹Ôì
+		/// ä»æ–‡ä»¶æ„é€ 
 		/// </summary>
-		/// <param name="fn">ÎÄ¼şÃû</param>
+		/// <param name="fn">æ–‡ä»¶å</param>
 		explicit Image(std::wstring_view fn) noexcept {
 			handle = details::MasterQian_Media_GDI_CreateImageFromFile(fn.data());
 		}
 
 		/// <summary>
-		/// ´Ó³ÌĞòÍ¼±ê¹¹Ôì
+		/// ä»ç¨‹åºå›¾æ ‡æ„é€ 
 		/// </summary>
-		/// <param name="fileIconPath">¿ÉÖ´ĞĞ³ÌĞò»òDLLÂ·¾¶</param>
-		/// <param name="index">Í¼±êË÷Òı</param>
+		/// <param name="fileIconPath">å¯æ‰§è¡Œç¨‹åºæˆ–DLLè·¯å¾„</param>
+		/// <param name="index">å›¾æ ‡ç´¢å¼•</param>
 		Image(std::wstring_view fileIconPath, mqui32 index) noexcept {
 			handle = details::MasterQian_Media_GDI_CreateImageFromFileIcon(fileIconPath.data(), index);
 		}
 
 		/// <summary>
-		/// ´ÓÄÚ´æ¹¹Ôì
+		/// ä»å†…å­˜æ„é€ 
 		/// </summary>
-		/// <param name="bv">×Ö½Ú¼¯</param>
+		/// <param name="bv">å­—èŠ‚é›†</param>
 		explicit Image(BinView bv) noexcept {
 			handle = details::MasterQian_Media_GDI_CreateImageFromMemory(bv.data(), bv.size32());
 		}
@@ -228,18 +228,18 @@ namespace MasterQian::Media::GDI {
 		}
 
 		/// <summary>
-		/// ±£´æµ½ÎÄ¼ş
+		/// ä¿å­˜åˆ°æ–‡ä»¶
 		/// </summary>
-		/// <param name="fn">ÎÄ¼şÃû</param>
-		/// <param name="format">Í¼Ïñ¸ñÊ½</param>
+		/// <param name="fn">æ–‡ä»¶å</param>
+		/// <param name="format">å›¾åƒæ ¼å¼</param>
 		bool Save(std::wstring_view fn, ImageFormat format) const noexcept {
 			return details::MasterQian_Media_GDI_SaveToFile(handle, fn.data(), format);
 		}
 
 		/// <summary>
-		/// ±£´æµ½ÄÚ´æ
+		/// ä¿å­˜åˆ°å†…å­˜
 		/// </summary>
-		/// <param name="format">Í¼Ïñ¸ñÊ½</param>
+		/// <param name="format">å›¾åƒæ ¼å¼</param>
 		[[nodiscard]] Bin Save(ImageFormat format) const noexcept {
 			Bin bin;
 			mqui32 size{ };
@@ -251,9 +251,9 @@ namespace MasterQian::Media::GDI {
 		}
 
 		/// <summary>
-		/// ±£´æµ½Á÷£¬´Ë·½·¨Î£ÏÕ£¬±£´æµÄCOMÁ÷ÎªIStream*£¬Ó¦ÓÉÓÃ»§×Ô¼ºÖ÷¶¯Release
+		/// ä¿å­˜åˆ°æµï¼Œæ­¤æ–¹æ³•å±é™©ï¼Œä¿å­˜çš„COMæµä¸ºIStream*ï¼Œåº”ç”±ç”¨æˆ·è‡ªå·±ä¸»åŠ¨Release
 		/// </summary>
-		/// <param name="format">Í¼Ïñ¸ñÊ½</param>
+		/// <param name="format">å›¾åƒæ ¼å¼</param>
 		[[nodiscard]] mqhandle SaveToUnsafeStream(ImageFormat format) const noexcept {
 			mqui32 size{ };
 			return details::MasterQian_Media_GDI_SaveToStream(handle, format, &size);
@@ -264,87 +264,87 @@ namespace MasterQian::Media::GDI {
 		}
 
 		/// <summary>
-		/// È¡¿í¶È
+		/// å–å®½åº¦
 		/// </summary>
 		[[nodiscard]] mqui32 Width() const noexcept {
 			return details::MasterQian_Media_GDI_Size(handle).width;
 		}
 
 		/// <summary>
-		/// È¡¸ß¶È
+		/// å–é«˜åº¦
 		/// </summary>
 		[[nodiscard]] mqui32 Height() const noexcept {
 			return details::MasterQian_Media_GDI_Size(handle).height;
 		}
 
 		/// <summary>
-		/// È¡³ß´ç
+		/// å–å°ºå¯¸
 		/// </summary>
 		[[nodiscard]] mqsize Size() const noexcept {
 			return details::MasterQian_Media_GDI_Size(handle);
 		}
 
 		/// <summary>
-		/// È¡·Ö±æÂÊ
+		/// å–åˆ†è¾¨ç‡
 		/// </summary>
 		[[nodiscard]] mqsize DPI() const noexcept {
 			return details::MasterQian_Media_GDI_GetDPI(handle);
 		}
 
 		/// <summary>
-		/// ÖÃ·Ö±æÂÊ
+		/// ç½®åˆ†è¾¨ç‡
 		/// </summary>
-		/// <param name="dpi">·Ö±æÂÊ</param>
+		/// <param name="dpi">åˆ†è¾¨ç‡</param>
 		void DPI(mqsize dpi) noexcept {
 			details::MasterQian_Media_GDI_SetDPI(handle, dpi);
 		}
 
 		/// <summary>
-		/// È¡Î»Éî¶È
+		/// å–ä½æ·±åº¦
 		/// </summary>
 		[[nodiscard]] mqui32 BitDepth() const noexcept {
 			return details::MasterQian_Media_GDI_BitDepth(handle);
 		}
 
 		/// <summary>
-		/// È¡ËõÂÔÍ¼
+		/// å–ç¼©ç•¥å›¾
 		/// </summary>
-		/// <param name="size">³ß´ç</param>
+		/// <param name="size">å°ºå¯¸</param>
 		[[nodiscard]] Image Thumbnail(mqsize size) const noexcept {
 			return Image{ details::MasterQian_Media_GDI_Thumbnail(handle, size), _unused };
 		}
 
 		/// <summary>
-		/// ²Ã¼ô
+		/// è£å‰ª
 		/// </summary>
-		/// <param name="rect">²Ã¼ô¾ØĞÎ</param>
-		/// <param name="mode">Ëã·¨</param>
+		/// <param name="rect">è£å‰ªçŸ©å½¢</param>
+		/// <param name="mode">ç®—æ³•</param>
 		[[nodiscard]] Image Crop(mqrect rect, AlgorithmModes mode = FAST_MODE) const noexcept {
 			return Image{ details::MasterQian_Media_GDI_Crop(handle, rect, mode), _unused };
 		}
 
 		/// <summary>
-		/// ±ß¿ò
+		/// è¾¹æ¡†
 		/// </summary>
-		/// <param name="pos">±ß¿ò¿í¶È</param>
-		/// <param name="color">±ß¿òÑÕÉ«</param>
-		/// <param name="mode">Ëã·¨</param>
+		/// <param name="pos">è¾¹æ¡†å®½åº¦</param>
+		/// <param name="color">è¾¹æ¡†é¢œè‰²</param>
+		/// <param name="mode">ç®—æ³•</param>
 		[[nodiscard]] Image Border(mqrange pos, Color color, AlgorithmModes mode = FAST_MODE) const noexcept {
 			return Image{ details::MasterQian_Media_GDI_Border(handle, pos, color, mode), _unused };
 		}
 
 		/// <summary>
-		/// Ğı×ª
+		/// æ—‹è½¬
 		/// </summary>
-		/// <param name="angle">Ğı×ª½Ç¶È£¬½Ç¶ÈÖÆ</param>
-		/// <param name="color">ĞÂÇøÓòÑÕÉ«£¬Ä¬ÈÏÊÇÍ¸Ã÷</param>
-		/// <param name="mode">Ëã·¨</param>
+		/// <param name="angle">æ—‹è½¬è§’åº¦ï¼Œè§’åº¦åˆ¶</param>
+		/// <param name="color">æ–°åŒºåŸŸé¢œè‰²ï¼Œé»˜è®¤æ˜¯é€æ˜</param>
+		/// <param name="mode">ç®—æ³•</param>
 		[[nodiscard]] Image Rotate(mqf64 angle, Color color = Colors::Transparency, AlgorithmModes mode = FAST_MODE) const noexcept {
 			return Image{ details::MasterQian_Media_GDI_Rotate(handle, angle, color, mode), _unused };
 		}
 
 		/// <summary>
-		/// ×óĞı×ª90¶È
+		/// å·¦æ—‹è½¬90åº¦
 		/// </summary>
 		Image& RotateLeft() noexcept {
 			details::MasterQian_Media_GDI_RotateLeft(handle);
@@ -352,7 +352,7 @@ namespace MasterQian::Media::GDI {
 		}
 
 		/// <summary>
-		/// ÓÒĞı×ª90¶È
+		/// å³æ—‹è½¬90åº¦
 		/// </summary>
 		Image& RotateRight() noexcept {
 			details::MasterQian_Media_GDI_RotateRight(handle);
@@ -360,7 +360,7 @@ namespace MasterQian::Media::GDI {
 		}
 
 		/// <summary>
-		/// Ë®Æ½·­×ª
+		/// æ°´å¹³ç¿»è½¬
 		/// </summary>
 		Image& FlipX() noexcept {
 			details::MasterQian_Media_GDI_FlipX(handle);
@@ -368,7 +368,7 @@ namespace MasterQian::Media::GDI {
 		}
 
 		/// <summary>
-		/// ´¹Ö±·­×ª
+		/// å‚ç›´ç¿»è½¬
 		/// </summary>
 		Image& FlipY() noexcept {
 			details::MasterQian_Media_GDI_FlipY(handle);
@@ -376,31 +376,31 @@ namespace MasterQian::Media::GDI {
 		}
 
 		/// <summary>
-		/// »Ò¶ÈÍ¼
+		/// ç°åº¦å›¾
 		/// </summary>
-		/// <param name="mode">Ëã·¨</param>
+		/// <param name="mode">ç®—æ³•</param>
 		Image& GrayScale(AlgorithmModes mode = FAST_MODE) noexcept {
 			details::MasterQian_Media_GDI_GrayScale(handle, mode);
 			return *this;
 		}
 
 		/// <summary>
-		/// ÖØĞÂ²ÉÑù
+		/// é‡æ–°é‡‡æ ·
 		/// </summary>
-		/// <param name="size">³ß´ç</param>
-		/// <param name="mode">Ëã·¨</param>
+		/// <param name="size">å°ºå¯¸</param>
+		/// <param name="mode">ç®—æ³•</param>
 		[[nodiscard]] Image Resample(mqsize size, AlgorithmModes mode = FAST_MODE) const noexcept {
 			return Image{ details::MasterQian_Media_GDI_Resample(handle, size, mode), _unused };
 		}
 
 		/// <summary>
-		/// ºÏ²¢£¬½«Á½¸öÍ¼ÏñÆ´½Ó
+		/// åˆå¹¶ï¼Œå°†ä¸¤ä¸ªå›¾åƒæ‹¼æ¥
 		/// </summary>
-		/// <param name="image">Í¼Ïñ2</param>
-		/// <param name="rect1">Í¼Ïñ1µÄÆ´½ÓÇøÓò</param>
-		/// <param name="rect2">Í¼Ïñ2µÄÆ´½ÓÇøÓò</param>
-		/// <param name="mode">Ëã·¨</param>
-		/// <typeparam name="isHorizontal">ÊÇ·ñ×óÓÒÆ´½Ó£¬·´Ö®ÉÏÏÂÆ´½Ó</typeparam>
+		/// <param name="image">å›¾åƒ2</param>
+		/// <param name="rect1">å›¾åƒ1çš„æ‹¼æ¥åŒºåŸŸ</param>
+		/// <param name="rect2">å›¾åƒ2çš„æ‹¼æ¥åŒºåŸŸ</param>
+		/// <param name="mode">ç®—æ³•</param>
+		/// <typeparam name="isHorizontal">æ˜¯å¦å·¦å³æ‹¼æ¥ï¼Œåä¹‹ä¸Šä¸‹æ‹¼æ¥</typeparam>
 		template<bool isHorizontal = true>
 		[[nodiscard]] Image Combine(Image const& image, mqrect rect1 = { }, mqrect rect2 = { }, AlgorithmModes mode = FAST_MODE) const noexcept {
 			if (rect1 == mqrect{ }) {
@@ -417,60 +417,60 @@ namespace MasterQian::Media::GDI {
 		}
 
 		/// <summary>
-		/// »­Ïß
+		/// ç”»çº¿
 		/// </summary>
-		/// <param name="rect">ÏßËùÔÚ¾ØĞÎÇøÓò</param>
-		/// <param name="color">ÏßÌõÑÕÉ«</param>
-		/// <param name="thickness">ÏßÌõ´ÖÏ¸</param>
-		/// <param name="mode">Ëã·¨</param>
+		/// <param name="rect">çº¿æ‰€åœ¨çŸ©å½¢åŒºåŸŸ</param>
+		/// <param name="color">çº¿æ¡é¢œè‰²</param>
+		/// <param name="thickness">çº¿æ¡ç²—ç»†</param>
+		/// <param name="mode">ç®—æ³•</param>
 		Image& DrawLine(mqrect rect, Color color, mqf64 thickness = 1.0, AlgorithmModes mode = FAST_MODE) noexcept {
 			details::MasterQian_Media_GDI_DrawLine(handle, rect, color, thickness, mode);
 			return *this;
 		}
 
 		/// <summary>
-		/// »­¾ØĞÎ
+		/// ç”»çŸ©å½¢
 		/// </summary>
-		/// <param name="rect">¾ØĞÎÇøÓò</param>
-		/// <param name="color">ÏßÌõÑÕÉ«</param>
-		/// <param name="thickness">ÏßÌõ´ÖÏ¸</param>
-		/// <param name="mode">Ëã·¨</param>
+		/// <param name="rect">çŸ©å½¢åŒºåŸŸ</param>
+		/// <param name="color">çº¿æ¡é¢œè‰²</param>
+		/// <param name="thickness">çº¿æ¡ç²—ç»†</param>
+		/// <param name="mode">ç®—æ³•</param>
 		Image& DrawRectangle(mqrect rect, Color color, mqf64 thickness = 1.0, AlgorithmModes mode = FAST_MODE) noexcept {
 			details::MasterQian_Media_GDI_DrawRectangle(handle, rect, color, thickness, mode);
 			return *this;
 		}
 
 		/// <summary>
-		/// »­¶à¸ö¾ØĞÎ
+		/// ç”»å¤šä¸ªçŸ©å½¢
 		/// </summary>
-		/// <param name="rects">¾ØĞÎÇøÓò¼¯ºÏ</param>
-		/// <param name="color">ÏßÌõÑÕÉ«</param>
-		/// <param name="thickness">ÏßÌõ´ÖÏ¸</param>
-		/// <param name="mode">Ëã·¨</param>
+		/// <param name="rects">çŸ©å½¢åŒºåŸŸé›†åˆ</param>
+		/// <param name="color">çº¿æ¡é¢œè‰²</param>
+		/// <param name="thickness">çº¿æ¡ç²—ç»†</param>
+		/// <param name="mode">ç®—æ³•</param>
 		Image& DrawRectangles(mqlist<mqrect> const& rects, Color color, mqf64 thickness = 1.0, AlgorithmModes mode = FAST_MODE) noexcept {
 			details::MasterQian_Media_GDI_DrawRectangles(handle, rects.data(), rects.size32(), color, thickness, mode);
 			return *this;
 		}
 
 		/// <summary>
-		/// »­ÍÖÔ²
+		/// ç”»æ¤­åœ†
 		/// </summary>
-		/// <param name="point">Ô²ĞÄÎ»ÖÃ</param>
-		/// <param name="r">³¤ÖáÓë¶ÌÖá°ë¾¶</param>
-		/// <param name="color">ÏßÌõÑÕÉ«</param>
-		/// <param name="thickness">ÏßÌõ´ÖÏ¸</param>
-		/// <param name="mode">Ëã·¨</param>
+		/// <param name="point">åœ†å¿ƒä½ç½®</param>
+		/// <param name="r">é•¿è½´ä¸çŸ­è½´åŠå¾„</param>
+		/// <param name="color">çº¿æ¡é¢œè‰²</param>
+		/// <param name="thickness">çº¿æ¡ç²—ç»†</param>
+		/// <param name="mode">ç®—æ³•</param>
 		Image& DrawCircle(mqpoint point, mqsize r, Color color, mqf64 thickness = 1.0, AlgorithmModes mode = FAST_MODE) noexcept {
 			details::MasterQian_Media_GDI_DrawCircle(handle, point, r, color, thickness, mode);
 			return *this;
 		}
 
 		/// <summary>
-		/// Ğ´ÎÄ±¾
+		/// å†™æ–‡æœ¬
 		/// </summary>
-		/// <param name="point">ÎÄ±¾ÖĞĞÄÎ»ÖÃ</param>
-		/// <param name="textInfo">ÎÄ±¾ĞÅÏ¢</param>
-		/// <param name="mode">Ëã·¨</param>
+		/// <param name="point">æ–‡æœ¬ä¸­å¿ƒä½ç½®</param>
+		/// <param name="textInfo">æ–‡æœ¬ä¿¡æ¯</param>
+		/// <param name="mode">ç®—æ³•</param>
 		Image& DrawString(mqpoint point, GDIText const& textInfo, AlgorithmModes mode = FAST_MODE) noexcept {
 			mode.compositing = AlgorithmMode::QUALITY;
 			details::MasterQian_Media_GDI_DrawString(handle, point, textInfo.content,
@@ -479,46 +479,46 @@ namespace MasterQian::Media::GDI {
 		}
 
 		/// <summary>
-		/// »­Í¼Ïñ
+		/// ç”»å›¾åƒ
 		/// </summary>
-		/// <param name="image">Í¼Ïñ2</param>
-		/// <param name="point">Í¼Ïñ2ÔÚÔ­Í¼ÏñÎ»ÖÃ</param>
-		/// <param name="size">Í¼Ïñ2³ß´ç</param>
-		/// <param name="mode">Ëã·¨</param>
+		/// <param name="image">å›¾åƒ2</param>
+		/// <param name="point">å›¾åƒ2åœ¨åŸå›¾åƒä½ç½®</param>
+		/// <param name="size">å›¾åƒ2å°ºå¯¸</param>
+		/// <param name="mode">ç®—æ³•</param>
 		Image& DrawImage(Image const& image, mqpoint point, mqsize size = { }, AlgorithmModes mode = FAST_MODE) noexcept {
 			details::MasterQian_Media_GDI_DrawImage(handle, image.handle, point, size, mode);
 			return *this;
 		}
 
 		/// <summary>
-		/// Ìî³ä¾ØĞÎ
+		/// å¡«å……çŸ©å½¢
 		/// </summary>
-		/// <param name="rect">¾ØĞÎÇøÓò</param>
-		/// <param name="color">¾ØĞÎÑÕÉ«</param>
-		/// <param name="mode">Ëã·¨</param>
+		/// <param name="rect">çŸ©å½¢åŒºåŸŸ</param>
+		/// <param name="color">çŸ©å½¢é¢œè‰²</param>
+		/// <param name="mode">ç®—æ³•</param>
 		Image& FillRectangle(mqrect rect, Color color, AlgorithmModes mode = FAST_MODE) noexcept {
 			details::MasterQian_Media_GDI_FillRectangle(handle, rect, color, mode);
 			return *this;
 		}
 
 		/// <summary>
-		/// Ìî³ä¶à¸ö¾ØĞÎ
+		/// å¡«å……å¤šä¸ªçŸ©å½¢
 		/// </summary>
-		/// <param name="rects">¾ØĞÎÇøÓò¼¯ºÏ</param>
-		/// <param name="color">Ìî³äÑÕÉ«</param>
-		/// <param name="mode">Ëã·¨</param>
+		/// <param name="rects">çŸ©å½¢åŒºåŸŸé›†åˆ</param>
+		/// <param name="color">å¡«å……é¢œè‰²</param>
+		/// <param name="mode">ç®—æ³•</param>
 		Image& FillRectangles(mqlist<mqrect> const& rects, Color color, AlgorithmModes mode = FAST_MODE) noexcept {
 			details::MasterQian_Media_GDI_FillRectangles(handle, rects.data(), rects.size32(), color, mode);
 			return *this;
 		}
 
 		/// <summary>
-		/// Ìî³äÍÖÔ²
+		/// å¡«å……æ¤­åœ†
 		/// </summary>
-		/// <param name="point">Ô²ĞÄÎ»ÖÃ</param>
-		/// <param name="r">³¤ÖáÓë¶ÌÖá°ë¾¶</param>
-		/// <param name="color">Ìî³äÑÕÉ«</param>
-		/// <param name="mode">Ëã·¨</param>
+		/// <param name="point">åœ†å¿ƒä½ç½®</param>
+		/// <param name="r">é•¿è½´ä¸çŸ­è½´åŠå¾„</param>
+		/// <param name="color">å¡«å……é¢œè‰²</param>
+		/// <param name="mode">ç®—æ³•</param>
 		Image& FillCircle(mqpoint point, mqsize r, Color color, AlgorithmModes mode = FAST_MODE) noexcept {
 			details::MasterQian_Media_GDI_FillCircle(handle, point, r, color, mode);
 			return *this;
@@ -526,17 +526,17 @@ namespace MasterQian::Media::GDI {
 	};
 
 	/// <summary>
-	/// ´òÓ¡»ú
-	/// <para>´Ë¶ÔÏó´´½¨Ê±¿ªÆô´òÓ¡»ú£¬Îö¹¹Ê±Íê³É´òÓ¡</para>
+	/// æ‰“å°æœº
+	/// <para>æ­¤å¯¹è±¡åˆ›å»ºæ—¶å¼€å¯æ‰“å°æœºï¼Œææ„æ—¶å®Œæˆæ‰“å°</para>
 	/// </summary>
 	export struct Printer {
 	private:
 		mqhandle handle{ };
 	public:
 		/// <summary>
-		/// µ÷ÓÃ´òÓ¡»ú
+		/// è°ƒç”¨æ‰“å°æœº
 		/// </summary>
-		/// <param name="name">´òÓ¡»úÃû³Æ</param>
+		/// <param name="name">æ‰“å°æœºåç§°</param>
 		explicit Printer(std::wstring_view name) noexcept {
 			handle = details::MasterQian_Media_GDI_StartPrinterFromName(name.data());
 		}
@@ -562,10 +562,10 @@ namespace MasterQian::Media::GDI {
 		}
 
 		/// <summary>
-		/// »­Í¼Ïñ
+		/// ç”»å›¾åƒ
 		/// </summary>
-		/// <param name="image">Í¼Ïñ</param>
-		/// <param name="mode">Ëã·¨</param>
+		/// <param name="image">å›¾åƒ</param>
+		/// <param name="mode">ç®—æ³•</param>
 		Printer& DrawImage(Image const& image, AlgorithmModes mode = FAST_MODE) noexcept {
 			details::MasterQian_Media_GDI_DrawImageToPrinter(handle, image.handle, mode);
 			return *this;

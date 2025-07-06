@@ -6,12 +6,12 @@
 
 namespace winrt::hyzjkz::implementation {
     struct HistoryPage : HistoryPageT<HistoryPage> {
-        bool mNotAtExternalLink; // ÊÇ·ñ²»´¦ÓÚÍâÁ´
-        bool mCoverTurnover; // ÊÇ·ñÒş²ØÓªÒµ¶î
-        mqui32 mPhotoNum; // ÕÕÆ¬ÊıÁ¿
+        bool mNotAtExternalLink; // æ˜¯å¦ä¸å¤„äºå¤–é“¾
+        bool mCoverTurnover; // æ˜¯å¦éšè—è¥ä¸šé¢
+        mqui32 mPhotoNum; // ç…§ç‰‡æ•°é‡
 
-        std::array<Microsoft::UI::Xaml::Media::Imaging::BitmapImage, 10ULL> bmp_nums; // Êı×ÖÌùÍ¼
-        Microsoft::UI::Xaml::Media::Imaging::BitmapImage bmp_default_img; // Ä¬ÈÏÕÕÆ¬
+        std::array<Microsoft::UI::Xaml::Media::Imaging::BitmapImage, 10ULL> bmp_nums; // æ•°å­—è´´å›¾
+        Microsoft::UI::Xaml::Media::Imaging::BitmapImage bmp_default_img; // é»˜è®¤ç…§ç‰‡
 
         event<Microsoft::UI::Xaml::Data::PropertyChangedEventHandler> mPropertyChanged;
 

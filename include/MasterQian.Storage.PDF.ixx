@@ -9,7 +9,7 @@ module;
 #define MasterQianLibString "MasterQian.Storage.PDF.dll"
 #endif
 #define MasterQianModuleVersion 20240131ULL
-#pragma message("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª Please copy [" MasterQianLibString "] into your program folder ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª")
+#pragma message("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€” Please copy [" MasterQianLibString "] into your program folder â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”")
 
 export module MasterQian.Storage.PDF;
 export import MasterQian.Bin;
@@ -68,40 +68,40 @@ namespace MasterQian::Storage {
 	private:
 		mqhandle handle{ };
 	public:
-		// Ñ¹ËõÄ£Ê½
+		// å‹ç¼©æ¨¡å¼
 		enum class CompressMode : mqenum {
 			NONE = 0U, TEXT = 1U, IMAGE = 2U, METADATA = 4U, ALL = 15U
 		};
-		// Ò³ÃæÏÔÊ¾Ä£Ê½
+		// é¡µé¢æ˜¾ç¤ºæ¨¡å¼
 		enum class PageShowMode : mqenum {
 			NONE = 0U, OUTLINE = 1U, THUMB = 2U, FULL_SCREEN = 3U
 		};
-		// Ò³Ãæ²¼¾ÖÄ£Ê½
+		// é¡µé¢å¸ƒå±€æ¨¡å¼
 		enum class PageLayoutMode : mqenum {
 			SINGLE = 0U, ONE_COLUMN = 1U, TWO_COLUMN_LEFT = 2U,
 			TWO_COLUMN_RIGHT = 3U, TWO_PAGE_LEFT = 4U, TWO_PAGE_RIGHT = 5U,
 		};
-		// È¨ÏŞ
+		// æƒé™
 		enum class Permission : mqenum {
 			NONE = static_cast<mqui32>(-1),
 			READ = 0U, PRINT = 4U, EDIT = 8U, COPY = 16U, EDIT_COMMENT = 32U, ALL = 60U
 		};
 
-		// PDFÅäÖÃ
+		// PDFé…ç½®
 		struct PDFConfig {
-			CompressMode compress_mode{ CompressMode::NONE }; // Ñ¹ËõÄ£Ê½
-			PageShowMode page_show_mode{ PageShowMode::NONE }; // Ò³ÃæÏÔÊ¾Ä£Ê½
-			PageLayoutMode page_layout_mode{ PageLayoutMode::SINGLE }; // Ò³Ãæ²¼¾ÖÄ£Ê½
-			Permission permission{ Permission::NONE }; // È¨ÏŞ
-			std::wstring password_owner; // ËùÓĞÕßÃÜÂë
-			std::wstring password_user; // ÓÃ»§ÃÜÂë
+			CompressMode compress_mode{ CompressMode::NONE }; // å‹ç¼©æ¨¡å¼
+			PageShowMode page_show_mode{ PageShowMode::NONE }; // é¡µé¢æ˜¾ç¤ºæ¨¡å¼
+			PageLayoutMode page_layout_mode{ PageLayoutMode::SINGLE }; // é¡µé¢å¸ƒå±€æ¨¡å¼
+			Permission permission{ Permission::NONE }; // æƒé™
+			std::wstring password_owner; // æ‰€æœ‰è€…å¯†ç 
+			std::wstring password_user; // ç”¨æˆ·å¯†ç 
 		};
 
-		// Ò³Ãæ´óĞ¡
+		// é¡µé¢å¤§å°
 		struct PageSize {
-			mqui32 width, height; // ¿í¸ß(µ¥Î»ÏñËØ, DPIÎª72)
+			mqui32 width, height; // å®½é«˜(å•ä½åƒç´ , DPIä¸º72)
 
-			[[nodiscard]] PageSize operator ~ () const noexcept { // µ÷×ª·½Ïò
+			[[nodiscard]] PageSize operator ~ () const noexcept { // è°ƒè½¬æ–¹å‘
 				return { height, width };
 			}
 		};
@@ -116,12 +116,12 @@ namespace MasterQian::Storage {
 			static constexpr PageSize B5{ 499U, 709U };
 		};
 
-		// Ò³ÃæÅäÖÃ
+		// é¡µé¢é…ç½®
 		struct PageConfig {
 			PageSize page_size{ PageSizes::A4 };
 		};
 
-		// ×ÖÌå
+		// å­—ä½“
 		struct Font {
 			friend struct PDF;
 			friend struct Page;
@@ -134,7 +134,7 @@ namespace MasterQian::Storage {
 			}
 		};
 
-		// Í¼Ïñ
+		// å›¾åƒ
 		struct Image {
 			friend struct PDF;
 			friend struct Page;
@@ -147,7 +147,7 @@ namespace MasterQian::Storage {
 			}
 		};
 
-		// Ò³Ãæ
+		// é¡µé¢
 		struct Page {
 			friend struct PDF;
 		private:

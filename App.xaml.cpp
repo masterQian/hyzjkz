@@ -5,8 +5,8 @@
 #include "app.h"
 
 namespace winrt::hyzjkz::implementation {
-    // [Òì²½] ÕÕÆ¬ÇåÀí
-    static fire_and_forget ClearPhotos() noexcept {
+    // [å¼‚æ­¥] ç…§ç‰‡æ¸…ç†
+    static IAsyncAction ClearPhotos() noexcept {
         co_await winrt::resume_background();
 
         mqchar clear_month[3]{ L'0', L'0', L'\0' };
@@ -30,15 +30,15 @@ namespace winrt::hyzjkz::implementation {
 
         for (auto& folder : Global.c_photoPath.EnumFolder()) {
             auto name{ folder.Name() };
-            if (name.size() == 8ULL && name.substr(4ULL, 2ULL) == clear_month) { // Èç20231231 -> 12
-                // É¾³ıÕÕÆ¬ÎÄ¼ş¼Ğ¼°¶ÔÓ¦ËõÂÔÍ¼ÎÄ¼ş¼Ğ
+            if (name.size() == 8ULL && name.substr(4ULL, 2ULL) == clear_month) { // å¦‚20231231 -> 12
+                // åˆ é™¤ç…§ç‰‡æ–‡ä»¶å¤¹åŠå¯¹åº”ç¼©ç•¥å›¾æ–‡ä»¶å¤¹
                 folder.Delete();
                 Global.c_thumbPath.Concat(name).Delete();
             }
         }
     }
 
-    // ÕÕÆ¬×ª´¢
+    // ç…§ç‰‡è½¬å‚¨
     static void RestorePhotos() noexcept {
         auto date_str{ Timestamp{ }.local().formatDate() };
         auto photo_path{ Global.c_photoPath / date_str };
@@ -51,7 +51,7 @@ namespace winrt::hyzjkz::implementation {
         }
     }
 
-    // È¡Ä¬ÈÏÅäÖÃ
+    // å–é»˜è®¤é…ç½®
     static Bin GetDefaultConfig() noexcept {
         GlobalConfig config;
         config.Set<GlobalConfig::EOS_PATH>();
@@ -63,19 +63,19 @@ namespace winrt::hyzjkz::implementation {
         config.Set<GlobalConfig::PASSWORD>();
         config.Set<GlobalConfig::USE_PASSWORD>();
         Parser::Config tools;
-        tools.set(L"ÃÀÍ¼ĞãĞã", L"");
-        tools.set(L"¹âÓ°Ä§ÊõÊÖ", L"");
+        tools.set(L"ç¾å›¾ç§€ç§€", L"");
+        tools.set(L"å…‰å½±é­”æœ¯æ‰‹", L"");
         tools.set(L"PhotoShop", L"");
         config.Set(GlobalConfig::TOOLS, tools);
         return config.save();
     }
 
-    // È¡Ä¬ÈÏ±¨±íÊı¾İ
+    // å–é»˜è®¤æŠ¥è¡¨æ•°æ®
     inline Bin GetDefaultRecordData() noexcept {
         return Bin(sizeof(RecordData));
     }
 
-    // È¡Ò»´çÄ£°å
+    // å–ä¸€å¯¸æ¨¡æ¿
     static Bin GetTemplate1() noexcept {
         mqui32 count{ 10U };
         Bin bin(PrintTemplate::CalcSize(count));
@@ -85,7 +85,7 @@ namespace winrt::hyzjkz::implementation {
         pt.flag.canDelete = false;
         pt.flag.isRotate = false;
         pt.flag.isAutoCut = true;
-        lstrcpyW(pt.name, L"Ò»´ç");
+        lstrcpyW(pt.name, L"ä¸€å¯¸");
         pt.data[0] = { 100, 160, 295, 413 };
         pt.data[1] = { 415, 160, 295, 413 };
         pt.data[2] = { 730, 160, 295, 413 };
@@ -99,7 +99,7 @@ namespace winrt::hyzjkz::implementation {
         return bin;
     }
 
-    // È¡¶ş´çÄ£°å
+    // å–äºŒå¯¸æ¨¡æ¿
     static Bin GetTemplate2() noexcept {
         mqui32 count{ 8U };
         Bin bin(PrintTemplate::CalcSize(count));
@@ -109,7 +109,7 @@ namespace winrt::hyzjkz::implementation {
         pt.flag.canDelete = false;
         pt.flag.isRotate = false;
         pt.flag.isAutoCut = true;
-        lstrcpyW(pt.name, L"¶ş´ç");
+        lstrcpyW(pt.name, L"äºŒå¯¸");
         pt.data[0] = { 90, 0, 390, 567 };
         pt.data[1] = { 500, 0, 390, 567 };
         pt.data[2] = { 910, 0, 390, 567 };
@@ -121,7 +121,7 @@ namespace winrt::hyzjkz::implementation {
         return bin;
     }
 
-    // È¡Îå´çÄ£°å
+    // å–äº”å¯¸æ¨¡æ¿
     static Bin GetTemplate5() noexcept {
         mqui32 count{ 1U };
         Bin bin(PrintTemplate::CalcSize(count));
@@ -131,12 +131,12 @@ namespace winrt::hyzjkz::implementation {
         pt.flag.canDelete = false;
         pt.flag.isRotate = true;
         pt.flag.isAutoCut = false;
-        lstrcpyW(pt.name, L"Îå´ç");
+        lstrcpyW(pt.name, L"äº”å¯¸");
         pt.data[0] = { 120, 50, 1500, 1050 };
         return bin;
     }
 
-    // È¡½á»éÕÕÄ£°å
+    // å–ç»“å©šç…§æ¨¡æ¿
     static Bin GetTemplateMarry() noexcept {
         mqui32 count{ 4U };
         Bin bin(PrintTemplate::CalcSize(count));
@@ -146,7 +146,7 @@ namespace winrt::hyzjkz::implementation {
         pt.flag.canDelete = false;
         pt.flag.isRotate = false;
         pt.flag.isAutoCut = false;
-        lstrcpyW(pt.name, L"½á»éÕÕ");
+        lstrcpyW(pt.name, L"ç»“å©šç…§");
         pt.data[0] = { 205, 125, 673, 437 };
         pt.data[1] = { 895, 125, 673, 437 };
         pt.data[2] = { 205, 585, 673, 437 };
@@ -157,7 +157,7 @@ namespace winrt::hyzjkz::implementation {
     App::App() {
         InitializeComponent();
 #ifdef _DEBUG
-        UnhandledException([](IInspectable const&, UnhandledExceptionEventArgs const& args) {
+        UnhandledException([](IInspectable const&, Microsoft::UI::Xaml::UnhandledExceptionEventArgs const& args) {
             if (IsDebuggerPresent()) {
                 auto errorMessage = args.Message();
                 __debugbreak();
@@ -166,58 +166,58 @@ namespace winrt::hyzjkz::implementation {
 #endif
     }
 
-    // ³õÊ¼»¯Â·¾¶
+    // åˆå§‹åŒ–è·¯å¾„
     static void InitializePath() noexcept {
-        // »ñÈ¡ÔËĞĞÂ·¾¶
+        // è·å–è¿è¡Œè·¯å¾„
         Global.c_runPath = Storage::Path::Running();
 
-        // µ±Ç°ÈÕÆÚÎÄ±¾
+        // å½“å‰æ—¥æœŸæ–‡æœ¬
         auto lt{ Timestamp{ }.local() };
         auto currentDate{ lt.formatDate() };
 
-        // ÕÕÆ¬Â·¾¶
+        // ç…§ç‰‡è·¯å¾„
         Global.c_photoPath = Global.c_runPath / L"photo";
         Global.c_photoPath.Create();
         Global.c_photoPath.Concat(currentDate).Create();
 
-        // »º´æÂ·¾¶
+        // ç¼“å­˜è·¯å¾„
         Global.c_thumbPath = Global.c_runPath / L"thumb";
         Global.c_thumbPath.Create();
         Global.c_thumbPath.Concat(currentDate).Create();
 
-        // Ä£°åÂ·¾¶
+        // æ¨¡æ¿è·¯å¾„
         Global.c_templatePath = Global.c_runPath / L"template";
         Global.c_templatePath.Create();
-        Global.c_templatePath.Concat(L"Ò»´ç.template").Create(GetTemplate1());
-        Global.c_templatePath.Concat(L"¶ş´ç.template").Create(GetTemplate2());
-        Global.c_templatePath.Concat(L"Îå´ç.template").Create(GetTemplate5());
-        Global.c_templatePath.Concat(L"½á»éÕÕ.template").Create(GetTemplateMarry());
+        Global.c_templatePath.Concat(L"ä¸€å¯¸.template").Create(GetTemplate1());
+        Global.c_templatePath.Concat(L"äºŒå¯¸.template").Create(GetTemplate2());
+        Global.c_templatePath.Concat(L"äº”å¯¸.template").Create(GetTemplate5());
+        Global.c_templatePath.Concat(L"ç»“å©šç…§.template").Create(GetTemplateMarry());
 
-        // Êı¾İÂ·¾¶
+        // æ•°æ®è·¯å¾„
         Global.c_dataPath = Global.c_runPath / L"data";
         Global.c_dataPath.Create();
         Global.c_dataPath.Concat(std::to_wstring(lt.year) + L".bin")
             .Create(GetDefaultRecordData());
 
-        // ÅäÖÃÎÄ¼ş
+        // é…ç½®æ–‡ä»¶
         Global.c_configFilePath = Global.c_runPath / L"app.config";
         Global.c_configFilePath.Create(GetDefaultConfig());
     
-        // ÁÙÊ±ÕÕÆ¬Â·¾¶
+        // ä¸´æ—¶ç…§ç‰‡è·¯å¾„
         Global.c_tempPhotoPath = Global.c_runPath / L"temp.jpg";
 
-        // Ïà»úÕÕÆ¬Â·¾¶
+        // ç›¸æœºç…§ç‰‡è·¯å¾„
         Global.c_cameraPhotoPath = Global.c_runPath / L"camera_photo";
         Global.c_cameraPhotoPath.Create();
     }
 
-    // ³õÊ¼»¯×ÊÔ´
+    // åˆå§‹åŒ–èµ„æº
     static void InitializeResource() noexcept {
         Global.res_icon = System::Process::GetResource(R_ICON);
         Global.res_default_img = System::Process::GetResource(R_DEFAULT_IMG);
     }
 
-    // ³õÊ¼»¯ÅäÖÃ
+    // åˆå§‹åŒ–é…ç½®
     static void InitializeConfig() noexcept {
         Global.cfg.load(Global.c_configFilePath.Read());
 
@@ -230,7 +230,7 @@ namespace winrt::hyzjkz::implementation {
         }
     }
     
-    // ³õÊ¼»¯Êı¾İ
+    // åˆå§‹åŒ–æ•°æ®
     static void InitializeData() noexcept {
         Global.c_photoThumbSize = {
             static_cast<mqui32>(util::RDValue<mqf64>(L"PhotoThumbWidth")),
@@ -259,27 +259,44 @@ namespace winrt::hyzjkz::implementation {
         };
     }
 
+    // åˆå§‹åŒ–å…¨å±€
+    static void InitializeGlobal() noexcept {
+        // å¼€å¯GDI
+        Media::GDI::StartupGDI();
+        // åˆ›å»ºæ–‡ä»¶ç›‘æ§äº‹ä»¶
+        Global.file_spy_event = CreateEventW(nullptr, true, false, nullptr);
+    }
+
     void App::OnLaunched(Microsoft::UI::Xaml::LaunchActivatedEventArgs const& e) {
-        if (System::Process::SingleProcessLock()) { // ·ÀÖ¹¶à¿ª
-            // ³õÊ¼»¯
+        if (System::Process::SingleProcessLock()) { // é˜²æ­¢å¤šå¼€
+            // åˆå§‹åŒ–
             InitializePath();
             InitializeResource();
             InitializeConfig();
             InitializeData();
+            InitializeGlobal();
 
-            // ÕÕÆ¬×ª´¢
+            // ç…§ç‰‡è½¬å‚¨
             RestorePhotos();
 
-            // Òì²½ÈÎÎñ
+            // å¼‚æ­¥ä»»åŠ¡
             ClearPhotos();
 
-            // ÏÔÊ¾Ö÷´°¿Ú
+            // æ˜¾ç¤ºä¸»çª—å£
             Global.ui_window = make<MainWindow>();
             window = Global.ui_window;
+            window.Closed([ ] (auto...) {
+                // å–æ¶ˆå¼•ç”¨
+                Global.ui_window = nullptr;
+                // å‘é€åœæ­¢æ–‡ä»¶ç›‘æ§äº‹ä»¶
+                SetEvent(Global.file_spy_event);
+                // å…³é—­GDI
+                Media::GDI::ShutdownGDI();
+            });
             window.Activate();
         }
         else {
-            Exit(); // ½áÊø³ÌĞò
+            Exit(); // ç»“æŸç¨‹åº
         }
     }
 }

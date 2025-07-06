@@ -10,7 +10,7 @@ module;
 #define MasterQianLibString "MasterQian.DB.Sqlite.dll"
 #endif
 #define MasterQianModuleVersion 20240131ULL
-#pragma message("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª Please copy [" MasterQianLibString "] into your program folder ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª")
+#pragma message("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€” Please copy [" MasterQianLibString "] into your program folder â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”")
 
 export module MasterQian.DB.Sqlite;
 export import MasterQian.freestanding;
@@ -43,12 +43,12 @@ namespace MasterQian::DB {
 		META_MODULE_END
 	}
 
-	// Sqlite3Êı¾İ¿â¶ÔÏó
+	// Sqlite3æ•°æ®åº“å¯¹è±¡
 	export struct Sqlite {
 	private:
 		mqhandle handle{ };
 	public:
-		// Sqlite²Ù×÷½á¹û
+		// Sqliteæ“ä½œç»“æœ
 		enum class Result : mqenum {
 			OK, ERROR, INTERNAL, PERM, ABORT, BUSY, LOCKED, MOMEM, READONLY, INTERRUPT,
 			IOERR, CORRUPT, NOTFOUND, FULL, CANTOPEN, PROTOCOL, EMPTY, SCHEMA, TOOBIG,
@@ -57,10 +57,10 @@ namespace MasterQian::DB {
 			ROW = 100, DONE,
 		};
 
-		// ÁĞ¶¨Òå
+		// åˆ—å®šä¹‰
 		using ColDef = std::unordered_map<std::wstring, mqui32, freestanding::isomerism_hash, freestanding::isomerism_equal>;
 
-		// ĞĞ
+		// è¡Œ
 		struct Row : protected mqlist<std::wstring> {
 			using BaseT = mqlist<std::wstring>;
 		protected:
@@ -91,7 +91,7 @@ namespace MasterQian::DB {
 			}
 		};
 
-		// ±í
+		// è¡¨
 		struct Table : protected mqlist<Row> {
 			using BaseT = mqlist<Row>;
 			ColDef colName;
@@ -144,10 +144,10 @@ namespace MasterQian::DB {
 		}
 
 		/// <summary>
-		/// ´ò¿ªÊı¾İ¿â
+		/// æ‰“å¼€æ•°æ®åº“
 		/// </summary>
-		/// <param name="fn">Sqlite3Êı¾İ¿âÎÄ¼şÃû</param>
-		/// <returns>²Ù×÷½á¹û</returns>
+		/// <param name="fn">Sqlite3æ•°æ®åº“æ–‡ä»¶å</param>
+		/// <returns>æ“ä½œç»“æœ</returns>
 		Result Open(std::wstring_view fn) noexcept {
 			if (handle) {
 				details::MasterQian_DB_Sqlite_Close(&handle);
@@ -156,33 +156,33 @@ namespace MasterQian::DB {
 		}
 
 		/// <summary>
-		/// ¹Ø±ÕÊı¾İ¿â
+		/// å…³é—­æ•°æ®åº“
 		/// </summary>
-		/// <returns>²Ù×÷½á¹û</returns>
+		/// <returns>æ“ä½œç»“æœ</returns>
 		Result Close() noexcept {
 			return static_cast<Result>(details::MasterQian_DB_Sqlite_Close(&handle));
 		}
 
 		/// <summary>
-		/// È¡×îºó½á¹û
+		/// å–æœ€åç»“æœ
 		/// </summary>
-		/// <returns>²Ù×÷½á¹û</returns>
+		/// <returns>æ“ä½œç»“æœ</returns>
 		[[nodiscard]] Result LastResult() const noexcept {
 			return static_cast<Result>(details::MasterQian_DB_Sqlite_LastResult(handle));
 		}
 
 		/// <summary>
-		/// È¡×îºó½á¹ûÎÄ±¾
+		/// å–æœ€åç»“æœæ–‡æœ¬
 		/// </summary>
-		/// <returns>²Ù×÷½á¹ûÎÄ±¾</returns>
+		/// <returns>æ“ä½œç»“æœæ–‡æœ¬</returns>
 		[[nodiscard]] std::wstring LastResultString() const noexcept {
 			return details::MasterQian_DB_Sqlite_LastResultString(handle);
 		}
 
 		/// <summary>
-		/// È¡ËùÓĞ±íÃû
+		/// å–æ‰€æœ‰è¡¨å
 		/// </summary>
-		/// <returns>Êı¾İ¿âÄÚËùÓĞ±íÃû</returns>
+		/// <returns>æ•°æ®åº“å†…æ‰€æœ‰è¡¨å</returns>
 		[[nodiscard]] mqlist<std::wstring> TablesName() const noexcept {
 			mqlist<std::wstring> container;
 			for (auto& row : Query(L"select name from sqlite_master where type = 'table'")) {
@@ -192,19 +192,19 @@ namespace MasterQian::DB {
 		}
 
 		/// <summary>
-		/// Ö´ĞĞSQL
+		/// æ‰§è¡ŒSQL
 		/// </summary>
-		/// <param name="sql">sqlÓï¾ä</param>
-		/// <returns>²Ù×÷½á¹û</returns>
+		/// <param name="sql">sqlè¯­å¥</param>
+		/// <returns>æ“ä½œç»“æœ</returns>
 		Result Execute(std::wstring_view sql) const noexcept {
 			return static_cast<Result>(details::MasterQian_DB_Sqlite_Execute(handle, sql.data()));
 		}
 
 		/// <summary>
-		/// ²éÑ¯SQL
+		/// æŸ¥è¯¢SQL
 		/// </summary>
-		/// <param name="sql">sqlÓï¾ä</param>
-		/// <returns>²éÑ¯±í</returns>
+		/// <param name="sql">sqlè¯­å¥</param>
+		/// <returns>æŸ¥è¯¢è¡¨</returns>
 		[[nodiscard]] Table Query(std::wstring_view sql) const noexcept {
 			return Table{ details::MasterQian_DB_Sqlite_QueryPrepare(handle, sql.data()) };
 		}

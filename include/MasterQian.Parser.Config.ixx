@@ -69,7 +69,7 @@ namespace MasterQian::Parser {
 		}
 	}
 	
-	// ÅäÖÃ¶ÔÏó
+	// é…ç½®å¯¹è±¡
 	export struct Config : protected std::unordered_map<std::wstring, Bin, freestanding::isomerism_hash, freestanding::isomerism_equal> {
 		using PointT = mqbytes;
 		using ConstPointT = mqcbytes;
@@ -78,7 +78,7 @@ namespace MasterQian::Parser {
 	public:
 		Config() = default;
 
-		// ´Ó×Ö½Ú¼¯´´½¨
+		// ä»å­—èŠ‚é›†åˆ›å»º
 		explicit Config(BinView bv) noexcept {
 			load(bv);
 		}
@@ -93,11 +93,11 @@ namespace MasterQian::Parser {
 		using BaseT::cend;
 
 		/// <summary>
-		/// ÖÃÅäÖÃ
+		/// ç½®é…ç½®
 		/// </summary>
-		/// <param name="key">ÅäÖÃÃû</param>
-		/// <param name="value">Êı×ÖÅäÖÃÖµ</param>
-		/// <typeparam name="T">ÅäÖÃÀàĞÍ£¬Ö§³ÖÕûÊı»ò¸¡µãÊıÀàĞÍ</typeparam>
+		/// <param name="key">é…ç½®å</param>
+		/// <param name="value">æ•°å­—é…ç½®å€¼</param>
+		/// <typeparam name="T">é…ç½®ç±»å‹ï¼Œæ”¯æŒæ•´æ•°æˆ–æµ®ç‚¹æ•°ç±»å‹</typeparam>
 		template<freestanding::numeric T>
 		void set(std::wstring_view key, T value) noexcept {
 			auto data{ reinterpret_cast<ConstPointT>(&value) };
@@ -111,10 +111,10 @@ namespace MasterQian::Parser {
 		}
 
 		/// <summary>
-		/// ÖÃÅäÖÃ
+		/// ç½®é…ç½®
 		/// </summary>
-		/// <param name="key">ÅäÖÃÃû</param>
-		/// <param name="value">×Ö·û´®ÅäÖÃÖµ</param>
+		/// <param name="key">é…ç½®å</param>
+		/// <param name="value">å­—ç¬¦ä¸²é…ç½®å€¼</param>
 		void set(std::wstring_view key, std::wstring_view value) noexcept {
 			auto data{ reinterpret_cast<ConstPointT>(value.data()) };
 			auto count{ value.size() * sizeof(mqchar) };
@@ -127,10 +127,10 @@ namespace MasterQian::Parser {
 		}
 
 		/// <summary>
-		/// ÖÃÅäÖÃ
+		/// ç½®é…ç½®
 		/// </summary>
-		/// <param name="key">ÅäÖÃÃû</param>
-		/// <param name="value">×Ö½Ú¼¯ÅäÖÃÖµ</param>
+		/// <param name="key">é…ç½®å</param>
+		/// <param name="value">å­—èŠ‚é›†é…ç½®å€¼</param>
 		void set(std::wstring_view key, BinView value) noexcept {
 			if (auto iter{ find(key) }; iter != cend()) {
 				iter->second = Bin(value);
@@ -141,10 +141,10 @@ namespace MasterQian::Parser {
 		}
 
 		/// <summary>
-		/// ÖÃÅäÖÃ
+		/// ç½®é…ç½®
 		/// </summary>
-		/// <param name="key">ÅäÖÃÃû</param>
-		/// <param name="value">×ÓÅäÖÃ</param>
+		/// <param name="key">é…ç½®å</param>
+		/// <param name="value">å­é…ç½®</param>
 		void set(std::wstring_view key, Config const& value) noexcept {
 			if (auto iter{ find(key) }; iter != cend()) {
 				iter->second = value.save();
@@ -155,12 +155,12 @@ namespace MasterQian::Parser {
 		}
 
 		/// <summary>
-		/// È¡ÅäÖÃ
+		/// å–é…ç½®
 		/// </summary>
-		/// <param name="key">ÅäÖÃÃû</param>
-		/// <param name="default_value">Ä¬ÈÏÖµ</param>
-		/// <typeparam name="T">ÅäÖÃÀàĞÍ£¬Ö§³ÖÕûÊı»ò¸¡µãÊı</typeparam>
-		/// <returns>ÅäÖÃÖµ</returns>
+		/// <param name="key">é…ç½®å</param>
+		/// <param name="default_value">é»˜è®¤å€¼</param>
+		/// <typeparam name="T">é…ç½®ç±»å‹ï¼Œæ”¯æŒæ•´æ•°æˆ–æµ®ç‚¹æ•°</typeparam>
+		/// <returns>é…ç½®å€¼</returns>
 		template<freestanding::numeric T>
 		[[nodiscard]] T get(std::wstring_view key, T default_value = { }) const noexcept {
 			if (auto iter{ find(key) }; iter != cend()) {
@@ -172,11 +172,11 @@ namespace MasterQian::Parser {
 		}
 
 		/// <summary>
-		/// È¡×Ö·û´®ÅäÖÃ
+		/// å–å­—ç¬¦ä¸²é…ç½®
 		/// </summary>
-		/// <param name="key">ÅäÖÃÃû</param>
-		/// <param name="default_value">Ä¬ÈÏÖµ</param>
-		/// <returns>ÅäÖÃÖµ</returns>
+		/// <param name="key">é…ç½®å</param>
+		/// <param name="default_value">é»˜è®¤å€¼</param>
+		/// <returns>é…ç½®å€¼</returns>
 		[[nodiscard]] std::wstring get(std::wstring_view key, std::wstring_view default_value = { }) const noexcept {
 			if (auto iter{ find(key) }; iter != cend()) {
 				auto data{ reinterpret_cast<mqcstr>(iter->second.data()) };
@@ -189,11 +189,11 @@ namespace MasterQian::Parser {
 		}
 
 		/// <summary>
-		/// È¡×Ö½Ú¼¯ÅäÖÃ
+		/// å–å­—èŠ‚é›†é…ç½®
 		/// </summary>
-		/// <param name="key">ÅäÖÃÃû</param>
-		/// <param name="default_value">Ä¬ÈÏÖµ</param>
-		/// <returns>ÅäÖÃÖµ</returns>
+		/// <param name="key">é…ç½®å</param>
+		/// <param name="default_value">é»˜è®¤å€¼</param>
+		/// <returns>é…ç½®å€¼</returns>
 		[[nodiscard]] Bin get_bin(std::wstring_view key, BinView default_value = { }) const noexcept {
 			if (auto iter{ find(key) }; iter != cend()) {
 				return iter->second;
@@ -204,11 +204,11 @@ namespace MasterQian::Parser {
 		}
 
 		/// <summary>
-		/// È¡×ÓÅäÖÃ
+		/// å–å­é…ç½®
 		/// </summary>
-		/// <param name="key">ÅäÖÃÃû</param>
-		/// <param name="default_value">Ä¬ÈÏÖµ</param>
-		/// <returns>ÅäÖÃÖµ</returns>
+		/// <param name="key">é…ç½®å</param>
+		/// <param name="default_value">é»˜è®¤å€¼</param>
+		/// <returns>é…ç½®å€¼</returns>
 		[[nodiscard]] Config get_config(std::wstring_view key, Config const& default_value = { }) const noexcept {
 			if (auto iter{ find(key) }; iter != cend()) {
 				return Config(iter->second);
@@ -219,9 +219,9 @@ namespace MasterQian::Parser {
 		}
 
 		/// <summary>
-		/// ÒÆ³ıÅäÖÃ
+		/// ç§»é™¤é…ç½®
 		/// </summary>
-		/// <param name="key">ÅäÖÃÃû</param>
+		/// <param name="key">é…ç½®å</param>
 		bool remove(std::wstring_view key) noexcept {
 			if (auto iter{ find(key) }; iter != cend()) {
 				erase(iter);
@@ -233,9 +233,9 @@ namespace MasterQian::Parser {
 		}
 
 		/// <summary>
-		/// ´Ó×Ö½Ú¼¯ÔØÈë
+		/// ä»å­—èŠ‚é›†è½½å…¥
 		/// </summary>
-		/// <param name="bv">×Ö½Ú¼¯</param>
+		/// <param name="bv">å­—èŠ‚é›†</param>
 		void load(BinView bv) noexcept {
 			clear();
 			ConstPointT p{ bv.data() };
@@ -250,9 +250,9 @@ namespace MasterQian::Parser {
 		}
 
 		/// <summary>
-		/// ±£´æ×Ö½Ú¼¯
+		/// ä¿å­˜å­—èŠ‚é›†
 		/// </summary>
-		/// <returns>×Ö½Ú¼¯</returns>
+		/// <returns>å­—èŠ‚é›†</returns>
 		[[nodiscard]] Bin save() const noexcept {
 			SizeT totalCount{ sizeof(SizeT) };
 			for (auto& [key, value] : *this) {

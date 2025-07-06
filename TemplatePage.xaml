@@ -30,11 +30,11 @@
                         VerticalAlignment="Center"
                         Background="Transparent"
                         DefaultLabelPosition="Right" IsOpen="False">
-                <AppBarButton Click="AppBarButton_Click" Icon="Add" Label="{StaticResource TemplatePage.Bar.Add}" />
-                <AppBarButton Click="AppBarButton_Click" Icon="Delete" Label="{StaticResource TemplatePage.Bar.Delete}" />
-                <AppBarButton Click="AppBarButton_Click" Icon="Edit" Label="{StaticResource TemplatePage.Bar.Rename}" />
-                <AppBarButton Click="AppBarButton_Click" Icon="Preview" Label="{StaticResource TemplatePage.Bar.Preview}" />
-                <AppBarButton Click="AppBarButton_Click" Icon="Save" Label="{StaticResource TemplatePage.Bar.Save}" />
+                <AppBarButton AllowFocusOnInteraction="True" Click="AppBarButton_Click" Icon="Add" Label="{StaticResource TemplatePage.Bar.Add}" />
+                <AppBarButton AllowFocusOnInteraction="True" Click="AppBarButton_Click" Icon="Delete" Label="{StaticResource TemplatePage.Bar.Delete}" />
+                <AppBarButton AllowFocusOnInteraction="True" Click="AppBarButton_Click" Icon="Edit" Label="{StaticResource TemplatePage.Bar.Rename}" />
+                <AppBarButton AllowFocusOnInteraction="True" Click="AppBarButton_Click" Icon="Preview" Label="{StaticResource TemplatePage.Bar.Preview}" />
+                <AppBarButton AllowFocusOnInteraction="True" Click="AppBarButton_Click" Icon="Save" Label="{StaticResource TemplatePage.Bar.Save}" />
             </CommandBar>
         </Grid>
         <ListView x:Name="LV_Templates" Grid.Row="1"
@@ -57,8 +57,8 @@
                         VerticalAlignment="Center"
                         Background="Transparent"
                         DefaultLabelPosition="Right" IsOpen="False">
-                <AppBarButton Click="AppBarButton_Click" Icon="Add" Label="{StaticResource TemplatePage.Bar.AddItem}" />
-                <AppBarButton Click="AppBarButton_Click" Icon="Delete" Label="{StaticResource TemplatePage.Bar.DeleteItem}" />
+                <AppBarButton AllowFocusOnInteraction="True" Click="AppBarButton_Click" Icon="Add" Label="{StaticResource TemplatePage.Bar.AddItem}" />
+                <AppBarButton AllowFocusOnInteraction="True" Click="AppBarButton_Click" Icon="Delete" Label="{StaticResource TemplatePage.Bar.DeleteItem}" />
             </CommandBar>
         </Grid>
         <Image x:Name="CanvasImage" Grid.Row="2" Grid.Column="1"

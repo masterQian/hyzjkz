@@ -82,10 +82,13 @@
             <!--  命令组  -->
             <CommandBar Margin="8,0,8,0" Background="Transparent" DefaultLabelPosition="Right" IsOpen="False">
                 <AppBarSeparator />
-                <AppBarButton mq:Property.ShortCutKey="{mq:ShortCutKey Key=F5}" Click="Refresh_Click" Icon="Refresh" Label="{StaticResource HistoryPage.Bar.Refresh}" />
-                <AppBarButton Click="AddDefault_Click" Icon="Add" Label="{StaticResource HistoryPage.Bar.AddDefault}" />
-                <AppBarButton Click="Import_Click" Icon="Upload" Label="{StaticResource HistoryPage.Bar.Import}" />
-                <AppBarButton Click="AddCopyData_Click" Icon="{mq:FontIcon Glyph={StaticResource Glyph_SubscriptionAdd}}" Label="{StaticResource HistoryPage.Bar.AddCopyData}" />
+                <AppBarButton mq:Property.ShortCutKey="{mq:ShortCutKey Key=F5}"
+                              AllowFocusOnInteraction="True"
+                              Click="Refresh_Click" Icon="Refresh"
+                              Label="{StaticResource HistoryPage.Bar.Refresh}" />
+                <AppBarButton AllowFocusOnInteraction="True" Click="AddDefault_Click" Icon="Add" Label="{StaticResource HistoryPage.Bar.AddDefault}" />
+                <AppBarButton AllowFocusOnInteraction="True" Click="Import_Click" Icon="Upload" Label="{StaticResource HistoryPage.Bar.Import}" />
+                <AppBarButton AllowFocusOnInteraction="True" Click="AddCopyData_Click" Icon="{mq:FontIcon Glyph={StaticResource Glyph_SubscriptionAdd}}" Label="{StaticResource HistoryPage.Bar.AddCopyData}" />
             </CommandBar>
         </StackPanel>
         <!--  列表框  -->

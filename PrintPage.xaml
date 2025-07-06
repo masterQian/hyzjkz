@@ -14,10 +14,12 @@
         <Grid Grid.Column="0" ColumnDefinitions="*,*" RowDefinitions="Auto, Auto, *">
             <AppBarButton Grid.Row="0" Grid.Column="0"
                           HorizontalAlignment="Center"
+                          AllowFocusOnInteraction="True"
                           Click="AppBarButton_Click" Icon="Print"
                           Label="{StaticResource PrintPage.Bar.Print}" />
             <AppBarButton Grid.Row="0" Grid.Column="1"
                           HorizontalAlignment="Center"
+                          AllowFocusOnInteraction="True"
                           Click="AppBarButton_Click" Icon="Save"
                           Label="{StaticResource PrintPage.Bar.Save}" />
             <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"

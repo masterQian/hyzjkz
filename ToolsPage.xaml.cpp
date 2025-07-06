@@ -5,23 +5,23 @@
 #endif
 
 namespace winrt::hyzjkz::implementation {
-	/*  Ê×Ò³  */
+	/*  é¦–é¡µ  */
 
-	// ³õÊ¼»¯
+	// åˆå§‹åŒ–
 	static void InitializeHomeSubPage(IInspectable* subPage) noexcept {
 		auto sp{ ToolsPage::HomeSubPage::From(subPage) };
 		sp->Stretch(Microsoft::UI::Xaml::Media::Stretch::Fill);
 		sp->Source(util::BinToBMP(System::Process::GetResource(R_SIZEINFORMATION), { }, true));
 	}
 
-	/*  Éí·İÖ¤Æ´½Ó  */
+	/*  èº«ä»½è¯æ‹¼æ¥  */
 
-	// Ñ¡Ôñ
+	// é€‰æ‹©
 	static IAsyncAction IDCard_Select(ToolsPage::IDCardSubPage* sp, IInspectable const& sender) noexcept {
 		auto button{ sender.as<Controls::Button>() };
-		// Î´µ¼ÈëÕÕÆ¬×´Ì¬
+		// æœªå¯¼å…¥ç…§ç‰‡çŠ¶æ€
 		if (!button.Tag().as<bool>()) {
-			// ×¼±¸¶Ô»°¿ò
+			// å‡†å¤‡å¯¹è¯æ¡†
 			Windows::Storage::Pickers::FileOpenPicker openPicker;
 			openPicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
 			openPicker.ViewMode(Windows::Storage::Pickers::PickerViewMode::Thumbnail);
@@ -31,7 +31,7 @@ namespace winrt::hyzjkz::implementation {
 			filters.Append(L".bmp");
 			util::InitializeDialog(openPicker, Global.ui_hwnd);
 
-			// ½ÓÊÜÕÕÆ¬
+			// æ¥å—ç…§ç‰‡
 			if (Windows::Storage::StorageFile file{ co_await openPicker.PickSingleFileAsync() }) {
 				Controls::Image image;
 				image.Width(Global.c_IDCardPreviewSize.width);
@@ -42,7 +42,7 @@ namespace winrt::hyzjkz::implementation {
 				button.Content(image);
 				button.Tag(box_value(true));
 
-				// ÈôÁ½Ãæ¶¼×¼±¸ºÃ
+				// è‹¥ä¸¤é¢éƒ½å‡†å¤‡å¥½
 				if (sp->button_front.Tag().as<bool>() && sp->button_back.Tag().as<bool>()) {
 					auto front_path{ sp->button_front.Content().as<FrameworkElement>().Tag().as<hstring>() };
 					auto back_path{ sp->button_back.Content().as<FrameworkElement>().Tag().as<hstring>() };
@@ -72,7 +72,7 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ÖØÖÃ°´Å¥
+	// é‡ç½®æŒ‰é’®
 	inline static void IDCard_Reset(Controls::Button const& button) noexcept {
 		if (button.Tag().as<bool>()) {
 			Controls::SymbolIcon icon;
@@ -82,20 +82,20 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// Çå³ı
+	// æ¸…é™¤
 	static void IDCard_Clear(ToolsPage::IDCardSubPage* sp) noexcept {
 		IDCard_Reset(sp->button_front);
 		IDCard_Reset(sp->button_back);
 		sp->image_preview.Source(nullptr);
 	}
 
-	// ºÏ³É
+	// åˆæˆ
 	static IAsyncAction IDCard_Work(ToolsPage::IDCardSubPage* sp) noexcept {
 		if (sp->button_front.Tag().as<bool>() && sp->button_back.Tag().as<bool>()) {
 			Windows::Storage::Pickers::FileSavePicker savePicker;
 			savePicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
 			auto filters{ savePicker.FileTypeChoices() };
-			filters.Insert(L"JPGÍ¼Æ¬", single_threaded_observable_vector<hstring>({ L".jpg" }));
+			filters.Insert(L"JPGå›¾ç‰‡", single_threaded_observable_vector<hstring>({ L".jpg" }));
 			savePicker.SuggestedFileName(util::RDString<hstring>(L"IDCardSubPage.SaveName"));
 			util::InitializeDialog(savePicker, Global.ui_hwnd);
 
@@ -122,7 +122,7 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ³õÊ¼»¯
+	// åˆå§‹åŒ–
 	static void InitializeIDCardSubPage(IInspectable* subPage) noexcept {
 		auto sp{ ToolsPage::IDCardSubPage::From(subPage) };
 		Application::LoadComponent(*sp, Uri{ L"ms-appx:///Xaml/Tools/IDCardSubPage.xaml" });
@@ -148,19 +148,19 @@ namespace winrt::hyzjkz::implementation {
 			});
 	}
 
-	// ¸üĞÂ
+	// æ›´æ–°
 	static void UpdateIDCardSubPage(IInspectable* subPage) noexcept {
 		IDCard_Clear(ToolsPage::IDCardSubPage::From(subPage));
 	}
 
-	/*  Æ´Í¼  */
+	/*  æ‹¼å›¾  */
 
-	// Çå¿Õ»æÍ¼Ãæ°å
+	// æ¸…ç©ºç»˜å›¾é¢æ¿
 	static void Canvas_Jigsaw_Clear(ToolsPage::JigsawSubPage* sp) noexcept {
 		sp->canvas.Children().Clear();
 	}
 
-	// ĞŞ¸Ä³ß´ç
+	// ä¿®æ”¹å°ºå¯¸
 	static void Canvas_Jigsaw_Resize(ToolsPage::JigsawSubPage* sp) noexcept {
 		auto canvas{ sp->canvas };
 		mqf64 scale{ sp->switch_mode.IsOn() ?
@@ -169,7 +169,7 @@ namespace winrt::hyzjkz::implementation {
 		canvas.Width(canvas.ActualHeight() * scale);
 	}
 
-	// µ¼Èë
+	// å¯¼å…¥
 	static IAsyncAction Canvas_Jigsaw_Import(ToolsPage::JigsawSubPage* sp) noexcept {
 		Windows::Storage::Pickers::FileOpenPicker openPicker;
 		openPicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
@@ -189,7 +189,7 @@ namespace winrt::hyzjkz::implementation {
 			}
 
 			auto items{ sp->canvas.Children() };
-			auto canvas_height{ sp->canvas.ActualHeight() }; // »­²¼Êµ¼Ê¸ß¶È
+			auto canvas_height{ sp->canvas.ActualHeight() }; // ç”»å¸ƒå®é™…é«˜åº¦
 
 			winrt::apartment_context ui_thread;
 
@@ -199,11 +199,11 @@ namespace winrt::hyzjkz::implementation {
 				Media::GDI::Image image(file);
 				auto image_size{ image.Size() };
 				if (image_size != mqsize{ }) {
-					auto thumb_height{ static_cast<mqui32>(canvas_height / 3) }; // ¸ß¶ÈËõ·Åµ½»­²¼¸ß¶ÈµÄ1/3
-					auto thumb_width{ thumb_height * image_size.width / image_size.height }; // ¿í¶È°´±ÈÀıËõ·Å
-					image = image.Resample({ thumb_width, thumb_height }, Media::GDI::FAST_MODE); // ÖØĞÂ²ÉÑù
-					auto stream{ image.SaveToUnsafeStream(Media::GDI::ImageFormat::BMP) }; // ±£´æµ½Á÷
-					// ¸üĞÂUI
+					auto thumb_height{ static_cast<mqui32>(canvas_height / 3) }; // é«˜åº¦ç¼©æ”¾åˆ°ç”»å¸ƒé«˜åº¦çš„1/3
+					auto thumb_width{ thumb_height * image_size.width / image_size.height }; // å®½åº¦æŒ‰æ¯”ä¾‹ç¼©æ”¾
+					image = image.Resample({ thumb_width, thumb_height }, Media::GDI::FAST_MODE); // é‡æ–°é‡‡æ ·
+					auto stream{ image.SaveToUnsafeStream(Media::GDI::ImageFormat::BMP) }; // ä¿å­˜åˆ°æµ
+					// æ›´æ–°UI
 					co_await ui_thread;
 
 					Controls::Image drag_image;
@@ -211,8 +211,8 @@ namespace winrt::hyzjkz::implementation {
 					drag_image.Height(thumb_height);
 					drag_image.Stretch(Microsoft::UI::Xaml::Media::Stretch::Fill);
 					drag_image.Source(util::StreamToBMP(stream));
-					drag_image.Tag(box_value(file)); // ¼ÇÂ¼ÕÕÆ¬Â·¾¶
-					// ÒÆ¶¯ÊÂ¼ş
+					drag_image.Tag(box_value(file)); // è®°å½•ç…§ç‰‡è·¯å¾„
+					// ç§»åŠ¨äº‹ä»¶
 					drag_image.PointerMoved([ ] (IInspectable const& sender, Input::PointerRoutedEventArgs const& e) {
 						auto drag_image{ sender.as<Controls::Image>() };
 						auto cp{ e.GetCurrentPoint(drag_image) };
@@ -226,24 +226,24 @@ namespace winrt::hyzjkz::implementation {
 							Controls::Canvas::SetTop(drag_image, static_cast<mqf32>(new_top));
 						}
 						});
-					// »¬ÂÖÊÂ¼ş
+					// æ»‘è½®äº‹ä»¶
 					drag_image.PointerWheelChanged([ ] (IInspectable const& sender, Input::PointerRoutedEventArgs const& e) {
 						auto drag_image{ sender.as<Controls::Image>() };
 						auto cp{ e.GetCurrentPoint(drag_image) };
 						auto prop{ cp.Properties() };
 						if (!prop.IsHorizontalMouseWheel()) {
 							auto delta{ prop.MouseWheelDelta() };
-							if (delta > 0) { // Ã¿´Î·Å1.1±¶
+							if (delta > 0) { // æ¯æ¬¡æ”¾1.1å€
 								drag_image.Width(drag_image.ActualWidth() * 1.1);
 								drag_image.Height(drag_image.ActualHeight() * 1.1);
 							}
-							else { // Ã¿´ÎËõ0.9±¶
+							else { // æ¯æ¬¡ç¼©0.9å€
 								drag_image.Width(drag_image.ActualWidth() * 0.9);
 								drag_image.Height(drag_image.ActualHeight() * 0.9);
 							}
 						}
 						});
-					// ÓÒ¼üÊÂ¼ş
+					// å³é”®äº‹ä»¶
 					drag_image.RightTapped([ ] (IInspectable const& sender, auto) {
 						auto drag_image{ sender.as<Controls::Image>() };
 						auto items{ drag_image.Parent().as<Controls::Canvas>().Children() };
@@ -261,18 +261,18 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// Æ´Í¼
+	// æ‹¼å›¾
 	static IAsyncAction Canvas_Jigsaw_Save(ToolsPage::JigsawSubPage* sp) noexcept {
 		Windows::Storage::Pickers::FileSavePicker savePicker;
 		savePicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
 		auto filters{ savePicker.FileTypeChoices() };
-		filters.Insert(L"JPGÍ¼Æ¬", single_threaded_observable_vector<hstring>({ L".jpg" }));
+		filters.Insert(L"JPGå›¾ç‰‡", single_threaded_observable_vector<hstring>({ L".jpg" }));
 		savePicker.SuggestedFileName(util::RDString<hstring>(L"JigsawSubPage.SaveName"));
 		util::InitializeDialog(savePicker, Global.ui_hwnd);
 
 		if (Windows::Storage::StorageFile file{ co_await savePicker.PickSaveFileAsync() }) {
 			auto print_canvas_size{ sp->switch_mode.IsOn() ? Global.c_printCanvasSize : Global.c_A4Size };
-			auto scale{ print_canvas_size.width / sp->canvas.ActualWidth() }; // Ëõ·Å±ÈÀı
+			auto scale{ print_canvas_size.width / sp->canvas.ActualWidth() }; // ç¼©æ”¾æ¯”ä¾‹
 			std::vector<std::pair<std::wstring, mqrect>> rects;
 			for (auto item : sp->canvas.Children()) {
 				auto drag_image{ item.as<Controls::Image>() };
@@ -286,7 +286,7 @@ namespace winrt::hyzjkz::implementation {
 			winrt::apartment_context ui_thread;
 			co_await winrt::resume_background();
 
-			Media::GDI::Image print_canvas(print_canvas_size, Media::Colors::White); // ´òÓ¡»­²¼
+			Media::GDI::Image print_canvas(print_canvas_size, Media::Colors::White); // æ‰“å°ç”»å¸ƒ
 			print_canvas.DPI({ 300U, 300U });
 			for (auto& [file, rect] : rects) {
 				Media::GDI::Image image{ file };
@@ -299,7 +299,7 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ³õÊ¼»¯
+	// åˆå§‹åŒ–
 	static void InitializeJigsawSubPage(IInspectable* subPage) noexcept {
 		auto sp{ ToolsPage::JigsawSubPage::From(subPage) };
 		Application::LoadComponent(*sp, Uri{ L"ms-appx:///Xaml/Tools/JigsawSubPage.xaml" });
@@ -327,20 +327,20 @@ namespace winrt::hyzjkz::implementation {
 			});
 	}
 
-	// ¸üĞÂ
+	// æ›´æ–°
 	static void UpdateJigsawSubPage(IInspectable* subPage) noexcept {
 		auto sp{ ToolsPage::JigsawSubPage::From(subPage) };
-		if (sp->switch_mode.IsOn()) { // Èç¹ûÊÇA6Ä£Ê½¾ÍÖÃ³ÉA4, IsOn»á´¥·¢ToggledÀ´Çå³ı
+		if (sp->switch_mode.IsOn()) { // å¦‚æœæ˜¯A6æ¨¡å¼å°±ç½®æˆA4, IsOnä¼šè§¦å‘Toggledæ¥æ¸…é™¤
 			sp->switch_mode.IsOn(false);
 		}
-		else { // Èç¹ûÒÑ¾­ÊÇA4Ä£Ê½Ö±½ÓÇå³ı
+		else { // å¦‚æœå·²ç»æ˜¯A4æ¨¡å¼ç›´æ¥æ¸…é™¤
 			Canvas_Jigsaw_Clear(sp);
 		}
 	}
 
-	/*  µ¼³öPDF  */
+	/*  å¯¼å‡ºPDF  */
 
-	// µ¼Èë
+	// å¯¼å…¥
 	static IAsyncAction ToPDF_Import(ToolsPage::ToPDFSubPage* sp) noexcept {
 		Windows::Storage::Pickers::FileOpenPicker openPicker;
 		openPicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
@@ -366,12 +366,12 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ±£´æ
+	// ä¿å­˜
 	static IAsyncAction ToPDF_Save(ToolsPage::ToPDFSubPage* sp) noexcept {
 		Windows::Storage::Pickers::FileSavePicker savePicker;
 		savePicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
 		auto filters{ savePicker.FileTypeChoices() };
-		filters.Insert(L"PDFÎÄµµ", single_threaded_observable_vector<hstring>({ L".pdf" }));
+		filters.Insert(L"PDFæ–‡æ¡£", single_threaded_observable_vector<hstring>({ L".pdf" }));
 		savePicker.SuggestedFileName(util::RDString<hstring>(L"ToPDFSubPage.SaveName"));
 		util::InitializeDialog(savePicker, Global.ui_hwnd);
 
@@ -399,7 +399,7 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ³õÊ¼»¯
+	// åˆå§‹åŒ–
 	static void InitializeToPDFSubPage(IInspectable* subPage) noexcept {
 		auto sp{ ToolsPage::ToPDFSubPage::From(subPage) };
 		Application::LoadComponent(*sp, Uri{ L"ms-appx:///Xaml/Tools/ToPDFSubPage.xaml" });
@@ -424,7 +424,7 @@ namespace winrt::hyzjkz::implementation {
 			});
 	}
 
-	// ¸üĞÂ
+	// æ›´æ–°
 	static void UpdateToPDFSubPage(IInspectable* subPage) noexcept {
 		auto sp{ ToolsPage::ToPDFSubPage::From(subPage) };
 		sp->gv_pdf.Items().Clear();
@@ -446,7 +446,7 @@ namespace winrt::hyzjkz::implementation {
 		NV_Main().SelectedItem(NVI_Home());
 	}
 
-	// ¸ü»»µ¼º½
+	// æ›´æ¢å¯¼èˆª
 	F_EVENT void ToolsPage::NV_Main_SelectionChanged(Controls::NavigationView const&, Controls::NavigationViewSelectionChangedEventArgs const& args) {
 		auto tag{ args.SelectedItem().as<Controls::NavigationViewItem>().Tag() };
 		if (tag != nullptr) {

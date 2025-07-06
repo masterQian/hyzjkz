@@ -5,9 +5,9 @@
 #endif
 
 namespace winrt::hyzjkz::implementation {
-	/*  ¹ØÓÚÒ³Ãæ  */
+	/*  å…³äºé¡µé¢  */
 
-	// ³õÊ¼»¯
+	// åˆå§‹åŒ–
 	static void InitializeAboutSubPage(IInspectable* subPage) noexcept {
 		auto sp{ SettingsPage::AboutSubPage::From(subPage) };
 		Application::LoadComponent(*sp, Uri{ L"ms-appx:///Xaml/Settings/AboutSubPage.xaml" });
@@ -17,33 +17,33 @@ namespace winrt::hyzjkz::implementation {
 			static_cast<mqui32>(util::RDValue<mqf64>(L"About.Icon.Height")) }, true));
 	}
 
-	/*  Â·¾¶Ò³Ãæ  */
+	/*  è·¯å¾„é¡µé¢  */
 
-	// ¹¤¾ßÁ´É¾³ı
+	// å·¥å…·é“¾åˆ é™¤
 	static IAsyncAction ToolsDelete(IInspectable const& sender, RoutedEventArgs const&) noexcept {
 		auto grid{ sender.as<FrameworkElement>().Parent().as<Controls::Grid>() };
 		auto tool_name{ grid.FindName(L"Button_Name").as<Controls::Button>().Content().as<hstring>() };
 		auto list_tools{ grid.Parent().as<Controls::ListView>() };
 		auto result{ co_await Global.ui_window.ShowConfirmDialog(util::RDString<hstring>(L"PathSubPage.Tip.ConfirmDeleleLink") + tool_name) };
 		if (result) {
-			// ¸üĞÂ±äÁ¿ÓëÎÄ¼ş
+			// æ›´æ–°å˜é‡ä¸æ–‡ä»¶
 			auto tools{ Global.cfg.Get(GlobalConfig::TOOLS) };
 			tools.remove(tool_name);
 			Global.cfg.Set(GlobalConfig::TOOLS, tools);
 			Global.c_configFilePath.Write(Global.cfg.save());
 
-			// ¸üĞÂUI
+			// æ›´æ–°UI
 			auto tool_items{ list_tools.Items() };
 			mqui32 index{ };
 			tool_items.IndexOf(grid, index);
 			tool_items.RemoveAt(index);
 
-			// ¸üĞÂ»Øµ÷
+			// æ›´æ–°å›è°ƒ
 			Global.ui_window.UpdateFlags(UpdateFlag::HISTORY, UpdateFlag::LINK_MENU);
 		}
 	}
 
-	// ¹¤¾ßÁ´ĞŞ¸ÄÃû³Æ
+	// å·¥å…·é“¾ä¿®æ”¹åç§°
 	static IAsyncAction ToolsSetName(IInspectable const& sender, RoutedEventArgs const&) noexcept {
 		auto button_name{ sender.as<Controls::Button>() };
 		auto old_tool_name{ button_name.Content().as<hstring>() };
@@ -51,15 +51,15 @@ namespace winrt::hyzjkz::implementation {
 		if (!tool_name.empty() && old_tool_name != tool_name) {
 			auto tools{ Global.cfg.Get(GlobalConfig::TOOLS) };
 			if (!tools.contains(tool_name)) {
-				// ¸üĞÂ±äÁ¿ÓëÎÄ¼ş
+				// æ›´æ–°å˜é‡ä¸æ–‡ä»¶
 				auto tool_path{ tools.get(old_tool_name) };
 				tools.set(tool_name, tool_path);
 				tools.remove(old_tool_name);
 				Global.cfg.Set(GlobalConfig::TOOLS, tools);
 				Global.c_configFilePath.Write(Global.cfg.save());
-				// ¸üĞÂUI
+				// æ›´æ–°UI
 				button_name.Content(box_value(tool_name));
-				// ¸üĞÂ»Øµ÷
+				// æ›´æ–°å›è°ƒ
 				Global.ui_window.UpdateFlags(UpdateFlag::HISTORY, UpdateFlag::LINK_MENU);
 			}
 			else {
@@ -68,7 +68,7 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ¹¤¾ßÁ´ĞŞ¸ÄÂ·¾¶
+	// å·¥å…·é“¾ä¿®æ”¹è·¯å¾„
 	static IAsyncAction ToolsSetPath(IInspectable const& sender, RoutedEventArgs const&) noexcept {
 		auto button_path{ sender.as<Controls::Button>() };
 		auto button_name{ button_path.Parent().as<Controls::Grid>().FindName(L"Button_Name").as<Controls::Button>() };
@@ -79,21 +79,21 @@ namespace winrt::hyzjkz::implementation {
 		util::InitializeDialog(openPicker, Global.ui_hwnd);
 
 		if (Windows::Storage::StorageFile file{ co_await openPicker.PickSingleFileAsync() }; file != nullptr) {
-			// ¸üĞÂ±äÁ¿ÓëÎÄ¼ş
+			// æ›´æ–°å˜é‡ä¸æ–‡ä»¶
 			std::wstring tool_name{ button_name.Content().as<hstring>() };
 			std::wstring tool_path{ file.Path() };
 			auto tools{ Global.cfg.Get(GlobalConfig::TOOLS) };
 			tools.set(tool_name, tool_path);
 			Global.cfg.Set(GlobalConfig::TOOLS, tools);
 			Global.c_configFilePath.Write(Global.cfg.save());
-			// ¸üĞÂUI
+			// æ›´æ–°UI
 			button_path.Content(box_value(tool_path));
-			// ¸üĞÂ»Øµ÷
+			// æ›´æ–°å›è°ƒ
 			Global.ui_window.UpdateFlags(UpdateFlag::HISTORY, UpdateFlag::LINK_MENU);
 		}
 	}
 
-	// Éú³ÉÍâÁ´Ïî
+	// ç”Ÿæˆå¤–é“¾é¡¹
 	static Controls::Grid MakeToolItemGrid(std::wstring_view tool_name, std::wstring_view tool_path) noexcept {
 		Controls::Grid grid;
 		Application::LoadComponent(grid, Uri{ L"ms-appx:///Xaml/PathSubPagePathItem.xaml" });
@@ -108,7 +108,7 @@ namespace winrt::hyzjkz::implementation {
 		return grid;
 	}
 
-	// ¹¤¾ßÁ´Ìí¼Ó
+	// å·¥å…·é“¾æ·»åŠ 
 	static IAsyncAction ToolsAdd(SettingsPage::PathSubPage* sp) noexcept {
 		Windows::Storage::Pickers::FileOpenPicker openPicker;
 		openPicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
@@ -121,13 +121,13 @@ namespace winrt::hyzjkz::implementation {
 
 			auto tools{ Global.cfg.Get(GlobalConfig::TOOLS) };
 			if (!tools.contains(tool_name)) {
-				// ¸üĞÂ±äÁ¿ÓëÎÄ¼ş
+				// æ›´æ–°å˜é‡ä¸æ–‡ä»¶
 				tools.set(tool_name, tool_path);
 				Global.cfg.Set(GlobalConfig::TOOLS, tools);
 				Global.c_configFilePath.Write(Global.cfg.save());
-				// ¸üĞÂUI
+				// æ›´æ–°UI
 				sp->list_tools.Items().Append(MakeToolItemGrid(tool_name, tool_path));
-				// ¸üĞÂ»Øµ÷
+				// æ›´æ–°å›è°ƒ
 				Global.ui_window.UpdateFlags(UpdateFlag::HISTORY, UpdateFlag::LINK_MENU);
 			}
 			else {
@@ -136,11 +136,11 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ³õÊ¼»¯
+	// åˆå§‹åŒ–
 	static void InitializePathSubPage(IInspectable* subPage) noexcept {
 		auto sp{ SettingsPage::PathSubPage::From(subPage) };
 		Application::LoadComponent(*sp, Uri{ L"ms-appx:///Xaml/Settings/PathSubPage.xaml" });
-		// EOSÂ·¾¶
+		// EOSè·¯å¾„
 		sp->Bind(sp->button_eospath_set, L"Button_EOSPath_Set");
 		sp->Bind(sp->button_eospath_clear, L"Button_EOSPath_Clear");
 		sp->Bind(sp->input_eospath, L"Input_EOSPath");
@@ -163,7 +163,7 @@ namespace winrt::hyzjkz::implementation {
 				Global.c_configFilePath.Write(Global.cfg.save());
 			}
 			});
-		// ¹¤¾ßÁ´
+		// å·¥å…·é“¾
 		sp->Bind(sp->button_tools_add, L"Button_Tools_Add");
 		sp->Bind(sp->list_tools, L"List_Tools");
 		sp->button_tools_add.Click([sp] (auto...) -> IAsyncAction {
@@ -176,20 +176,20 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ¸üĞÂ
+	// æ›´æ–°
 	static void UpdatePathSubPage(IInspectable* subPage) noexcept {
 		auto sp{ SettingsPage::PathSubPage::From(subPage) };
-		// EOSÂ·¾¶
+		// EOSè·¯å¾„
 		sp->input_eospath.Text(Global.cfg.Get<GlobalConfig::EOS_PATH>());
 	}
 
-	/*  ÓªÒµÒ³Ãæ  */
+	/*  è¥ä¸šé¡µé¢  */
 
-	// ³õÊ¼»¯
+	// åˆå§‹åŒ–
 	static void InitializeBusinessSubPage(IInspectable* subPage) noexcept {
 		auto sp{ SettingsPage::BusinessSubPage::From(subPage) };
 		Application::LoadComponent(*sp, Uri{ L"ms-appx:///Xaml/Settings/BusinessSubPage.xaml" });
-		// µ¥¼Û
+		// å•ä»·
 		sp->Bind(sp->button_unitprice, L"Button_UnitPrice");
 		sp->Bind(sp->input_unitprice, L"Input_UnitPrice");
 		sp->button_unitprice.Click([sp] (auto...) -> IAsyncAction {
@@ -197,7 +197,7 @@ namespace winrt::hyzjkz::implementation {
 			Global.c_configFilePath.Write(Global.cfg.save());
 			co_await Global.ui_window.ShowTipDialog(util::RDString<hstring>(L"SettingsPage.SaveSuccess"));
 			});
-		// ÇåÀíÖÜÆÚ
+		// æ¸…ç†å‘¨æœŸ
 		sp->Bind(sp->button_resetmonth, L"Button_ResetMonth");
 		sp->Bind(sp->input_resetmonth, L"Input_ResetMonth");
 		sp->button_resetmonth.Click([sp] (auto...) -> IAsyncAction {
@@ -205,14 +205,14 @@ namespace winrt::hyzjkz::implementation {
 			Global.c_configFilePath.Write(Global.cfg.save());
 			co_await Global.ui_window.ShowTipDialog(util::RDString<hstring>(L"SettingsPage.SaveSuccess"));
 			});
-		// ÏÔÊ¾ÓªÒµ¶î
+		// æ˜¾ç¤ºè¥ä¸šé¢
 		sp->Bind(sp->switch_showturnover, L"Switch_ShowTurnover");
 		sp->switch_showturnover.Toggled([sp] (auto...) {
 			Global.cfg.Set<GlobalConfig::SHOW_TURNOVER>(sp->switch_showturnover.IsOn());
 			Global.c_configFilePath.Write(Global.cfg.save());
 			Global.ui_window.UpdateFlags(UpdateFlag::HISTORY, UpdateFlag::SHOW_TURNOVER);
 			});
-		// ¹ÜÀíÔ±ÃÜÂë
+		// ç®¡ç†å‘˜å¯†ç 
 		sp->Bind(sp->button_password, L"Button_Password");
 		sp->Bind(sp->input_password, L"Input_Password");
 		sp->Bind(sp->switch_password, L"Switch_Password");
@@ -234,27 +234,27 @@ namespace winrt::hyzjkz::implementation {
 			});
 	}
 
-	// ¸üĞÂ
+	// æ›´æ–°
 	static void UpdateBusinessSubPage(IInspectable* subPage) noexcept {
 		auto sp{ SettingsPage::BusinessSubPage::From(subPage) };
-		// µ¥¼Û
+		// å•ä»·
 		sp->input_unitprice.Value(static_cast<mqf64>(Global.cfg.Get<GlobalConfig::UNIT_PRICE>()));
-		// ÇåÀíÖÜÆÚ
+		// æ¸…ç†å‘¨æœŸ
 		sp->input_resetmonth.Value(static_cast<mqf64>(Global.cfg.Get<GlobalConfig::RESET_MONTH>()));
-		// ÏÔÊ¾ÓªÒµ¶î
+		// æ˜¾ç¤ºè¥ä¸šé¢
 		sp->switch_showturnover.IsOn(Global.cfg.Get<GlobalConfig::SHOW_TURNOVER>());
-		// ¹ÜÀíÔ±ÃÜÂë
+		// ç®¡ç†å‘˜å¯†ç 
 		sp->switch_password.IsOn(Global.cfg.Get<GlobalConfig::USE_PASSWORD>());
 		sp->input_password.Text(Global.cfg.Get<GlobalConfig::PASSWORD>());
 	}
 
-	/*  ´òÓ¡Ò³Ãæ  */
+	/*  æ‰“å°é¡µé¢  */
 
-	// ³õÊ¼»¯
+	// åˆå§‹åŒ–
 	static void InitializePrintSubPage(IInspectable* subPage) noexcept {
 		auto sp{ SettingsPage::PrintSubPage::From(subPage) };
 		Application::LoadComponent(*sp, Uri{ L"ms-appx:///Xaml/Settings/PrintSubPage.xaml" });
-		// ´òÓ¡»úÃû³Æ
+		// æ‰“å°æœºåç§°
 		sp->Bind(sp->input_printername, L"Input_PrinterName");
 		sp->Bind(sp->button_printername, L"Button_PrinterName");
 		sp->button_printername.Click([sp] (auto...) -> IAsyncAction {
@@ -262,7 +262,7 @@ namespace winrt::hyzjkz::implementation {
 			Global.c_configFilePath.Write(Global.cfg.save());
 			co_await Global.ui_window.ShowTipDialog(util::RDString<hstring>(L"SettingsPage.SaveSuccess"));
 		});
-		// ×Ô¶¯²Ã¼ôÈİÈÌÎó²î
+		// è‡ªåŠ¨è£å‰ªå®¹å¿è¯¯å·®
 		sp->Bind(sp->input_autocuteps, L"Input_AutoCutEPS");
 		sp->Bind(sp->button_autocuteps, L"Button_AutoCutEPS");
 		sp->button_autocuteps.Click([sp] (auto...) -> IAsyncAction {
@@ -272,12 +272,12 @@ namespace winrt::hyzjkz::implementation {
 		});
 	}
 
-	// ¸üĞÂ
+	// æ›´æ–°
 	static void UpdatePrintSubPage(IInspectable* subPage) noexcept {
 		auto sp{ SettingsPage::PrintSubPage::From(subPage) };
-		// ´òÓ¡»úÃû³Æ
+		// æ‰“å°æœºåç§°
 		sp->input_printername.Text(Global.cfg.Get<GlobalConfig::PRINTER_NAME>());
-		// ×Ô¶¯²Ã¼ôÈİÈÌÎó²î
+		// è‡ªåŠ¨è£å‰ªå®¹å¿è¯¯å·®
 		sp->input_autocuteps.Value(Global.cfg.Get<GlobalConfig::AUTOCUT_EPS>());
 	}
 }
@@ -305,7 +305,7 @@ namespace winrt::hyzjkz::implementation {
 			});
 	}
 
-	// ¸ü»»µ¼º½
+	// æ›´æ¢å¯¼èˆª
 	F_EVENT void SettingsPage::NV_Main_SelectionChanged(Controls::NavigationView const&, Controls::NavigationViewSelectionChangedEventArgs const& args) {
 		auto tag{ args.SelectedItem().as<Controls::NavigationViewItem>().Tag() };
 		if (tag != nullptr) {

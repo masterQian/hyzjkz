@@ -7,18 +7,18 @@ export module MasterQian.Log;
 export import MasterQian.freestanding;
 
 export namespace MasterQian {
-	// ÈÕÖ¾ÀàĞÍ
+	// æ—¥å¿—ç±»å‹
 	enum class LogType : mqenum {
-		STD_CONSOLE, // ¿ØÖÆÌ¨ÈÕÖ¾
-		DEBUG_CONSOLE, // µ÷ÊÔ´°¿ÚÈÕÖ¾
-		FILE, // ÎÄ¼şÈÕÖ¾
+		STD_CONSOLE, // æ§åˆ¶å°æ—¥å¿—
+		DEBUG_CONSOLE, // è°ƒè¯•çª—å£æ—¥å¿—
+		FILE, // æ–‡ä»¶æ—¥å¿—
 	};
 
-	// ÈÕÖ¾±êÇ©
+	// æ—¥å¿—æ ‡ç­¾
 	enum class LogTag : mqenum {
-		INFO, // ĞÅÏ¢
-		WARNING, // ¾¯¸æ
-		ERR // ´íÎó
+		INFO, // ä¿¡æ¯
+		WARNING, // è­¦å‘Š
+		ERR // é”™è¯¯
 	};
 }
 
@@ -68,8 +68,8 @@ namespace MasterQian::details {
 	};
 
 	/// <summary>
-	/// <para>ÓÃ»§¿ÉÒÔÍ¨¹ıÊµÏÖLog½Ó¿ÚÀ´Êä³ö×Ô¶¨ÒåÀàĞÍ</para>
-	/// <para>ÒÔÊä³ö×ø±êPosÀàÎªÀı</para>
+	/// <para>ç”¨æˆ·å¯ä»¥é€šè¿‡å®ç°Logæ¥å£æ¥è¾“å‡ºè‡ªå®šä¹‰ç±»å‹</para>
+	/// <para>ä»¥è¾“å‡ºåæ ‡Posç±»ä¸ºä¾‹</para>
 	/// <example>
 	/// <code>
 	/// struct Pos {
@@ -78,7 +78,7 @@ namespace MasterQian::details {
 	///			buf += std::to_wstring(x) + L"," + std::wstring(y);
 	///		}
 	/// }
-	/// »ò
+	/// æˆ–
 	/// struct Pos {
 	///		int x, y;
 	/// }
@@ -175,9 +175,9 @@ export namespace MasterQian {
 		static constexpr mqcstr LogTagString[] = { L"[Info] ", L"[Warning] ", L"[Error] " };
 	public:
 		/// <summary>
-		/// ³ıÎÄ¼şÈÕÖ¾ĞèÒªÒÔÎÄ¼şÃû×÷Îª²ÎÊıÆäËû¾ù²»ĞèÒª
+		/// é™¤æ–‡ä»¶æ—¥å¿—éœ€è¦ä»¥æ–‡ä»¶åä½œä¸ºå‚æ•°å…¶ä»–å‡ä¸éœ€è¦
 		/// </summary>
-		/// <param name="arg">²ÎÊı</param>
+		/// <param name="arg">å‚æ•°</param>
 		Logger(mqcmem arg = nullptr) noexcept {
 			handle = details::CreateLogger(type, arg);
 		}
@@ -201,16 +201,16 @@ export namespace MasterQian {
 		}
 
 		/// <summary>
-		/// ÖØ¶¨Ïò
+		/// é‡å®šå‘
 		/// </summary>
-		/// <param name="arg">²ÎÊı</param>
+		/// <param name="arg">å‚æ•°</param>
 		void reset(mqcmem arg = nullptr) noexcept {
 			close();
 			handle = details::CreateLogger(type, arg);
 		}
 
 		/// <summary>
-		/// ¹Ø±Õ
+		/// å…³é—­
 		/// </summary>
 		void close() noexcept {
 			if (handle) {
@@ -220,10 +220,10 @@ export namespace MasterQian {
 		}
 
 		/// <summary>
-		/// Êä³ö
+		/// è¾“å‡º
 		/// </summary>
-		/// <typeparam name="tag">ÈÕÖ¾±êÇ©</typeparam>
-		/// <typeparam name="newLine">×Ô¶¯»»ĞĞ</typeparam>
+		/// <typeparam name="tag">æ—¥å¿—æ ‡ç­¾</typeparam>
+		/// <typeparam name="newLine">è‡ªåŠ¨æ¢è¡Œ</typeparam>
 		template<LogTag tag = LogTag::INFO, bool newLine = true, typename... Args>
 		void log(Args&&... args) const noexcept {
 			if (handle) {
@@ -239,7 +239,7 @@ export namespace MasterQian {
 		}
 
 		/// <summary>
-		/// Êä³öĞÅÏ¢
+		/// è¾“å‡ºä¿¡æ¯
 		/// </summary>
 		template<bool newLine = true, typename... Args>
 		void i(Args&&... args) const noexcept {
@@ -247,7 +247,7 @@ export namespace MasterQian {
 		}
 
 		/// <summary>
-		/// Êä³ö¾¯¸æ
+		/// è¾“å‡ºè­¦å‘Š
 		/// </summary>
 		template<bool newLine = true, typename... Args>
 		void w(Args&&... args) const noexcept {
@@ -255,7 +255,7 @@ export namespace MasterQian {
 		}
 
 		/// <summary>
-		/// Êä³ö´íÎó
+		/// è¾“å‡ºé”™è¯¯
 		/// </summary>
 		template<bool newLine = true, typename... Args>
 		void e(Args&&... args) const noexcept {
@@ -263,18 +263,18 @@ export namespace MasterQian {
 		}
 	};
 
-	// ¿ØÖÆÌ¨ÈÕÖ¾£¬½«ÔÚstdoutÊä³ö
-	using ConsoleLogger = Logger<LogType::STD_CONSOLE>;
+	// æ§åˆ¶å°æ—¥å¿—ï¼Œå°†åœ¨stdoutè¾“å‡º
+	inline Logger<LogType::STD_CONSOLE> console;
 
-	// µ÷ÊÔ´°¿ÚÈÕÖ¾£¬½«ÔÚdebug´°¿ÚÊä³ö
-	using DebugLogger = Logger<LogType::DEBUG_CONSOLE>;
+	// è°ƒè¯•çª—å£æ—¥å¿—ï¼Œå°†åœ¨debugçª—å£è¾“å‡º
+	inline Logger<LogType::DEBUG_CONSOLE> debug;
 
-	// ÎÄ¼şÈÕÖ¾£¬Ö¸¶¨ÎÄ¼şÊä³ö
+	// æ–‡ä»¶æ—¥å¿—ï¼ŒæŒ‡å®šæ–‡ä»¶è¾“å‡º
 	using FileLogger = Logger<LogType::FILE>;
 }
 
 
-/*    ¶Ô»ù´¡ÀàĞÍÊä³öÖ§³Ö    */
+/*    å¯¹åŸºç¡€ç±»å‹è¾“å‡ºæ”¯æŒ    */
 
 // mqguid
 export inline void Log(std::wstring& buf, mqguid const& guid) noexcept {

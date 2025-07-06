@@ -5,7 +5,7 @@
 #endif
 
 namespace winrt::hyzjkz::implementation {
-	// ¸üĞÂ¹¤¾ßÁ´²Ëµ¥
+	// æ›´æ–°å·¥å…·é“¾èœå•
 	static void UpdateToolChain(HistoryPage* page) noexcept {
 		auto items{ page->GV_Photos_Menu().Items() };
 		uint32_t index{ };
@@ -29,7 +29,7 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ¸üĞÂÕÕÏà±¨±íÊı¾İ
+	// æ›´æ–°ç…§ç›¸æŠ¥è¡¨æ•°æ®
 	static void UpdateRecordPhotoData(HistoryPage* page, mqui16 year, mqui8 month, mqui8 day) noexcept {
 		std::wstring filename{ std::to_wstring(year) + L".bin" };
 		auto data_path{ Global.c_dataPath / filename };
@@ -40,7 +40,7 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ¸üĞÂ¸´Ó¡±¨±íÊı¾İ
+	// æ›´æ–°å¤å°æŠ¥è¡¨æ•°æ®
 	static void UpdateRecordCopyData(HistoryPage* page, mqui32 value) noexcept {
 		auto cur_date{ util::DateTimeToLocal(page->CDP_Main().Date().as<Windows::Foundation::DateTime>()) };
 		std::wstring filename{ std::to_wstring(cur_date.year) + L".bin" };
@@ -52,51 +52,51 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// Ë¢ĞÂ
+	// åˆ·æ–°
 	static void Refresh(HistoryPage* page, bool updateRecord) noexcept {
-		// ÏÈÇå¿ÕÁĞ±í, ÅúÁ¿Í¬Ê±ÖØ»æ
+		// å…ˆæ¸…ç©ºåˆ—è¡¨, æ‰¹é‡åŒæ—¶é‡ç»˜
 		auto photo_view{ page->GV_Photos() };
 		photo_view.ItemsSource(nullptr);
 		auto new_photos{ single_threaded_observable_vector<hyzjkz::ModelPhoto>() };
 
 		auto cur_date{ util::DateTimeToLocal(page->CDP_Main().Date().as<Windows::Foundation::DateTime>()) };
 		auto date_str{ cur_date.formatDate() };
-		auto photo_path{ Global.c_photoPath / date_str }; // [ÕÕÆ¬Â·¾¶]/20231231
-		auto thumb_path{ Global.c_thumbPath / date_str }; // [ËõÂÔÍ¼Â·¾¶]/20231231
-		thumb_path.Create(); // È·±£ËõÂÔÍ¼Ä¿Â¼´æÔÚ
+		auto photo_path{ Global.c_photoPath / date_str }; // [ç…§ç‰‡è·¯å¾„]/20231231
+		auto thumb_path{ Global.c_thumbPath / date_str }; // [ç¼©ç•¥å›¾è·¯å¾„]/20231231
+		thumb_path.Create(); // ç¡®ä¿ç¼©ç•¥å›¾ç›®å½•å­˜åœ¨
 
-		mqui32 photo_num{ }; // ÕÕÆ¬ÊıÁ¿
+		mqui32 photo_num{ }; // ç…§ç‰‡æ•°é‡
 
-		// ±éÀúÕÕÆ¬ÎÄ¼ş¼Ğ
+		// éå†ç…§ç‰‡æ–‡ä»¶å¤¹
 		for (auto& photo_file : photo_path.EnumFolder(L"*.jpg")) {
 			auto filename{ photo_file.Name() };
 			auto thumb_file{ thumb_path / filename };
-			if (!thumb_file.Exists()) { // ËõÂÔÍ¼²»´æÔÚ
-				// ´´½¨ËõÂÔÍ¼
+			if (!thumb_file.Exists()) { // ç¼©ç•¥å›¾ä¸å­˜åœ¨
+				// åˆ›å»ºç¼©ç•¥å›¾
 				Media::GDI::Image(photo_file).Thumbnail(Global.c_photoThumbSize).Save(thumb_file, Media::GDI::ImageFormat::JPG);
 			}
 
-			new_photos.Append(hyzjkz::ModelPhoto{ date_str, filename }); // Ìí¼ÓĞÂÕÕÆ¬
+			new_photos.Append(hyzjkz::ModelPhoto{ date_str, filename }); // æ·»åŠ æ–°ç…§ç‰‡
 
 			++photo_num;
 		}
 
-		photo_view.ItemsSource(new_photos); // ¸üĞÂÕÕÆ¬Êı×éÍ¬Ê±Ë¢ĞÂUI
-		page->PhotoNum(photo_num); // ¸üĞÂÕÕÆ¬ÊıÁ¿Í¬Ê±Ë¢ĞÂUI
+		photo_view.ItemsSource(new_photos); // æ›´æ–°ç…§ç‰‡æ•°ç»„åŒæ—¶åˆ·æ–°UI
+		page->PhotoNum(photo_num); // æ›´æ–°ç…§ç‰‡æ•°é‡åŒæ—¶åˆ·æ–°UI
 
-		// ¸üĞÂ±¨±íÊı¾İ
+		// æ›´æ–°æŠ¥è¡¨æ•°æ®
 		if (updateRecord) {
 			UpdateRecordPhotoData(page, cur_date.year, cur_date.month, cur_date.day);
 		}
 	}
 
-	// Áí´æÎªÕÕÆ¬
+	// å¦å­˜ä¸ºç…§ç‰‡
 	static IAsyncAction Menu_Save(hyzjkz::ModelPhoto item) noexcept {
 		Windows::Storage::Pickers::FileSavePicker savePicker;
 		auto filters{ savePicker.FileTypeChoices() };
-		filters.Insert(L"JPGÍ¼Æ¬", single_threaded_observable_vector<hstring>({ L".jpg" }));
-		filters.Insert(L"PNGÍ¼Æ¬", single_threaded_observable_vector<hstring>({ L".png" }));
-		filters.Insert(L"BMPÍ¼Æ¬", single_threaded_observable_vector<hstring>({ L".bmp" }));
+		filters.Insert(L"JPGå›¾ç‰‡", single_threaded_observable_vector<hstring>({ L".jpg" }));
+		filters.Insert(L"PNGå›¾ç‰‡", single_threaded_observable_vector<hstring>({ L".png" }));
+		filters.Insert(L"BMPå›¾ç‰‡", single_threaded_observable_vector<hstring>({ L".bmp" }));
 		savePicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
 		savePicker.SuggestedFileName(MasterQian::Timestamp{ }.local().formatDateTime());
 		util::InitializeDialog(savePicker, Global.ui_hwnd);
@@ -120,7 +120,7 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ¸´ÖÆÕÕÆ¬
+	// å¤åˆ¶ç…§ç‰‡
 	static IAsyncAction Menu_Copy(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
 		winrt::apartment_context ui_thread;
 		co_await winrt::resume_background();
@@ -136,7 +136,7 @@ namespace winrt::hyzjkz::implementation {
 		Refresh(page, true);
 	}
 
-	// É¾³ıÕÕÆ¬
+	// åˆ é™¤ç…§ç‰‡
 	static IAsyncAction Menu_Delete(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
 		winrt::apartment_context ui_thread;
 		co_await winrt::resume_background();
@@ -149,12 +149,12 @@ namespace winrt::hyzjkz::implementation {
 		Refresh(page, true);
 	}
 
-	// ´òÓ¡ÕÕÆ¬
+	// æ‰“å°ç…§ç‰‡
 	static void Menu_Print(hyzjkz::ModelPhoto item) noexcept {
 		Global.ui_window.NavigateToPrivatePage(UpdateFlag::PRIVATE_PRINT, box_value(item.PhotoPath()));
 	}
 
-	// Ğı×ª
+	// æ—‹è½¬
 	static IAsyncAction Menu_Rotate(HistoryPage* page, hyzjkz::ModelPhoto item, std::wstring_view tag) noexcept {
 		std::wstring photo_path{ item.PhotoPath() };
 		std::wstring thumb_path{ item.ThumbPath() };
@@ -208,7 +208,7 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ±ß¿òÊµÏÖ
+	// è¾¹æ¡†å®ç°
 	static Media::GDI::Image ImageBorderImpl(Media::GDI::Image& image, mqui32 size, Windows::UI::Color color, Media::GDI::AlgorithmModes mode) {
 		auto border_x{ (image.Width() >> 8) * size };
 		auto border_y{ (image.Height() >> 8) * size };
@@ -217,7 +217,7 @@ namespace winrt::hyzjkz::implementation {
 		return image.Border({ border_x, border_y, border_x, border_y }, { color.R, color.G, color.B, color.A }, mode);
 	};
 
-	// ±ß¿ò
+	// è¾¹æ¡†
 	static IAsyncAction Menu_Border(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
 		std::wstring photo_path{ item.PhotoPath() };
 		std::wstring thumb_path{ item.ThumbPath() };
@@ -233,14 +233,14 @@ namespace winrt::hyzjkz::implementation {
 
 		auto result{ co_await dialog.ShowAsync() };
 		if (result == Controls::ContentDialogResult::Secondary) {
-			// ³ß´çºÍÑÕÉ«
+			// å°ºå¯¸å’Œé¢œè‰²
 			auto size{ static_cast<mqui32>(border_box.Value()) };
 			auto color{ border_color.Color() };
 
 			winrt::apartment_context ui_thread;
 			co_await winrt::resume_background();
 
-			// Í¼Ïñ±ß¿ò±£´æ
+			// å›¾åƒè¾¹æ¡†ä¿å­˜
 			Media::GDI::Image image{ photo_path };
 			image = ImageBorderImpl(image, size, color, Media::GDI::QUALITY_MODE);
 			image.Save(photo_path, Media::GDI::ImageFormat::JPG);
@@ -252,7 +252,7 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ºÚ°×ÕÕ
+	// é»‘ç™½ç…§
 	static IAsyncAction Menu_BWPhoto(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
 		std::wstring photo_path{ item.PhotoPath() };
 		std::wstring thumb_path{ item.ThumbPath() };
@@ -280,14 +280,14 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// Éí·İÖ¤
+	// èº«ä»½è¯
 	static IAsyncAction Menu_IDCard(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
 		std::wstring photo_path{ item.PhotoPath() };
 		std::wstring thumb_path{ item.ThumbPath() };
 
 		Media::GDI::Image image{ photo_path };
 		auto [width, height] { image.Size() };
-		Media::GDI::GDIText textInfo{ L"", width * 7 / image.DPI().width, Media::Colors::White, L"ºÚÌå" };
+		Media::GDI::GDIText textInfo{ L"", width * 7 / image.DPI().width, Media::Colors::White, L"é»‘ä½“" };
 
 		auto dialog{ page->MenuIDCardDialog() };
 		auto idcard_image{ page->MIDD_Image() };
@@ -308,7 +308,7 @@ namespace winrt::hyzjkz::implementation {
 
 		auto result{ co_await dialog.ShowAsync() };
 		if (result == Controls::ContentDialogResult::Secondary) {
-			// Éí·İÖ¤ºÅ,ÑÕÉ«,µ×±ß¾àÀë,×ÖÌå´óĞ¡
+			// èº«ä»½è¯å·,é¢œè‰²,åº•è¾¹è·ç¦»,å­—ä½“å¤§å°
 			textInfo.content = idcard_box.Text().data();
 			textInfo.size = static_cast<mqui32>(idcard_fontsize.Value());
 			auto color{ idcard_color.Color() };
@@ -326,7 +326,7 @@ namespace winrt::hyzjkz::implementation {
 			winrt::apartment_context ui_thread;
 			co_await winrt::resume_background();
 
-			// Í¼ÏñÉí·İÖ¤±£´æ
+			// å›¾åƒèº«ä»½è¯ä¿å­˜
 			image.DrawString(point, textInfo, Media::GDI::QUALITY_MODE);
 			image.Save(photo_path, Media::GDI::ImageFormat::JPG);
 			image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path, Media::GDI::ImageFormat::JPG);
@@ -337,19 +337,19 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// [Ğ­³Ì] ÍâÁ´
+	// [åç¨‹] å¤–é“¾
 	static IAsyncAction Menu_Link(HistoryPage* page, hyzjkz::ModelPhoto item, std::wstring_view name) noexcept {
-		// ÕÕÆ¬Â·¾¶, ËõÂÔÍ¼Â·¾¶, ÁÙÊ±Â·¾¶, ÍâÁ´Â·¾¶
+		// ç…§ç‰‡è·¯å¾„, ç¼©ç•¥å›¾è·¯å¾„, ä¸´æ—¶è·¯å¾„, å¤–é“¾è·¯å¾„
 		Storage::Path photo_path{ item.PhotoPath() };
 		Storage::Path thumb_path{ item.ThumbPath() };
 		Storage::Path link_path{ name };
-		// ¸´ÖÆÕÕÆ¬µ½ÁÙÊ±Â·¾¶
+		// å¤åˆ¶ç…§ç‰‡åˆ°ä¸´æ—¶è·¯å¾„
 		photo_path.CopyRename(Global.c_tempPhotoPath, true);
 
-		// ´ò¿ªÍâÁ´Ëø
+		// æ‰“å¼€å¤–é“¾é”
 		page->NotAtExternalLink(false);
 
-		// Òì²½ÔËĞĞÍâÁ´
+		// å¼‚æ­¥è¿è¡Œå¤–é“¾
 		winrt::apartment_context ui_thread;
 		co_await winrt::resume_background();
 
@@ -357,10 +357,10 @@ namespace winrt::hyzjkz::implementation {
 
 		co_await ui_thread;
 
-		// ¹Ø±ÕÍâÁ´Ëø
+		// å…³é—­å¤–é“¾é”
 		page->NotAtExternalLink(true);
 
-		// È·ÈÏ½á¹û¶Ô»°¿ò
+		// ç¡®è®¤ç»“æœå¯¹è¯æ¡†
 		auto dialog{ page->PreviewDialog() };
 
 		auto priview_bmp{ util::FileToBMP(Global.c_tempPhotoPath, Global.c_photoPreviewSize) };
@@ -368,18 +368,18 @@ namespace winrt::hyzjkz::implementation {
 
 		auto result{ co_await dialog.ShowAsync() };
 		if (result == Controls::ContentDialogResult::Primary) {
-			// ¸´ÖÆÁÙÊ±ÕÕÆ¬µ½ÕÕÆ¬Â·¾¶
+			// å¤åˆ¶ä¸´æ—¶ç…§ç‰‡åˆ°ç…§ç‰‡è·¯å¾„
 			Global.c_tempPhotoPath.CopyRename(photo_path, true);
-			// Éú³ÉËõÂÔÍ¼
+			// ç”Ÿæˆç¼©ç•¥å›¾
 			Media::GDI::Image(photo_path).Thumbnail(Global.c_photoThumbSize).Save(thumb_path, Media::GDI::ImageFormat::JPG);
 
 			Refresh(page, false);
 		}
-		// É¾³ıÁÙÊ±ÕÕÆ¬
+		// åˆ é™¤ä¸´æ—¶ç…§ç‰‡
 		Global.c_tempPhotoPath.Delete();
 	}
 
-	// µ¼ÈëÕÕÆ¬
+	// å¯¼å…¥ç…§ç‰‡
 	static void ImportPhotos(mqhandle arg, std::vector<std::wstring> const& files) noexcept {
 		auto page{ static_cast<HistoryPage*>(arg) };
 		auto date_str{ util::DateTimeToLocal(page->CDP_Main().Date().as<Windows::Foundation::DateTime>()).formatDate() };
@@ -388,19 +388,19 @@ namespace winrt::hyzjkz::implementation {
 		auto thumb_path{ Global.c_thumbPath / date_str };
 		thumb_path.Create();
 
-		mqui32 index{ 10U }; // ´Ó10¿ªÊ¼Ê¡µÄÒ»Î»Êı×ª×Ö·û´®»¹ÒªÌíÇ°ÖÃ0
+		mqui32 index{ 10U }; // ä»10å¼€å§‹çœçš„ä¸€ä½æ•°è½¬å­—ç¬¦ä¸²è¿˜è¦æ·»å‰ç½®0
 		for (auto& file : files) {
 			std::wstring filename{ Timestamp{ }.local().formatDateTime() + std::to_wstring(index++) };
 			filename += L".jpg";
 			Media::GDI::Image image(file);
-			image.Save(photo_path / filename, Media::GDI::ImageFormat::JPG); // ¸´ÖÆÕÕÆ¬¼°µ¼³öËõÂÔÍ¼
+			image.Save(photo_path / filename, Media::GDI::ImageFormat::JPG); // å¤åˆ¶ç…§ç‰‡åŠå¯¼å‡ºç¼©ç•¥å›¾
 			image.Thumbnail(Global.c_photoThumbSize).Save(thumb_path / filename, Media::GDI::ImageFormat::JPG);
 		}
 
 		Refresh(page, true);
 	}
 
-	// ÎÄ¼ş¼à¿Ø
+	// æ–‡ä»¶ç›‘æ§
 	static fire_and_forget StartFileSpy(HistoryPage* page) noexcept {
 		winrt::apartment_context ui_thread;
 		HANDLE hDir{ CreateFileW(std::wstring_view{ Global.c_cameraPhotoPath }.data(),
@@ -468,10 +468,10 @@ namespace winrt::hyzjkz::implementation {
 	
 		InitializeComponent();
 
-		// ¸üĞÂ¹¤¾ßÁ´²Ëµ¥
+		// æ›´æ–°å·¥å…·é“¾èœå•
 		UpdateToolChain(this);
 
-		// ³õÊ¼»¯¸´Ó¡Êı¾İ¶Ô»°¿ò
+		// åˆå§‹åŒ–å¤å°æ•°æ®å¯¹è¯æ¡†
 		auto copy_grid{ AddCopyDataGrid() };
 		Application::LoadComponent(copy_grid, Uri{ L"ms-appx:///Xaml/CopyDataDialog.xaml" });
 		for (auto child : copy_grid.Children()) {
@@ -481,7 +481,7 @@ namespace winrt::hyzjkz::implementation {
 		}
 		copy_grid.FindName(L"Button_AddCopyData_Set").as<Controls::Button>().Click({ this, &HistoryPage::AddCopyData_Set_Click });
 
-		// ÉèÖÃ×Ó¿Ø¼şÊÂ¼ş
+		// è®¾ç½®å­æ§ä»¶äº‹ä»¶
 		MenuBorderDialog().PrimaryButtonClick([this] (auto, Controls::ContentDialogButtonClickEventArgs const& args) {
 			auto size{ static_cast<mqui32>(MBD_BorderWidth().Value()) };
 			auto color{ MBD_BorderColor().Color() };
@@ -505,7 +505,7 @@ namespace winrt::hyzjkz::implementation {
 			auto color{ MIDD_IDCardColor().Color() };
 			Media::GDI::GDIText textInfo{ MIDD_IDCardNumber().Text().data(),
 				static_cast<mqui32>(MIDD_IDCardFontSize().Value()),
-				Media::Color(color.R, color.G, color.B, color.A), L"ºÚÌå" };
+				Media::Color(color.R, color.G, color.B, color.A), L"é»‘ä½“" };
 			auto bottom{ static_cast<mqui32>(MIDD_IDCardBottom().Value()) };
 			auto isExtend{ MIDD_IDCardMode().IsOn() };
 
@@ -521,17 +521,17 @@ namespace winrt::hyzjkz::implementation {
 			args.Cancel(true);
 		});
 
-		// ÉèÖÃÈÕÆÚÎª½ñÌì
+		// è®¾ç½®æ—¥æœŸä¸ºä»Šå¤©
 		CDP_Main().Date(winrt::clock::now());
 
-		// ×¢²áÍÏ·Å¹³×Ó
+		// æ³¨å†Œæ‹–æ”¾é’©å­
 		util::SetDropHook(&ImportPhotos, this);
 		
-		// ×¢²áÎÄ¼ş¼à¿Ø
+		// æ³¨å†Œæ–‡ä»¶ç›‘æ§
 		StartFileSpy(this);
 	}
 
-	// ÇĞ»»Ò³Ãæ
+	// åˆ‡æ¢é¡µé¢
 	F_EVENT void HistoryPage::OnNavigatedTo(Microsoft::UI::Xaml::Navigation::NavigationEventArgs const& args) {
 		FlagConverter flag{ .value = args.Parameter().as<mqui64>() };
 		if (flag.flags[UpdateFlag::SHOW_TURNOVER]) {
@@ -542,24 +542,24 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ÈÕÀú¿ò±»Ñ¡Ôñ
+	// æ—¥å†æ¡†è¢«é€‰æ‹©
 	F_EVENT void HistoryPage::CDP_Main_DateChanged(Controls::CalendarDatePicker const&, Controls::CalendarDatePickerDateChangedEventArgs const& args) {
 		auto old_date{ args.OldDate() }, new_date{ args.NewDate() };
-		if (new_date != nullptr) { // µã»÷ÖØ¸´µÄÈÕÆÚÊ±old_dateÎª¸ÃÈÕÆÚ, ¶ønew_date==nullptr
+		if (new_date != nullptr) { // ç‚¹å‡»é‡å¤çš„æ—¥æœŸæ—¶old_dateä¸ºè¯¥æ—¥æœŸ, è€Œnew_date==nullptr
 			Refresh(this, false);
 		}
 		else if (old_date != nullptr) {
 			auto t{ util::DateTimeToLocal(old_date.Value()) };
-			CDP_Main().PlaceholderText(winrt::format(L"{}Äê{}ÔÂ{}ÈÕ", t.year, t.month, t.day));
+			CDP_Main().PlaceholderText(winrt::format(L"{}å¹´{}æœˆ{}æ—¥", t.year, t.month, t.day));
 		}
 	}
 
-	// Ë¢ĞÂ
+	// åˆ·æ–°
 	F_EVENT void HistoryPage::Refresh_Click(IInspectable const&, RoutedEventArgs const&) {
-		CDP_Main().Date(winrt::clock::now()); // ¸üĞÂÈÕÆÚµ½½ñÌì
+		CDP_Main().Date(winrt::clock::now()); // æ›´æ–°æ—¥æœŸåˆ°ä»Šå¤©
 	}
 
-	// ²¹²î
+	// è¡¥å·®
 	F_EVENT IAsyncAction HistoryPage::AddDefault_Click(IInspectable const&, RoutedEventArgs const&) {
 		auto date_str{ util::DateTimeToLocal(CDP_Main().Date().as<Windows::Foundation::DateTime>()).formatDate() };
 		winrt::apartment_context ui_thread;
@@ -580,7 +580,7 @@ namespace winrt::hyzjkz::implementation {
 		Refresh(this, true);
 	}
 
-	// µ¼Èë
+	// å¯¼å…¥
 	F_EVENT IAsyncAction HistoryPage::Import_Click(IInspectable const&, RoutedEventArgs const&) {
 		Windows::Storage::Pickers::FileOpenPicker openPicker;
 		openPicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
@@ -602,13 +602,13 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// Ìí¼Ó¸´Ó¡Êı¾İ
+	// æ·»åŠ å¤å°æ•°æ®
 	F_EVENT IAsyncAction HistoryPage::AddCopyData_Click(IInspectable const&, RoutedEventArgs const&) {
 		AddCopyDataGrid().FindName(L"NB_AddCopyData").as<Controls::NumberBox>().Value(0.0);
 		co_await AddCopyDataDialog().ShowAsync();
 	}
 
-	// Ìí¼Ó¸´Ó¡Êı¾İ, µã»÷
+	// æ·»åŠ å¤å°æ•°æ®, ç‚¹å‡»
 	F_EVENT void HistoryPage::AddCopyData_Plus_Click(IInspectable const& sender, RoutedEventArgs const&) {
 		std::wstring_view str{ sender.as<Controls::Button>().Content().as<hstring>() };
 		auto value{ std::wcstoul(str.substr(1U).data(), nullptr, 10) };
@@ -616,29 +616,29 @@ namespace winrt::hyzjkz::implementation {
 		AddCopyDataDialog().Hide();
 	}
 
-	// Ìí¼Ó¸´Ó¡Êı¾İ, ×Ô¶¨Òåµã»÷
+	// æ·»åŠ å¤å°æ•°æ®, è‡ªå®šä¹‰ç‚¹å‡»
 	F_EVENT void HistoryPage::AddCopyData_Set_Click(IInspectable const&, RoutedEventArgs const&) {
 		auto value{ static_cast<mqui32>(AddCopyDataGrid().FindName(L"NB_AddCopyData").as<Controls::NumberBox>().Value()) };
 		UpdateRecordCopyData(this, value);
 		AddCopyDataDialog().Hide();
 	}
 
-	// Ë«»÷²é¿´´óÍ¼
+	// åŒå‡»æŸ¥çœ‹å¤§å›¾
 	F_EVENT IAsyncAction HistoryPage::GV_Photos_DoubleClick(IInspectable const&, Input::DoubleTappedRoutedEventArgs const&) {
 		auto dialog{ ShowPictureDialog() };
 		Storage::Path photo_path{ GV_Photos().SelectedItem().as<hyzjkz::ModelPhoto>().PhotoPath() };
 		Media::GDI::Image image(photo_path);
 		auto size{ image.Size() };
 		auto dpi{ image.DPI() };
-		SPD_Text1().Text(winrt::format(L"³ß´ç: {} ¡Á {} ÏñËØ", size.width, size.height));
-		SPD_Text2().Text(winrt::format(L"·Ö±æÂÊ: {} ¡Á {} dpi", dpi.width, dpi.height));
-		SPD_Text3().Text(winrt::format(L"Î»Éî¶È: {}", image.BitDepth()));
-		SPD_Text4().Text(winrt::format(L"´óĞ¡: {} KB", static_cast<mqui32>(photo_path.Size()) / 1024U));
+		SPD_Text1().Text(winrt::format(L"å°ºå¯¸: {} Ã— {} åƒç´ ", size.width, size.height));
+		SPD_Text2().Text(winrt::format(L"åˆ†è¾¨ç‡: {} Ã— {} dpi", dpi.width, dpi.height));
+		SPD_Text3().Text(winrt::format(L"ä½æ·±åº¦: {}", image.BitDepth()));
+		SPD_Text4().Text(winrt::format(L"å¤§å°: {} KB", static_cast<mqui32>(photo_path.Size()) / 1024U));
 		SPD_Image().Source(util::StreamToBMP(image.SaveToUnsafeStream(Media::GDI::ImageFormat::BMP)));
 		co_await dialog.ShowAsync();
 	}
 
-	// ÓÒ¼ü´ò¿ª²Ëµ¥
+	// å³é”®æ‰“å¼€èœå•
 	F_EVENT void HistoryPage::ModelPhoto_RightClick(IInspectable const&, Input::RightTappedRoutedEventArgs const& args) {
 		auto photo_view{ GV_Photos() };
 		auto image{ args.OriginalSource().as<Controls::Image>() };
@@ -652,7 +652,7 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ÓÒ¼ü²Ëµ¥
+	// å³é”®èœå•
 	F_EVENT IAsyncAction HistoryPage::MenuItem_Click(IInspectable const&, RoutedEventArgs const& args) {
 		std::wstring tag{ args.OriginalSource().as<FrameworkElement>().Tag().as<hstring>() };
 		auto dom{ std::wstring_view{ tag }.substr(0ULL, 4ULL) };
@@ -683,38 +683,38 @@ namespace winrt::hyzjkz::implementation {
 }
 
 namespace winrt::hyzjkz::implementation {
-	// ÕÕÆ¬ÊıÖµÎ»Í¼ÏÔÊ¾
+	// ç…§ç‰‡æ•°å€¼ä½å›¾æ˜¾ç¤º
 	F_RT Microsoft::UI::Xaml::Visibility HistoryPage::GetPVBVisibility(mqui32 photo_num, mqui32 index, bool is_photo_num) const {
-		if (is_photo_num) { // ÕÕÆ¬Êı
-			if (index == 1U) { // ÈôĞ¡ÓÚÁ½Î»ÊıÔòµÚÒ»Î»²»¿É¼û
+		if (is_photo_num) { // ç…§ç‰‡æ•°
+			if (index == 1U) { // è‹¥å°äºä¸¤ä½æ•°åˆ™ç¬¬ä¸€ä½ä¸å¯è§
 				return photo_num < 10U ? Visibility::Collapsed : Visibility::Visible;
 			}
-			else if (index == 2U) { // µÚ¶şÎ»Ê¼ÖÕ¿É¼û
+			else if (index == 2U) { // ç¬¬äºŒä½å§‹ç»ˆå¯è§
 				return Visibility::Visible;
 			}
-			else { // ÈôĞ¡ÓÚÈıÎ»ÊıÔòµÚÈıÎ»²»¿É¼û
+			else { // è‹¥å°äºä¸‰ä½æ•°åˆ™ç¬¬ä¸‰ä½ä¸å¯è§
 				return photo_num < 100U ? Visibility::Collapsed : Visibility::Visible;
 			}
 		}
 		else {
-			auto turnover{ photo_num * Global.cfg.Get<GlobalConfig::UNIT_PRICE>() }; // ÓªÒµ¶î
-			if (index == 1U) { // ÈôĞ¡ÓÚÈıÎ»ÊıÔòµÚÒ»Î»²»¿É¼û
+			auto turnover{ photo_num * Global.cfg.Get<GlobalConfig::UNIT_PRICE>() }; // è¥ä¸šé¢
+			if (index == 1U) { // è‹¥å°äºä¸‰ä½æ•°åˆ™ç¬¬ä¸€ä½ä¸å¯è§
 				return turnover < 100U ? Visibility::Collapsed : Visibility::Visible;
 			}
-			else if (index == 2U) { // µÚ¶şÎ»Ê¼ÖÕ¿É¼û
+			else if (index == 2U) { // ç¬¬äºŒä½å§‹ç»ˆå¯è§
 				return Visibility::Visible;
 			}
-			else if (index == 3U) { // ÈôĞ¡ÓÚÁ½Î»ÊıÔòµÚÈıÎ»²»¿É¼û
+			else if (index == 3U) { // è‹¥å°äºä¸¤ä½æ•°åˆ™ç¬¬ä¸‰ä½ä¸å¯è§
 				return turnover < 10U ? Visibility::Collapsed : Visibility::Visible;
 			}
-			else { // ÈôĞ¡ÓÚËÄÎ»ÊıÔòµÚËÄÎ»²»¿É¼û
+			else { // è‹¥å°äºå››ä½æ•°åˆ™ç¬¬å››ä½ä¸å¯è§
 				return turnover < 1000U ? Visibility::Collapsed : Visibility::Visible;
 			}
 		}
 	}
 
 	F_RT Microsoft::UI::Xaml::Media::Imaging::BitmapImage HistoryPage::GetPVBSource(mqui32 photo_num, mqui32 index, bool is_photo_num) const {
-		if (is_photo_num) { // ÕÕÆ¬Êı
+		if (is_photo_num) { // ç…§ç‰‡æ•°
 			if (index == 1U) {
 				if (photo_num >= 10U) {
 					return photo_num < 100U ? bmp_nums[photo_num / 10U] : bmp_nums[photo_num / 100U];
@@ -735,7 +735,7 @@ namespace winrt::hyzjkz::implementation {
 			}
 		}
 		else {
-			auto turnover{ photo_num * Global.cfg.Get<GlobalConfig::UNIT_PRICE>() }; // ÓªÒµ¶î
+			auto turnover{ photo_num * Global.cfg.Get<GlobalConfig::UNIT_PRICE>() }; // è¥ä¸šé¢
 			if (index == 1U) {
 				if (turnover >= 100U) {
 					return turnover < 1000U ? bmp_nums[turnover / 100U] : bmp_nums[turnover / 1000U];

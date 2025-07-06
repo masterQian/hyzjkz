@@ -5,50 +5,25 @@
 #endif
 
 namespace winrt::hyzjkz::implementation {
-    // ³õÊ¼»¯È«¾Ö
-    static void InitializeGlobal() noexcept {
-        // ¿ªÆôGDI
-        Media::GDI::StartupGDI();
-        // ´´½¨ÎÄ¼ş¼à¿ØÊÂ¼ş
-        Global.file_spy_event = CreateEventW(nullptr, true, false, nullptr);
-    }
-
-    // ÇåÀíÈ«¾Ö
-    static void UninitializeGlobal(IInspectable const&, Microsoft::UI::Xaml::WindowEventArgs const&) noexcept {
-        // È¡ÏûÒıÓÃ
-        Global.ui_window = nullptr;
-        // ·¢ËÍÍ£Ö¹ÎÄ¼ş¼à¿ØÊÂ¼ş
-        SetEvent(Global.file_spy_event);
-        // ¹Ø±ÕGDI
-        Media::GDI::ShutdownGDI();
-    }
-}
-
-namespace winrt::hyzjkz::implementation {
     MainWindow::MainWindow() {
         InitializeComponent();
 
-        // »ñÈ¡´°¿Ú¾ä±ú
+        // è·å–çª—å£å¥æŸ„
         auto appWindow{ AppWindow() };
         Global.ui_hwnd = reinterpret_cast<HWND>(appWindow.Id().Value);
-        
-        // ³õÊ¼»¯È«¾Ö
-        InitializeGlobal();
-        // ¹Ø±ÕÊÂ¼ş --- ÇåÀíÈ«¾Ö
-        Closed(&UninitializeGlobal);
 
-        // ÉèÖÃ×Ó¿Ø¼şÊÂ¼ş
+        // è®¾ç½®å­æ§ä»¶äº‹ä»¶
         PasswordDialog().PrimaryButtonClick([ ] (Controls::ContentDialog const& dialog, Controls::ContentDialogButtonClickEventArgs const& args) {
             if (dialog.Content().as<Controls::PasswordBox>().Password() != Global.cfg.Get<GlobalConfig::PASSWORD>()) {
                 args.Cancel(true);
             }
         });
 
-        // ÉèÖÃ×Ô¶¨Òå±êÌâÀ¸
+        // è®¾ç½®è‡ªå®šä¹‰æ ‡é¢˜æ 
         ExtendsContentIntoTitleBar(true);
         SetTitleBar(SP_TitleBar());
 
-        // µ÷Õû´°¿Ú´óĞ¡
+        // è°ƒæ•´çª—å£å¤§å°
         auto width{ static_cast<mqi32>(System::Info::GetScreenWidth()) };
         auto height{ static_cast<mqi32>(System::Info::GetScreenHeight()) };
         auto scale{ util::RDValue<mqf64>(L"MainWindow.Scale.Value") };
@@ -58,10 +33,10 @@ namespace winrt::hyzjkz::implementation {
         auto actualTop{ static_cast<mqi32>((1.0 - scale) * height / 2) };
         appWindow.MoveAndResize({ actualLeft, actualTop, actualWidth, actualHeight });
 
-        // ¼ÓÔØÍ¼±ê
+        // åŠ è½½å›¾æ ‡
         Image_Icon().Source(util::BinToBMP(Global.res_icon, { }, true));
 
-        // ÉèÖÃÒ³Ãæ±êÇ©
+        // è®¾ç½®é¡µé¢æ ‡ç­¾
         auto nv_main{ NV_Main() };
         NVI_Settings().Tag(box_value(UpdateFlag::SETTINGS));
         NVI_History().Tag(box_value(UpdateFlag::HISTORY));
@@ -69,21 +44,21 @@ namespace winrt::hyzjkz::implementation {
         NVI_Tools().Tag(box_value(UpdateFlag::TOOLS));
         NVI_Record().Tag(box_value(UpdateFlag::RECORD));
 
-        // Ê×Ò³ÎªÀúÊ·¼ÇÂ¼
+        // é¦–é¡µä¸ºå†å²è®°å½•
         nv_main.SelectedItem(NVI_History());
         NavigateToPublicPage(UpdateFlag::HISTORY);
     }
 
-    // µ¼º½À¸ÇĞ»»
+    // å¯¼èˆªæ åˆ‡æ¢
     F_EVENT void MainWindow::NV_Main_ItemInvoked(Controls::NavigationView const&, Controls::NavigationViewItemInvokedEventArgs const& args) {
-        // ÇĞ»»¶ÔÓ¦µÄÒ³Ãæ
+        // åˆ‡æ¢å¯¹åº”çš„é¡µé¢
         auto flagID{ args.InvokedItemContainer().Tag().as<mqui64>() };
         if (flagID != NV_Main().Tag().as<mqui64>()) {
             NavigateToPublicPage(flagID);
         }
     }
 
-    // Á¬½ÓÏà»ú
+    // è¿æ¥ç›¸æœº
     F_EVENT IAsyncAction MainWindow::AttachCamera_Click(IInspectable const&, RoutedEventArgs const&) {
         Storage::Path eos_path{ Global.cfg.Get<GlobalConfig::EOS_PATH>() };
         if (eos_path.IsFile()) {
@@ -94,25 +69,25 @@ namespace winrt::hyzjkz::implementation {
         }
     }
 
-    // ¼ì²é¸üĞÂ
+    // æ£€æŸ¥æ›´æ–°
     F_EVENT void MainWindow::CheckUpdate_Click(IInspectable const&, RoutedEventArgs const&) {
         auto CurrentVersion{ util::RDString<hstring>(L"App.Version") };
-        // ½áÊø³ÌĞò
+        // ç»“æŸç¨‹åº
         Close();
-        // »½Æğ¸üĞÂ³ÌĞò
+        // å”¤èµ·æ›´æ–°ç¨‹åº
         System::Process::Execute(L"AutoUpdate.exe", CurrentVersion, false, true);
     }
 }
 
 namespace winrt::hyzjkz::implementation {
-    // ÌáÊ¾¶Ô»°¿ò
+    // æç¤ºå¯¹è¯æ¡†
     F_RT IAsyncAction MainWindow::ShowTipDialog(hstring const& msg) {
         auto dialog{ TipDialog() };
         dialog.Title(box_value(msg));
         co_await dialog.ShowAsync();
     }
 
-    // È·ÈÏ¶Ô»°¿ò
+    // ç¡®è®¤å¯¹è¯æ¡†
     F_RT IAsyncOperation<bool> MainWindow::ShowConfirmDialog(hstring const& msg) {
         auto dialog{ ConfirmDialog() };
         dialog.Title(box_value(msg));
@@ -120,7 +95,7 @@ namespace winrt::hyzjkz::implementation {
         co_return result == Controls::ContentDialogResult::Primary;
     }
 
-    // ÊäÈë¶Ô»°¿ò
+    // è¾“å…¥å¯¹è¯æ¡†
     F_RT IAsyncOperation<hstring> MainWindow::ShowInputDialog(hstring const& msg) {
         auto dialog{ InputDialog() };
         dialog.Title(box_value(msg));
@@ -130,7 +105,7 @@ namespace winrt::hyzjkz::implementation {
         co_return result == Controls::ContentDialogResult::Primary ? textbox.Text() : L"";
     }
 
-    // ÃÜÂë¶Ô»°¿ò
+    // å¯†ç å¯¹è¯æ¡†
     F_RT IAsyncAction MainWindow::ShowPasswordDialog() {
         auto dialog{ PasswordDialog() };
         dialog.Content().as<Controls::PasswordBox>().Password(L"");
@@ -140,7 +115,7 @@ namespace winrt::hyzjkz::implementation {
         }
     }
 
-    // ÇĞ»»¹«¿ªÒ³
+    // åˆ‡æ¢å…¬å¼€é¡µ
     F_RT void MainWindow::NavigateToPublicPage(mqui64 flagID) {
         Windows::UI::Xaml::Interop::TypeName name;
         switch (flagID) {
@@ -168,7 +143,7 @@ namespace winrt::hyzjkz::implementation {
         Frame_Main().Navigate(name, box_value(flag));
     }
 
-    // ÇĞ»»Ë½ÓĞÒ³
+    // åˆ‡æ¢ç§æœ‰é¡µ
     F_RT void MainWindow::NavigateToPrivatePage(mqui64 flagID, IInspectable const& args) {
         Windows::UI::Xaml::Interop::TypeName name;
         switch (flagID) {
@@ -184,7 +159,7 @@ namespace winrt::hyzjkz::implementation {
         Frame_Main().Navigate(name, args);
     }
 
-    // ¸üĞÂ±êÖ¾
+    // æ›´æ–°æ ‡å¿—
     F_RT void MainWindow::UpdateFlags(mqui64 page_index, mqui64 flag_index) {
         mUpdateFlag.flags[page_index].flags[flag_index] = true;
     }

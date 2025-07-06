@@ -7,7 +7,7 @@ export module MasterQian.Bin;
 export import MasterQian.freestanding;
 
 namespace MasterQian {
-	// ×Ö½Ú¼¯ÊÓÍ¼
+	// å­—èŠ‚é›†è§†å›¾
 	export struct BinView {
 		mqcbytes mData{ };
 		mqui64 mSize{ };
@@ -32,7 +32,7 @@ namespace MasterQian {
 		}
 
 		/// <summary>
-		/// È¡32Î»³¤¶È
+		/// å–32ä½é•¿åº¦
 		/// </summary>
 		[[nodiscard]] mqui32 size32() const noexcept {
 			return static_cast<mqui32>(mSize);
@@ -55,30 +55,30 @@ namespace MasterQian {
 		}
 	};
 
-	// ×Ö½Ú¼¯
+	// å­—èŠ‚é›†
 	export struct Bin : private mqbuffer {
 		Bin() noexcept = default;
 
 		/// <summary>
-		/// ´´½¨Ö¸¶¨³¤¶ÈµÄ¿Õ×Ö½Ú¼¯
+		/// åˆ›å»ºæŒ‡å®šé•¿åº¦çš„ç©ºå­—èŠ‚é›†
 		/// </summary>
-		/// <param name="len">³¤¶È</param>
+		/// <param name="len">é•¿åº¦</param>
 		explicit Bin(mqui64 len) noexcept : mqbuffer{ len, true } {}
 
 		/// <summary>
-		/// ´´½¨ÄÚ´æÊ×Ö·Óë³¤¶ÈÈ·¶¨µÄ×Ö½Ú¼¯
+		/// åˆ›å»ºå†…å­˜é¦–å€ä¸é•¿åº¦ç¡®å®šçš„å­—èŠ‚é›†
 		/// </summary>
-		/// <param name="data">Ê×Ö·</param>
-		/// <param name="len">³¤¶È</param>
+		/// <param name="data">é¦–å€</param>
+		/// <param name="len">é•¿åº¦</param>
 		Bin(mqcbytes data, mqui64 len) noexcept : mqbuffer{ len, false } {
 			freestanding::copy(mData, data, len);
 		}
 
 		/// <summary>
-		/// ÖØ¸´Ö¸¶¨×Ö½Ú¼¯Ò»¶¨´ÎÊı
+		/// é‡å¤æŒ‡å®šå­—èŠ‚é›†ä¸€å®šæ¬¡æ•°
 		/// </summary>
-		/// <param name="bin">×Ö½Ú¼¯</param>
-		/// <param name="count">ÖØ¸´´ÎÊı</param>
+		/// <param name="bin">å­—èŠ‚é›†</param>
+		/// <param name="count">é‡å¤æ¬¡æ•°</param>
 		Bin(Bin const& bin, mqui64 count) noexcept : mqbuffer{ bin.mSize * count, false } {
 			for (mqui64 i{ }; i < count; ++i) {
 				freestanding::copy(mData + i * bin.mSize, bin.mData, bin.mSize);
@@ -86,16 +86,16 @@ namespace MasterQian {
 		}
 
 		/// <summary>
-		/// ³õÊ¼»¯ÁĞ±í¹¹Ôì×Ö½Ú¼¯
+		/// åˆå§‹åŒ–åˆ—è¡¨æ„é€ å­—èŠ‚é›†
 		/// </summary>
-		/// <param name="bin">³õÊ¼»¯ÁĞ±í</param>
+		/// <param name="bin">åˆå§‹åŒ–åˆ—è¡¨</param>
 		Bin(std::initializer_list<mqbyte> bin) noexcept : Bin{ bin.begin(), bin.size() } {}
 
 		/// <summary>
-		/// ÖØ¸´Ö¸¶¨³õÊ¼»¯ÁĞ±íÒ»¶¨´ÎÊı
+		/// é‡å¤æŒ‡å®šåˆå§‹åŒ–åˆ—è¡¨ä¸€å®šæ¬¡æ•°
 		/// </summary>
-		/// <param name="bin">³õÊ¼»¯ÁĞ±í</param>
-		/// <param name="count">ÖØ¸´´ÎÊı</param>
+		/// <param name="bin">åˆå§‹åŒ–åˆ—è¡¨</param>
+		/// <param name="count">é‡å¤æ¬¡æ•°</param>
 		Bin(std::initializer_list<mqbyte> bin, mqui64 count) noexcept : mqbuffer{ bin.size() * count, false } {
 			for (mqui64 i{ }; i < count; ++i) {
 				freestanding::copy(mData + i * bin.size(), bin.begin(), bin.size());
@@ -103,9 +103,9 @@ namespace MasterQian {
 		}
 
 		/// <summary>
-		/// ´Ó×Ö½Ú¼¯ÊÓÍ¼¹¹Ôì×Ö½Ú¼¯
+		/// ä»å­—èŠ‚é›†è§†å›¾æ„é€ å­—èŠ‚é›†
 		/// </summary>
-		/// <param name="bv">×Ö½Ú¼¯ÊÓÍ¼</param>
+		/// <param name="bv">å­—èŠ‚é›†è§†å›¾</param>
 		explicit Bin(BinView bv) noexcept : Bin{ bv.mData, bv.mSize } {}
 
 		[[nodiscard]] Bin operator + (BinView bv) const noexcept {
@@ -177,7 +177,7 @@ namespace MasterQian {
 		}
 
 		/// <summary>
-		/// È¡32Î»³¤¶È
+		/// å–32ä½é•¿åº¦
 		/// </summary>
 		[[nodiscard]] mqui32 size32() const noexcept {
 			return static_cast<mqui32>(size());
@@ -190,9 +190,9 @@ namespace MasterQian {
 		}
 
 		/// <summary>
-		/// È¡×Ö½Ú¼¯×ó±ß
+		/// å–å­—èŠ‚é›†å·¦è¾¹
 		/// </summary>
-		/// <param name="num">×Ö½ÚÊı</param>
+		/// <param name="num">å­—èŠ‚æ•°</param>
 		[[nodiscard]] Bin left(mqui64 num) const noexcept {
 			Bin tmp;
 			if (num > mSize) {
@@ -204,9 +204,9 @@ namespace MasterQian {
 		}
 
 		/// <summary>
-		/// È¡×Ö½Ú¼¯ÓÒ±ß
+		/// å–å­—èŠ‚é›†å³è¾¹
 		/// </summary>
-		/// <param name="num">×Ö½ÚÊı</param>
+		/// <param name="num">å­—èŠ‚æ•°</param>
 		[[nodiscard]] Bin right(mqui64 num) const noexcept {
 			Bin tmp;
 			if (num > mSize) {
@@ -218,10 +218,10 @@ namespace MasterQian {
 		}
 
 		/// <summary>
-		/// È¡×Ö½Ú¼¯ÖĞ¼ä
+		/// å–å­—èŠ‚é›†ä¸­é—´
 		/// </summary>
-		/// <param name="start">ÆğÊ¼Î»ÖÃ</param>
-		/// <param name="num">×Ö½ÚÊı</param>
+		/// <param name="start">èµ·å§‹ä½ç½®</param>
+		/// <param name="num">å­—èŠ‚æ•°</param>
 		[[nodiscard]] Bin middle(mqui64 start, mqui64 num) const noexcept {
 			Bin tmp;
 			if (start + num > mSize) {
@@ -234,8 +234,8 @@ namespace MasterQian {
 		}
 
 		/// <summary>
-		/// µ¼³öÒÔ´óÀ¨ºÅ°ü¹üÏÔÊ¾Ã¿¸ö×Ö½ÚÄÚÈİµÄÓÑºÃ×Ö·û´®£¬¶ÔÓÚ³¬³ö520³¤¶ÈµÄ×Ö½Ú¼¯²»×÷ÏÔÊ¾
-		/// Èç¹ûÒıÓÃÁËMasterQian.Log¿â½«ÄÜÖ±½ÓÊä³öµ½¶ÔÓ¦Éè±¸
+		/// å¯¼å‡ºä»¥å¤§æ‹¬å·åŒ…è£¹æ˜¾ç¤ºæ¯ä¸ªå­—èŠ‚å†…å®¹çš„å‹å¥½å­—ç¬¦ä¸²ï¼Œå¯¹äºè¶…å‡º520é•¿åº¦çš„å­—èŠ‚é›†ä¸ä½œæ˜¾ç¤º
+		/// å¦‚æœå¼•ç”¨äº†MasterQian.Logåº“å°†èƒ½ç›´æ¥è¾“å‡ºåˆ°å¯¹åº”è®¾å¤‡
 		/// </summary>
 		void Log(std::wstring& buf) const noexcept {
 			auto len{ size() };
@@ -255,17 +255,17 @@ namespace MasterQian {
 		}
 	};
 
-	// ÎÄ±¾±àÂëÀàĞÍ
+	// æ–‡æœ¬ç¼–ç ç±»å‹
 	export enum class CodePage : mqenum {
 		ANSI = 0U, UTF8 = 65001U
 	};
 
 	/// <summary>
-	/// ×Ö½Ú¼¯×ª×Ö·û´®
+	/// å­—èŠ‚é›†è½¬å­—ç¬¦ä¸²
 	/// </summary>
-	/// <param name="bv">×Ö½Ú¼¯</param>
-	/// <param name="cp">±àÂë£¬Ä¬ÈÏÎªUTF8</param>
-	/// <returns>×Ö·û´®</returns>
+	/// <param name="bv">å­—èŠ‚é›†</param>
+	/// <param name="cp">ç¼–ç ï¼Œé»˜è®¤ä¸ºUTF8</param>
+	/// <returns>å­—ç¬¦ä¸²</returns>
 	export [[nodiscard]] inline std::wstring ToString(BinView bv, CodePage cp = CodePage::UTF8) noexcept {
 		std::wstring tmp;
 		if (auto len{ api::MultiByteToWideChar(static_cast<mqui32>(cp), 0, reinterpret_cast<mqcstra>(bv.data()),
@@ -278,11 +278,11 @@ namespace MasterQian {
 	}
 
 	/// <summary>
-	/// ×Ö·û´®×ª×Ö½Ú¼¯
+	/// å­—ç¬¦ä¸²è½¬å­—èŠ‚é›†
 	/// </summary>
-	/// <param name="sv">×Ö·û´®</param>
-	/// <param name="cp">±àÂë£¬Ä¬ÈÏÎªUTF8</param>
-	/// <returns>×Ö½Ú¼¯</returns>
+	/// <param name="sv">å­—ç¬¦ä¸²</param>
+	/// <param name="cp">ç¼–ç ï¼Œé»˜è®¤ä¸ºUTF8</param>
+	/// <returns>å­—èŠ‚é›†</returns>
 	export [[nodiscard]] inline Bin ToBin(std::wstring_view sv, CodePage cp = CodePage::UTF8) noexcept {
 		Bin tmp;
 		if (auto len{ api::WideCharToMultiByte(static_cast<mqui32>(cp), 0, sv.data(),

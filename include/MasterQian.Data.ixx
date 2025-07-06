@@ -9,7 +9,7 @@ module;
 #define MasterQianLibString "MasterQian.Data.dll"
 #endif
 #define MasterQianModuleVersion 20240131ULL
-#pragma message("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª Please copy [" MasterQianLibString "] into your program folder ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª")
+#pragma message("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€” Please copy [" MasterQianLibString "] into your program folder â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”")
 
 export module MasterQian.Data;
 export import MasterQian.Bin;
@@ -31,28 +31,28 @@ namespace MasterQian::Data {
 
 export namespace MasterQian::Data {
 	/// <summary>
-	/// È¡¹şÏ£Öµ
+	/// å–å“ˆå¸Œå€¼
 	/// </summary>
-	/// <param name="bv">×Ö½Ú¼¯</param>
-	/// <returns>¹şÏ£Öµ</returns>
+	/// <param name="bv">å­—èŠ‚é›†</param>
+	/// <returns>å“ˆå¸Œå€¼</returns>
 	[[nodiscard]] inline mqui64 HashValue(BinView bv) noexcept {
 		return freestanding::hash_bytes(bv.data(), bv.size());
 	}
 
 	/// <summary>
-	/// È¡CRC32Ğ£ÑéÖµ
+	/// å–CRC32æ ¡éªŒå€¼
 	/// </summary>
-	/// <param name="bv">×Ö½Ú¼¯</param>
-	/// <returns>CRC32Ğ£ÑéÖµ</returns>
+	/// <param name="bv">å­—èŠ‚é›†</param>
+	/// <returns>CRC32æ ¡éªŒå€¼</returns>
 	[[nodiscard]] inline mqui32 CRC32(BinView bv) noexcept {
 		return details::MasterQian_Data_GetCRC32(bv.data(), bv.size32());
 	}
 
 	/// <summary>
-	/// È¡MD5ÕªÒª
+	/// å–MD5æ‘˜è¦
 	/// </summary>
-	/// <param name="bv">×Ö½Ú¼¯</param>
-	/// <returns>32Î»MD5Öµ£¬´óĞ´</returns>
+	/// <param name="bv">å­—èŠ‚é›†</param>
+	/// <returns>32ä½MD5å€¼ï¼Œå¤§å†™</returns>
 	[[nodiscard]] inline std::wstring MD5(BinView bv) noexcept {
 		std::wstring md5(32, L'\0');
 		details::MasterQian_Data_GetMD5(bv.data(), bv.size32(), md5.data());
@@ -60,10 +60,10 @@ export namespace MasterQian::Data {
 	}
 
 	/// <summary>
-	/// Base64±àÂë
+	/// Base64ç¼–ç 
 	/// </summary>
-	/// <param name="bv">×Ö½Ú¼¯</param>
-	/// <returns>Base64±àÂë×Ö·û´®</returns>
+	/// <param name="bv">å­—èŠ‚é›†</param>
+	/// <returns>Base64ç¼–ç å­—ç¬¦ä¸²</returns>
 	[[nodiscard]] inline std::wstring Base64Encode(BinView bv) noexcept {
 		auto len{ bv.size() };
 		auto num24Bit{ len / 3U };
@@ -74,10 +74,10 @@ export namespace MasterQian::Data {
 	}
 
 	/// <summary>
-	/// Base64½âÂë
+	/// Base64è§£ç 
 	/// </summary>
-	/// <param name="sv">×Ö·û´®</param>
-	/// <returns>Base64½âÂë×Ö½Ú¼¯</returns>
+	/// <param name="sv">å­—ç¬¦ä¸²</param>
+	/// <returns>Base64è§£ç å­—èŠ‚é›†</returns>
 	[[nodiscard]] inline Bin Base64Decode(std::wstring_view sv) noexcept {
 		mqui64 len{ sv.size() }, padSize{ }, retSize{ };
 		if (len && len % 4 == 0) {

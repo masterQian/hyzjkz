@@ -20,9 +20,9 @@
                 VerticalAlignment="Center"
                 Background="Transparent"
                 DefaultLabelPosition="Right" IsOpen="False">
-        <AppBarButton x:Name="Button_Import" Icon="Import" Label="{StaticResource JigsawSubPage.Bar.Import}" />
-        <AppBarButton x:Name="Button_Clear" Icon="Clear" Label="{StaticResource JigsawSubPage.Bar.Clear}" />
-        <AppBarButton x:Name="Button_Save" Icon="Save" Label="{StaticResource JigsawSubPage.Bar.Save}" />
+        <AppBarButton x:Name="Button_Import" AllowFocusOnInteraction="True" Icon="Import" Label="{StaticResource JigsawSubPage.Bar.Import}" />
+        <AppBarButton x:Name="Button_Clear" AllowFocusOnInteraction="True" Icon="Clear" Label="{StaticResource JigsawSubPage.Bar.Clear}" />
+        <AppBarButton x:Name="Button_Save" AllowFocusOnInteraction="True" Icon="Save" Label="{StaticResource JigsawSubPage.Bar.Save}" />
     </CommandBar>
     <Canvas x:Name="Canvas_Jigsaw" Grid.Row="1"
             Grid.Column="0" Grid.ColumnSpan="4"

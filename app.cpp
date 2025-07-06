@@ -43,7 +43,7 @@ namespace util {
 		if (stream) {
 			winrt::Windows::Storage::Streams::IRandomAccessStream ras;
 			CreateRandomAccessStreamOverStream(stream, BSOS_OPTIONS::BSOS_DEFAULT, GuidIRandomAccessStream, reinterpret_cast<void**>(&ras));
-			stream->Release(); // ½Ó¹ÜUnsafeStreamÊÍ·Å
+			stream->Release(); // æŽ¥ç®¡UnsafeStreamé‡Šæ”¾
 			if (!hasCache) bmp.CreateOptions(BitmapCreateOptions::IgnoreImageCache);
 			if (size.width) bmp.DecodePixelWidth(size.width);
 			if (size.height) bmp.DecodePixelHeight(size.height);

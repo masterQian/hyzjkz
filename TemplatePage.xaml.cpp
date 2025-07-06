@@ -6,7 +6,7 @@
 #endif
 
 namespace winrt::hyzjkz::implementation {
-	// ´´½¨ÕıÔòÊäÈë¿ò
+	// åˆ›å»ºæ­£åˆ™è¾“å…¥æ¡†
 	static MQControls::RegexTextBox MakeRegexTextBox(mqrect rect) noexcept {
 		MQControls::RegexTextBox rtb;
 		rtb.Text(winrt::format(L"{}  {}  {}  {}", rect.left, rect.top, rect.width, rect.height));
@@ -16,15 +16,15 @@ namespace winrt::hyzjkz::implementation {
 		return rtb;
 	}
 
-	// Ô¤ÀÀÄ£°å
+	// é¢„è§ˆæ¨¡æ¿
 	static void PreviewTemplate(TemplatePage* page) noexcept {
 		auto image{ page->CanvasImage() };
 		auto canvas_width{ image.ActualWidth() };
 		auto canvas_height{ image.ActualHeight() };
 		auto canvas_scale{ Global.c_printCanvasSize.height / canvas_height };
-		// »­²¼
+		// ç”»å¸ƒ
 		Media::GDI::Image canvas({ static_cast<mqui32>(canvas_width), static_cast<mqui32>(canvas_height) }, Media::Colors::Pink);
-		// »­¾ØĞÎ
+		// ç”»çŸ©å½¢
 		mqlist<mqrect> rects;
 		for (auto item : page->LV_TemplateData().Items()) {
 			auto rtb{ item.as<MQControls::RegexTextBox>() };
@@ -40,7 +40,7 @@ namespace winrt::hyzjkz::implementation {
 		image.Source(util::StreamToBMP(canvas.SaveToUnsafeStream(Media::GDI::ImageFormat::BMP)));
 	}
 
-	// Ë¢ĞÂÄ£°å
+	// åˆ·æ–°æ¨¡æ¿
 	static void RefreshTemplate(TemplatePage* page, std::wstring_view template_name) noexcept {
 		auto& template_data{ Global.templateList[template_name] };
 		page->TB_TemplateName().Text(template_data.name);
@@ -59,7 +59,7 @@ namespace winrt::hyzjkz::implementation {
 		PreviewTemplate(page);
 	}
 
-	// Ë¢ĞÂÄ£°åÁĞ±í
+	// åˆ·æ–°æ¨¡æ¿åˆ—è¡¨
 	static void RefreshTemplates(TemplatePage* page) noexcept {
 		auto items{ page->LV_Templates().Items() };
 		items.Clear();
@@ -85,7 +85,7 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// Ñ¡ÔñµÚÒ»Ïî
+	// é€‰æ‹©ç¬¬ä¸€é¡¹
 	static void SelectFirstTemplate(TemplatePage* page) noexcept {
 		auto lv_templates{ page->LV_Templates() };
 		auto items{ lv_templates.Items() };
@@ -94,16 +94,16 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ´´½¨Ä£°å
+	// åˆ›å»ºæ¨¡æ¿
 	static IAsyncAction CreateTemplate(TemplatePage* page) noexcept {
 		std::wstring name{ co_await Global.ui_window.ShowInputDialog(util::RDString<hstring>(L"TemplatePage.Tip.InputNewTemplateName")) };
 		if (name.empty()) {
 			co_return;
 		}
-		if (Global.templateList.contains(name)) { // ¼ì²éÄ£°åÊÇ·ñÒÑ´æÔÚ
+		if (Global.templateList.contains(name)) { // æ£€æŸ¥æ¨¡æ¿æ˜¯å¦å·²å­˜åœ¨
 			co_return co_await Global.ui_window.ShowTipDialog(util::RDString<hstring>(L"TemplatePage.Tip.TemplateNameExists"));
 		}
-		// ·ÖÅä0ÏîµÄÄ£°å
+		// åˆ†é…0é¡¹çš„æ¨¡æ¿
 		Bin bin(PrintTemplate::CalcSize(0U));
 		auto& pt{ *reinterpret_cast<PrintTemplate*>(bin.data()) };
 		pt.size = sizeof(PrintTemplate);
@@ -114,20 +114,20 @@ namespace winrt::hyzjkz::implementation {
 		(void)lstrcpynW(pt.name, name.data(), 31);
 		pt.order = 0U;
 
-		// ¸üĞÂÎÄ¼ş
+		// æ›´æ–°æ–‡ä»¶
 		Global.c_templatePath.Concat(name + L".template").Write(bin);
 
-		// ¸üĞÂ±äÁ¿
+		// æ›´æ–°å˜é‡
 		Global.templateList.add(name, std::move(bin));
 
-		// ¸üĞÂUI
+		// æ›´æ–°UI
 		auto lv_templates{ page->LV_Templates() };
 		auto new_item{ box_value(name) };
 		lv_templates.Items().Append(new_item);
 		lv_templates.SelectedItem(new_item);
 	}
 
-	// É¾³ıÄ£°å
+	// åˆ é™¤æ¨¡æ¿
 	static IAsyncAction DeleteTemplate(TemplatePage* page) noexcept {
 		auto item{ page->LV_Templates().SelectedItem() };
 		if (item == nullptr) {
@@ -135,22 +135,22 @@ namespace winrt::hyzjkz::implementation {
 		}
 		std::wstring name{ item.as<hstring>() };
 
-		// »ñµÃÄ£°åÊı¾İ
+		// è·å¾—æ¨¡æ¿æ•°æ®
 		auto& pt{ Global.templateList[name] };
 
-		if (!pt.flag.canDelete) { // ¼ì²éÄ£°åÊÇ·ñÔÊĞíÉ¾³ı
+		if (!pt.flag.canDelete) { // æ£€æŸ¥æ¨¡æ¿æ˜¯å¦å…è®¸åˆ é™¤
 			co_return co_await Global.ui_window.ShowTipDialog(util::RDString<hstring>(L"TemplatePage.Tip.CannotDeleteTemplate"));
 		}
 
-		// ¶ş´ÎÈ·ÈÏ
+		// äºŒæ¬¡ç¡®è®¤
 		if (bool result{ co_await Global.ui_window.ShowConfirmDialog(util::RDString<hstring>(L"TemplatePage.Tip.ConfirmDeleteTemplate") + name) }) {
-			// ¸üĞÂÎÄ¼ş
+			// æ›´æ–°æ–‡ä»¶
 			Global.c_templatePath.Concat(name + L".template").Delete();
 
-			// ¸üĞÂ±äÁ¿
+			// æ›´æ–°å˜é‡
 			Global.templateList.erase(name);
 
-			// ¸üĞÂUI
+			// æ›´æ–°UI
 			auto lv_templates{ page->LV_Templates() };
 			auto items{ lv_templates.Items() };
 			mqui32 index{ };
@@ -160,7 +160,7 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ÖØÃüÃûÄ£°å
+	// é‡å‘½åæ¨¡æ¿
 	static IAsyncAction RenameTemplate(TemplatePage* page) noexcept {
 		auto item{ page->LV_Templates().SelectedItem() };
 		if (item == nullptr) {
@@ -171,26 +171,26 @@ namespace winrt::hyzjkz::implementation {
 		if (new_name.empty()) {
 			co_return;
 		}
-		if (Global.templateList.contains(new_name)) { // ¼ì²éÄ£°åÊÇ·ñÒÑ´æÔÚ
+		if (Global.templateList.contains(new_name)) { // æ£€æŸ¥æ¨¡æ¿æ˜¯å¦å·²å­˜åœ¨
 			co_return co_await Global.ui_window.ShowTipDialog(util::RDString<hstring>(L"TemplatePage.Tip.TemplateNameExists"));
 		}
 
-		// »ñµÃÄ£°åÊı¾İ
+		// è·å¾—æ¨¡æ¿æ•°æ®
 		Bin bin{ std::move(Global.templateList.get(old_name)) };
 
-		// ĞŞ¸ÄÃû³Æ
+		// ä¿®æ”¹åç§°
 		auto& pt{ *reinterpret_cast<PrintTemplate*>(bin.data()) };
 		(void)lstrcpynW(pt.name, new_name.data(), 31);
 		
-		// ¸üĞÂÎÄ¼ş
+		// æ›´æ–°æ–‡ä»¶
 		Global.c_templatePath.Concat(old_name + L".template").Delete();
 		Global.c_templatePath.Concat(new_name + L".template").Write(bin);
 
-		// ¸üĞÂ±äÁ¿
+		// æ›´æ–°å˜é‡
 		Global.templateList.erase(old_name);
 		Global.templateList.add(new_name, std::move(bin));
 
-		// ¸üĞÂUI
+		// æ›´æ–°UI
 		auto lv_templates{ page->LV_Templates() };
 		auto items{ lv_templates.Items() };
 		mqui32 index{ };
@@ -200,7 +200,7 @@ namespace winrt::hyzjkz::implementation {
 		lv_templates.SelectedItem(new_item);
 	}
 
-	// ±£´æÄ£°å
+	// ä¿å­˜æ¨¡æ¿
 	static IAsyncAction SaveTemplate(TemplatePage* page) noexcept {
 		auto lv_templates{ page->LV_Templates() };
 		auto selected_item{ lv_templates.SelectedItem() };
@@ -209,21 +209,21 @@ namespace winrt::hyzjkz::implementation {
 		}
 		std::wstring name{ selected_item.as<hstring>() };
 
-		// »ñµÃÔ­Ä£°å
+		// è·å¾—åŸæ¨¡æ¿
 		auto data_items{ page->LV_TemplateData().Items() };
 		auto new_template_count{ data_items.Size() };
 		auto new_template_size{ PrintTemplate::CalcSize(new_template_count) };
 
-		// ´´½¨ĞÂÄ£°å
+		// åˆ›å»ºæ–°æ¨¡æ¿
 		Bin new_template_data(new_template_size);
 		auto& pt{ *reinterpret_cast<PrintTemplate*>(new_template_data.data()) };
 
-		// ¿½±´»ù´¡Êı¾İ
+		// æ‹·è´åŸºç¡€æ•°æ®
 		memcpy(&pt, Global.templateList.at(name), sizeof(PrintTemplate));
 		pt.size = new_template_size;
 		pt.count = new_template_count;
 
-		// ¸üĞÂĞÂÊı¾İ
+		// æ›´æ–°æ–°æ•°æ®
 		pt.order = static_cast<mqui32>(page->TA_Order().Value());
 		pt.flag.isRotate = page->TA_Rotate().IsChecked().as<bool>();
 		pt.flag.isAutoCut = page->TA_AutoCut().IsChecked().as<bool>();
@@ -242,13 +242,13 @@ namespace winrt::hyzjkz::implementation {
 			}
 		}
 
-		// ¸üĞÂÎÄ¼ş
+		// æ›´æ–°æ–‡ä»¶
 		Global.c_templatePath.Concat(name + L".template").Write(new_template_data);
 
-		// ¸üĞÂ±äÁ¿
+		// æ›´æ–°å˜é‡
 		Global.templateList.set(name, std::move(new_template_data));
 
-		// Ë¢ĞÂ
+		// åˆ·æ–°
 		RefreshTemplates(page);
 		lv_templates.SelectedItem(box_value(name));
 
@@ -272,14 +272,14 @@ namespace winrt::hyzjkz::implementation {
 			});
 	}
 
-	// ÇĞ»»Ä£°å
+	// åˆ‡æ¢æ¨¡æ¿
 	F_EVENT void TemplatePage::LV_Templates_SelectionChanged(IInspectable const&, Controls::SelectionChangedEventArgs const& args) {
 		if (auto items{ args.AddedItems() }; items.Size() == 1U) {
 			RefreshTemplate(this, items.GetAt(0U).as<hstring>());
 		}
 	}
 
-	// °´Å¥µ¥»÷
+	// æŒ‰é’®å•å‡»
 	F_EVENT IAsyncAction TemplatePage::AppBarButton_Click(IInspectable const& sender, RoutedEventArgs const&) {
 		auto label{ sender.as<Controls::AppBarButton>().Label() };
 		if (label == util::RDString<hstring>(L"TemplatePage.Bar.Add")) {
@@ -314,8 +314,8 @@ namespace winrt::hyzjkz::implementation {
 }
 
 namespace winrt::hyzjkz::implementation {
-	// »ñÈ¡»­²¼³ß´ç
+	// è·å–ç”»å¸ƒå°ºå¯¸
 	F_RT hstring TemplatePage::CanvasSizeString() const {
-		return winrt::format(L"»­²¼´óĞ¡: {} ¡Á {}", Global.c_printCanvasSize.width, Global.c_printCanvasSize.height);
+		return winrt::format(L"ç”»å¸ƒå¤§å°: {} Ã— {}", Global.c_printCanvasSize.width, Global.c_printCanvasSize.height);
 	}
 }

@@ -8,24 +8,24 @@ module;
 #else
 #define MasterQianLibString "MasterQian.System.dll"
 #endif
-#define MasterQianModuleVersion 20240131ULL
-#pragma message("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª Please copy [" MasterQianLibString "] into your program folder ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª")
+#define MasterQianModuleVersion 20240301ULL
+#pragma message("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€” Please copy [" MasterQianLibString "] into your program folder â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”")
 
 export module MasterQian.System;
 export import MasterQian.Bin;
 
 namespace MasterQian::System {
-	// µã»÷Ä£Ê½
+	// ç‚¹å‡»æ¨¡å¼
 	export enum class MouseClickMode : mqenum {
-		L, // ×ó¼üµ¥»÷
-		LD, // ×ó¼üË«»÷
-		M, // ÖĞ¼üµ¥»÷
-		MD, // ÖĞ¼üË«»÷
-		R, // ÓÒ¼üµ¥»÷
-		RD, // ÓÒ¼üË«»÷
+		L, // å·¦é”®å•å‡»
+		LD, // å·¦é”®åŒå‡»
+		M, // ä¸­é”®å•å‡»
+		MD, // ä¸­é”®åŒå‡»
+		R, // å³é”®å•å‡»
+		RD, // å³é”®åŒå‡»
 	};
 
-	// ¼ü´úÂë
+	// é”®ä»£ç 
 	export enum class KeyCode : mqenum {
 		None = 0U,
 		Backspace = 8U, Tab,
@@ -84,6 +84,16 @@ namespace MasterQian::System {
 		META_IMPORT_API(mqbool, RegGetKeyValueMaxSize, mqhandle, mqui32*, mqui32*);
 		META_IMPORT_API(mqui32, RegEnumKey, mqhandle, mqui32, mqui32, mqstr, mqui32*);
 		META_IMPORT_API(void, FlushEnvironment);
+
+		META_IMPORT_API(void, MemoryFreeLibrary, mqhandle);
+		META_IMPORT_API(mqhandle, MemoryLoadLibrary, mqcmem, mqui64);
+		META_IMPORT_API(mqproc, MemoryGetProcAddress, mqhandle, mqcstra);
+		META_IMPORT_API(mqi32, MemoryCallEntryPoint, mqhandle);
+		META_IMPORT_API(mqhandle, MemoryFindResource, mqhandle, mqcstr, mqcstr);
+		META_IMPORT_API(mqui32, MemorySizeofResource, mqhandle, mqhandle);
+		META_IMPORT_API(mqmem, MemoryLoadResource, mqhandle, mqhandle);
+		META_IMPORT_API(mqi32, MemoryLoadString, mqhandle, mqui32, mqcstr, mqui32);
+
 		META_MODULE_BEGIN
 			META_PROC_API(GetMousePos);
 			META_PROC_API(SetMousePos);
@@ -123,51 +133,60 @@ namespace MasterQian::System {
 			META_PROC_API(RegGetKeyValueMaxSize);
 			META_PROC_API(RegEnumKey);
 			META_PROC_API(FlushEnvironment);
+
+			META_PROC_API(MemoryFreeLibrary);
+			META_PROC_API(MemoryLoadLibrary);
+			META_PROC_API(MemoryGetProcAddress);
+			META_PROC_API(MemoryCallEntryPoint);
+			META_PROC_API(MemoryFindResource);
+			META_PROC_API(MemorySizeofResource);
+			META_PROC_API(MemoryLoadResource);
+			META_PROC_API(MemoryLoadString);
 		META_MODULE_END
 	}
 
 	export namespace AutoDevice {
 		/// <summary>
-		/// È¡Êó±êÎ»ÖÃ
+		/// å–é¼ æ ‡ä½ç½®
 		/// </summary>
-		/// <returns>Êó±êÎ»ÖÃ</returns>
+		/// <returns>é¼ æ ‡ä½ç½®</returns>
 		[[nodiscard]] inline mqpoint GetMousePos() noexcept {
 			return details::MasterQian_System_GetMousePos();
 		}
 
 		/// <summary>
-		/// Êó±êÄ£ÄâÒÆ¶¯
+		/// é¼ æ ‡æ¨¡æ‹Ÿç§»åŠ¨
 		/// </summary>
-		/// <param name="point">Êó±êÎ»ÖÃ</param>
+		/// <param name="point">é¼ æ ‡ä½ç½®</param>
 		/// <returns></returns>
 		inline void SetMousePos(mqpoint point) noexcept {
 			details::MasterQian_System_SetMousePos(point);
 		}
 
 		/// <summary>
-		/// Êó±êÄ£Äâµã»÷
+		/// é¼ æ ‡æ¨¡æ‹Ÿç‚¹å‡»
 		/// </summary>
-		/// <param name="point">Êó±êÎ»ÖÃ</param>
-		/// <typeparam name="mode">µã»÷Ä£Ê½</typeparam>
+		/// <param name="point">é¼ æ ‡ä½ç½®</param>
+		/// <typeparam name="mode">ç‚¹å‡»æ¨¡å¼</typeparam>
 		template<MouseClickMode mode>
 		inline void MouseClick(mqpoint point) noexcept {
 			details::MasterQian_System_MouseClick(point, mode);
 		}
 
 		/// <summary>
-		/// Êó±êÄ£Äâ»¬ÂÖ
+		/// é¼ æ ‡æ¨¡æ‹Ÿæ»‘è½®
 		/// </summary>
-		/// <param name="len">¹ö¶¯¾àÀë£¬¸ºÊı±íÊ¾·´·½Ïò¹ö¶¯</param>
+		/// <param name="len">æ»šåŠ¨è·ç¦»ï¼Œè´Ÿæ•°è¡¨ç¤ºåæ–¹å‘æ»šåŠ¨</param>
 		inline void MouseWheel(mqi32 len) noexcept {
 			details::MasterQian_System_MouseWheel(len);
 		}
 
 		/// <summary>
-		/// ¼üÅÌÄ£Äâ°´¼ü£¬×î¶àÖ§³Ö3¸ö¼ü×éºÏ
+		/// é”®ç›˜æ¨¡æ‹ŸæŒ‰é”®ï¼Œæœ€å¤šæ”¯æŒ3ä¸ªé”®ç»„åˆ
 		/// </summary>
-		/// <typeparam name="key1">¼ü1</typeparam>
-		/// <typeparam name="key1">¼ü2</typeparam>
-		/// <typeparam name="key1">¼ü3</typeparam>
+		/// <typeparam name="key1">é”®1</typeparam>
+		/// <typeparam name="key1">é”®2</typeparam>
+		/// <typeparam name="key1">é”®3</typeparam>
 		template<KeyCode key1, KeyCode key2 = KeyCode::None, KeyCode key3 = KeyCode::None>
 		inline void KeyboardClick() noexcept {
 			details::MasterQian_System_KeyboardClick(key1, key2, key3);
@@ -176,14 +195,14 @@ namespace MasterQian::System {
 
 	export namespace Clipboard {
 		/// <summary>
-		/// Çå¿Õ¼ôÌù°å
+		/// æ¸…ç©ºå‰ªè´´æ¿
 		/// </summary>
 		inline void Clear() noexcept {
 			details::MasterQian_System_ClearClipboard();
 		}
 
 		/// <summary>
-		/// È¡¼ôÌù°åÎÄ±¾
+		/// å–å‰ªè´´æ¿æ–‡æœ¬
 		/// </summary>
 		[[nodiscard]] inline std::wstring GetString() noexcept {
 			mqui64 size{ };
@@ -198,17 +217,17 @@ namespace MasterQian::System {
 		}
 
 		/// <summary>
-		/// ÖÃ¼ôÌù°åÎÄ±¾
+		/// ç½®å‰ªè´´æ¿æ–‡æœ¬
 		/// </summary>
-		/// <param name="sv">ÎÄ±¾</param>
+		/// <param name="sv">æ–‡æœ¬</param>
 		inline bool SetString(std::wstring_view sv) noexcept {
 			return details::MasterQian_System_SetClipboardData(13U, sv.data(), (sv.size() + 1) << 1);
 		}
 
 		/// <summary>
-		/// È¡¼ôÌù°åÎ»Í¼
+		/// å–å‰ªè´´æ¿ä½å›¾
 		/// </summary>
-		/// <returns>BMP¸ñÊ½µÄ×Ö½Ú¼¯</returns>
+		/// <returns>BMPæ ¼å¼çš„å­—èŠ‚é›†</returns>
 		[[nodiscard]] inline Bin GetBitmap() noexcept {
 			mqui64 size{ };
 			Bin bin;
@@ -238,9 +257,9 @@ namespace MasterQian::System {
 		}
 
 		/// <summary>
-		/// ÖÃ¼ôÌù°åÎÄ¼ş£¬¿ÉÓÃÓÚÔÚÎÄ¼ş×ÊÔ´¹ÜÀíÆ÷¸´ÖÆÕ³ÌùµÈ²Ù×÷
+		/// ç½®å‰ªè´´æ¿æ–‡ä»¶ï¼Œå¯ç”¨äºåœ¨æ–‡ä»¶èµ„æºç®¡ç†å™¨å¤åˆ¶ç²˜è´´ç­‰æ“ä½œ
 		/// </summary>
-		/// <param name="files">ÎÄ¼şÁĞ±í</param>
+		/// <param name="files">æ–‡ä»¶åˆ—è¡¨</param>
 		inline bool SetFiles(mqlist<std::wstring> const& files) noexcept {
 			std::wstring buf;
 			for (auto& item : files) {
@@ -251,7 +270,7 @@ namespace MasterQian::System {
 		}
 
 		/// <summary>
-		/// È¡¼ôÌù°åÎÄ¼ş
+		/// å–å‰ªè´´æ¿æ–‡ä»¶
 		/// </summary>
 		[[nodiscard]] inline mqlist<std::wstring> GetFiles() noexcept {
 			mqui64 size{ };
@@ -270,28 +289,28 @@ namespace MasterQian::System {
 
 	export namespace Info {
 		/// <summary>
-		///  È¡ÆÁÄ»¿í¶È
+		///  å–å±å¹•å®½åº¦
 		/// </summary>
 		[[nodiscard]] inline mqui32 GetScreenWidth() noexcept {
 			return details::MasterQian_System_GetScreenWidth();
 		}
 
 		/// <summary>
-		/// È¡ÆÁÄ»¸ß¶È
+		/// å–å±å¹•é«˜åº¦
 		/// </summary>
 		[[nodiscard]] inline mqui32 GetScreenHeight() noexcept {
 			return details::MasterQian_System_GetScreenHeight();
 		}
 
 		/// <summary>
-		/// È¡ÈÎÎñÀ¸¸ß¶È
+		/// å–ä»»åŠ¡æ é«˜åº¦
 		/// </summary>
 		[[nodiscard]] inline mqui32 GetTaskBarHeight() noexcept {
 			return details::MasterQian_System_GetTaskBarHeight();
 		}
 
 		/// <summary>
-		/// È¡µ±Ç°ÓÃ»§Ãû
+		/// å–å½“å‰ç”¨æˆ·å
 		/// </summary>
 		[[nodiscard]] inline std::wstring GetCurrentUserName() noexcept {
 			mqchar buf[api::PATH_MAX_SIZE]{ };
@@ -300,7 +319,7 @@ namespace MasterQian::System {
 		}
 
 		/// <summary>
-		/// È¡µ±Ç°¼ÆËã»úÃû
+		/// å–å½“å‰è®¡ç®—æœºå
 		/// </summary>
 		[[nodiscard]] inline std::wstring GetCurrentComputerName() noexcept {
 			mqchar buf[api::PATH_MAX_SIZE]{ };
@@ -311,11 +330,11 @@ namespace MasterQian::System {
 
 	export namespace Process {
 		/// <summary>
-		/// È¡×ÊÔ´£¬Ó¦ÎªrcÎÄ¼şÖĞ¶ÔÓ¦µÄ×ÊÔ´
+		/// å–èµ„æºï¼Œåº”ä¸ºrcæ–‡ä»¶ä¸­å¯¹åº”çš„èµ„æº
 		/// </summary>
-		/// <param name="id">×ÊÔ´ID</param>
-		/// <param name="type">×ÊÔ´ÀàĞÍ£¬Ä¬ÈÏÎªFILE</param>
-		/// <returns>×ÊÔ´×Ö½Ú¼¯</returns>
+		/// <param name="id">èµ„æºID</param>
+		/// <param name="type">èµ„æºç±»å‹ï¼Œé»˜è®¤ä¸ºFILE</param>
+		/// <returns>èµ„æºå­—èŠ‚é›†</returns>
 		[[nodiscard]] inline BinView GetResource(mqui32 id, std::wstring_view type = L"FILE") noexcept {
 			mqui32 res_size{ };
 			auto mem{ details::MasterQian_System_GetResource(id, type.data(), &res_size) };
@@ -323,21 +342,21 @@ namespace MasterQian::System {
 		}
 
 		/// <summary>
-		/// µ¥½ø³ÌËø£¬±£Ö¤Ó¦ÓÃ³ÌĞò½öÓĞÒ»¸öÊµÀı
+		/// å•è¿›ç¨‹é”ï¼Œä¿è¯åº”ç”¨ç¨‹åºä»…æœ‰ä¸€ä¸ªå®ä¾‹
 		/// </summary>
-		/// <returns>ÈôÔËĞĞµÄ³ÌĞò²»ÊÇµÚÒ»¸öÊµÀıÔò·µ»Øfalse</returns>
+		/// <returns>è‹¥è¿è¡Œçš„ç¨‹åºä¸æ˜¯ç¬¬ä¸€ä¸ªå®ä¾‹åˆ™è¿”å›false</returns>
 		[[nodiscard]] inline mqbool SingleProcessLock() noexcept {
 			return details::MasterQian_System_SingleProcessLock();
 		}
 
 		/// <summary>
-		/// Ö´ĞĞ½ø³Ì
+		/// æ‰§è¡Œè¿›ç¨‹
 		/// </summary>
-		/// <param name="fn">½ø³ÌÎÄ¼şÃû</param>
-		/// <param name="arg">²ÎÊı</param>
-		/// <param name="isWaiting">ÊÇ·ñµÈ´ı½ø³Ì½áÊø£¬Ä¬ÈÏÎª¼Ù</param>
-		/// <param name="isAdmin">ÊÇ·ñÒÔ¹ÜÀíÔ±Éí·İÔËĞĞ£¬Ä¬ÈÏÎª¼Ù</param>
-		/// <returns>½ø³Ì·µ»ØÖµ£¬½öÔÚµÈ´ı½ø³Ì½áÊøÊ±ÓĞĞ§</returns>
+		/// <param name="fn">è¿›ç¨‹æ–‡ä»¶å</param>
+		/// <param name="arg">å‚æ•°</param>
+		/// <param name="isWaiting">æ˜¯å¦ç­‰å¾…è¿›ç¨‹ç»“æŸï¼Œé»˜è®¤ä¸ºå‡</param>
+		/// <param name="isAdmin">æ˜¯å¦ä»¥ç®¡ç†å‘˜èº«ä»½è¿è¡Œï¼Œé»˜è®¤ä¸ºå‡</param>
+		/// <returns>è¿›ç¨‹è¿”å›å€¼ï¼Œä»…åœ¨ç­‰å¾…è¿›ç¨‹ç»“æŸæ—¶æœ‰æ•ˆ</returns>
 		inline mqui32 Execute(std::wstring_view fn, std::wstring_view arg = L"",
 			mqbool isWaiting = false, mqbool isAdmin = false) noexcept {
 			return details::MasterQian_System_Execute(fn.data(), arg.data(), isWaiting, isAdmin);
@@ -346,9 +365,9 @@ namespace MasterQian::System {
 
 	export namespace TaskBar {
 		/// <summary>
-		/// ÏÔÊ¾ÈÎÎñÀ¸
+		/// æ˜¾ç¤ºä»»åŠ¡æ 
 		/// </summary>
-		/// <param name="status">ÊÇ·ñÏÔÊ¾ÈÎÎñÀ¸</param>
+		/// <param name="status">æ˜¯å¦æ˜¾ç¤ºä»»åŠ¡æ </param>
 		inline void Show(bool status = true) noexcept {
 			details::MasterQian_System_ShowTaskBar(status);
 		}
@@ -363,25 +382,25 @@ namespace MasterQian::System {
 		}
 	}
 
-	// ×¢²á±í²Ù×÷¶ÔÏó
+	// æ³¨å†Œè¡¨æ“ä½œå¯¹è±¡
 	export struct Reg {
 	private:
 		mqhandle handle{ };
 		mqbool bWOW64{ };
 	public:
-		// ¼üÀàĞÍ
+		// é”®ç±»å‹
 		enum class KeyType : mqenum {
-			None = 0U, // ¿Õ
-			String = 1U, // ×Ö·û´®
+			None = 0U, // ç©º
+			String = 1U, // å­—ç¬¦ä¸²
 			_ES = 2U,
-			Binary = 3U, // ¶ş½øÖÆ
-			Number = 4U, // Êı×Ö
+			Binary = 3U, // äºŒè¿›åˆ¶
+			Number = 4U, // æ•°å­—
 			_BN = 5U, _Link = 6U,
-			MultiLineString = 7U, // ¶àĞĞ×Ö·û´®
+			MultiLineString = 7U, // å¤šè¡Œå­—ç¬¦ä¸²
 			_RL = 8U, _FRD = 9U, _RRL = 10U, _N64 = 11U
 		};
 
-		// ¸ù¼ü
+		// æ ¹é”®
 		enum class KeyBase : mqui64 {
 			ClassesRoot = 0x80000000ULL,
 			CurrentUser = 0x80000001ULL,
@@ -393,11 +412,11 @@ namespace MasterQian::System {
 		Reg() = default;
 
 		/// <summary>
-		/// ´ò¿ª×¢²á±í
+		/// æ‰“å¼€æ³¨å†Œè¡¨
 		/// </summary>
-		/// <param name="base">¸ù¼ü</param>
-		/// <param name="route">Â·¾¶</param>
-		/// <param name="wow64">ÊÇ·ñÊÇ64Î»Ó³Ïñ</param>
+		/// <param name="base">æ ¹é”®</param>
+		/// <param name="route">è·¯å¾„</param>
+		/// <param name="wow64">æ˜¯å¦æ˜¯64ä½æ˜ åƒ</param>
 		Reg(KeyBase base, std::wstring_view route, mqbool wow64 = true) noexcept : bWOW64{ wow64 } {
 			Open(base, route);
 		}
@@ -423,69 +442,69 @@ namespace MasterQian::System {
 		}
 
 		/// <summary>
-		/// ÖÃWOW64
+		/// ç½®WOW64
 		/// </summary>
-		/// <param name="wow64">ÊÇ·ñÊÇ64Î»Ó³Ïñ</param>
+		/// <param name="wow64">æ˜¯å¦æ˜¯64ä½æ˜ åƒ</param>
 		void SetWOW64(mqbool wow64) noexcept {
 			bWOW64 = wow64;
 		}
 
 		/// <summary>
-		/// ÊÇ·ñÊÇWOW64
+		/// æ˜¯å¦æ˜¯WOW64
 		/// </summary>
 		[[nodiscard]] mqbool IsWOW64() const noexcept {
 			return bWOW64;
 		}
 
 		/// <summary>
-		/// ÊÇ·ñ´ò¿ª
+		/// æ˜¯å¦æ‰“å¼€
 		/// </summary>
 		[[nodiscard]] mqbool IsOpen() const noexcept {
 			return handle != nullptr;
 		}
 
 		/// <summary>
-		/// ´ò¿ª
+		/// æ‰“å¼€
 		/// </summary>
-		/// <param name="base">¸ù¼ü</param>
-		/// <param name="route">Â·¾¶</param>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <param name="base">æ ¹é”®</param>
+		/// <param name="route">è·¯å¾„</param>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		mqbool Open(KeyBase base, std::wstring_view route) noexcept {
 			if (handle) Close();
 			return details::MasterQian_System_RegOpen(&handle, bWOW64, reinterpret_cast<mqhandle>(base), route.data());
 		}
 
 		/// <summary>
-		/// ¹Ø±Õ
+		/// å…³é—­
 		/// </summary>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		mqbool Close() noexcept {
 			return details::MasterQian_System_RegClose(&handle);
 		}
 
 		/// <summary>
-		/// ´´½¨Ïî
+		/// åˆ›å»ºé¡¹
 		/// </summary>
-		/// <param name="route">Â·¾¶</param>
-		/// <param name="ret">·µ»ØµÄÏî£¬ÈôÎª¿Õ±íÊ¾ºöÂÔ</param>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <param name="route">è·¯å¾„</param>
+		/// <param name="ret">è¿”å›çš„é¡¹ï¼Œè‹¥ä¸ºç©ºè¡¨ç¤ºå¿½ç•¥</param>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		mqbool CreateItem(std::wstring_view route, Reg* ret = nullptr) const noexcept {
 			return handle ? details::MasterQian_System_RegCreateItem(handle, bWOW64, route.data(), ret ? &ret->handle : nullptr) : false;
 		}
 
 		/// <summary>
-		/// É¾³ıÏî
+		/// åˆ é™¤é¡¹
 		/// </summary>
-		/// <param name="route">Â·¾¶</param>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <param name="route">è·¯å¾„</param>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		mqbool DeleteItem(std::wstring_view route) const noexcept {
 			return handle ? details::MasterQian_System_RegDeleteItem(handle, bWOW64, route.data()) : false;
 		}
 
 		/// <summary>
-		/// Ã¶¾ÙÏî
+		/// æšä¸¾é¡¹
 		/// </summary>
-		/// <returns>Â·¾¶ÏÂµÄËùÓĞÏî¼¯ºÏ</returns>
+		/// <returns>è·¯å¾„ä¸‹çš„æ‰€æœ‰é¡¹é›†åˆ</returns>
 		[[nodiscard]] mqlist<std::wstring> EnumItem() const noexcept {
 			mqlist<std::wstring> container;
 			if (handle) {
@@ -498,18 +517,18 @@ namespace MasterQian::System {
 		}
 
 		/// <summary>
-		/// ÊÇ·ñÓĞ¼ü
+		/// æ˜¯å¦æœ‰é”®
 		/// </summary>
-		/// <param name="key">¼üÃû</param>
+		/// <param name="key">é”®å</param>
 		[[nodiscard]] mqbool HasKey(std::wstring_view key) const noexcept {
 			return handle ? details::MasterQian_System_RegHasKey(handle, key.data()) : false;
 		}
 
 		/// <summary>
-		/// È¡¼üÀàĞÍ
+		/// å–é”®ç±»å‹
 		/// </summary>
-		/// <param name="key">¼üÃû</param>
-		/// <returns>¼üÀàĞÍ</returns>
+		/// <param name="key">é”®å</param>
+		/// <returns>é”®ç±»å‹</returns>
 		[[nodiscard]] KeyType GetKeyType(std::wstring_view key) const noexcept {
 			KeyType type{ };
 			if (handle) {
@@ -520,9 +539,9 @@ namespace MasterQian::System {
 		}
 
 		/// <summary>
-		/// È¡¶ş½øÖÆÖµ
+		/// å–äºŒè¿›åˆ¶å€¼
 		/// </summary>
-		/// <param name="key">¼üÃû</param>
+		/// <param name="key">é”®å</param>
 		[[nodiscard]] Bin GetBinaryValue(std::wstring_view key) const noexcept {
 			Bin bin;
 			if (handle) {
@@ -539,9 +558,9 @@ namespace MasterQian::System {
 		}
 
 		/// <summary>
-		/// È¡Êı×ÖÖµ
+		/// å–æ•°å­—å€¼
 		/// </summary>
-		/// <param name="key">¼üÃû</param>
+		/// <param name="key">é”®å</param>
 		[[nodiscard]] mqui64 GetNumberValue(std::wstring_view key) const noexcept {
 			mqui64 value{ };
 			if (handle) {
@@ -557,9 +576,9 @@ namespace MasterQian::System {
 		}
 
 		/// <summary>
-		/// È¡×Ö·û´®Öµ
+		/// å–å­—ç¬¦ä¸²å€¼
 		/// </summary>
-		/// <param name="key">¼üÃû</param>
+		/// <param name="key">é”®å</param>
 		[[nodiscard]] std::wstring GetStringValue(std::wstring_view key) const noexcept {
 			std::wstring str;
 			if (handle) {
@@ -596,21 +615,21 @@ namespace MasterQian::System {
 		}
 
 		/// <summary>
-		/// ÖÃ¶ş½øÖÆÖµ
+		/// ç½®äºŒè¿›åˆ¶å€¼
 		/// </summary>
-		/// <param name="key">¼üÃû</param>
-		/// <param name="value">¼üÖµ</param>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <param name="key">é”®å</param>
+		/// <param name="value">é”®å€¼</param>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		mqbool SetBinaryValue(std::wstring_view key, BinView value) const noexcept {
 			return handle ? details::MasterQian_System_RegSetValue(handle, key.data(), static_cast<mqui32>(KeyType::Binary), value.data(), value.size32()) : false;
 		}
 
 		/// <summary>
-		/// ÖÃÊı×ÖÖµ
+		/// ç½®æ•°å­—å€¼
 		/// </summary>
-		/// <param name="key">¼üÃû</param>
-		/// <param name="value">¼üÖµ</param>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <param name="key">é”®å</param>
+		/// <param name="value">é”®å€¼</param>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		mqbool SetNumberValue(std::wstring_view key, mqui64 value) const noexcept {
 			if (handle) {
 				if (value > 0xFFFFFFFFULL) {
@@ -623,12 +642,12 @@ namespace MasterQian::System {
 		}
 
 		/// <summary>
-		/// ÖÃ×Ö·û´®Öµ
+		/// ç½®å­—ç¬¦ä¸²å€¼
 		/// </summary>
-		/// <param name="key">¼üÃû</param>
-		/// <param name="value">¼üÖµ</param>
-		/// <param name="multiline">ÊÇ·ñ¶àĞĞ</param>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <param name="key">é”®å</param>
+		/// <param name="value">é”®å€¼</param>
+		/// <param name="multiline">æ˜¯å¦å¤šè¡Œ</param>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		mqbool SetStringValue(std::wstring_view key, std::wstring_view value, mqbool multiline = false) const noexcept {
 			if (handle) {
 				if (multiline) {
@@ -644,18 +663,18 @@ namespace MasterQian::System {
 		}
 
 		/// <summary>
-		/// É¾³ı¼ü
+		/// åˆ é™¤é”®
 		/// </summary>
-		/// <param name="key">¼üÃû</param>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <param name="key">é”®å</param>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		mqbool DeleteKey(std::wstring_view key) const noexcept {
 			return handle ? details::MasterQian_System_RegDeleteKey(handle, key.data()) : false;
 		}
 
 		/// <summary>
-		/// Ã¶¾Ù¼üÖµ¶Ô
+		/// æšä¸¾é”®å€¼å¯¹
 		/// </summary>
-		/// <returns>ÏîÏÂËùÓĞ¼üÖµ¶ÔµÄ¼¯ºÏ</returns>
+		/// <returns>é¡¹ä¸‹æ‰€æœ‰é”®å€¼å¯¹çš„é›†åˆ</returns>
 		[[nodiscard]] mqlist<std::pair<std::wstring, KeyType>> EnumKey() const noexcept {
 			mqlist<std::pair<std::wstring, KeyType>> container;
 			if (handle) {
@@ -676,10 +695,44 @@ namespace MasterQian::System {
 		}
 
 		/// <summary>
-		/// Ë¢ĞÂ»·¾³±äÁ¿£¬À´Ê¹µÃËùÓĞÓ¦ÓÃ³ÌĞòÊÕµ½ĞŞ¸Äºó×¢²á±íµÄ¸üĞÂ
+		/// åˆ·æ–°ç¯å¢ƒå˜é‡ï¼Œæ¥ä½¿å¾—æ‰€æœ‰åº”ç”¨ç¨‹åºæ”¶åˆ°ä¿®æ”¹åæ³¨å†Œè¡¨çš„æ›´æ–°
 		/// </summary>
 		static void FlushEnvironment() noexcept {
 			details::MasterQian_System_FlushEnvironment();
+		}
+	};
+
+	
+	// å†…å­˜DLLå¯¹è±¡
+	export struct MemoryDll {
+	private:
+		mqhandle handle;
+	public:
+		MemoryDll(BinView bv) noexcept {
+			handle = details::MasterQian_System_MemoryLoadLibrary(bv.data(), bv.size());
+		}
+
+		~MemoryDll() noexcept {
+			details::MasterQian_System_MemoryFreeLibrary(handle);
+		}
+
+		template<typename Ret, typename... Args>
+		auto Function(std::wstring_view name) const noexcept -> Ret(__stdcall*)(Args...) {
+			auto ansi_name{ ToBin(name, CodePage::ANSI) };
+			return reinterpret_cast<Ret(__stdcall*)(Args...)>(details::MasterQian_System_MemoryGetProcAddress(handle, reinterpret_cast<mqcstra>(ansi_name.data())));
+		}
+
+		mqi32 Execute() const noexcept {
+			return details::MasterQian_System_MemoryCallEntryPoint(handle);
+		}
+
+		BinView Resource(std::wstring_view name, std::wstring_view type) const noexcept {
+			if (auto res{ details::MasterQian_System_MemoryFindResource(handle, name.data(), type.data()) }) {
+				return BinView{
+					static_cast<mqcbytes>(details::MasterQian_System_MemoryLoadResource(handle, res)),
+					static_cast<mqui64>(details::MasterQian_System_MemorySizeofResource(handle, res)) };
+			}
+			return { };
 		}
 	};
 }

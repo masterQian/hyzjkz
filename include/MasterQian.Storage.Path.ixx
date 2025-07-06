@@ -9,7 +9,7 @@ module;
 #define MasterQianLibString "MasterQian.Storage.Path.dll"
 #endif
 #define MasterQianModuleVersion 20240131ULL
-#pragma message("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª Please copy [" MasterQianLibString "] into your program folder ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª")
+#pragma message("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€” Please copy [" MasterQianLibString "] into your program folder â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”")
 
 export module MasterQian.Storage.Path;
 export import MasterQian.Bin;
@@ -66,12 +66,8 @@ namespace MasterQian::Storage {
 			META_PROC_API(AutoCurrentFolder);
 		META_MODULE_END
 	}
-#undef MasterQianModuleName
-#undef MasterQianModuleNameString
-#undef MasterQianLibString
-#undef MasterQianModuleVersion
 
-	// Â·¾¶
+	// è·¯å¾„
 	export struct Path {
 	private:
 		static constexpr auto PATH_SLASH{ L'\\' };
@@ -80,7 +76,7 @@ namespace MasterQian::Storage {
 
 		std::wstring mData;
 	public:
-		// Â·¾¶ÊôĞÔ
+		// è·¯å¾„å±æ€§
 		struct Attributes {
 		private:
 			mqui32 attr;
@@ -93,32 +89,32 @@ namespace MasterQian::Storage {
 		public:
 			Attributes(mqui32 value = NON_EXIST) : attr{ value } {}
 
-			// ÊÇ·ñ´æÔÚ
+			// æ˜¯å¦å­˜åœ¨
 			[[nodiscard]] bool Exists() const noexcept {
 				return attr != NON_EXIST;
 			}
 
-			// ÊÇ·ñÖ»¶Á
+			// æ˜¯å¦åªè¯»
 			[[nodiscard]] bool ReadOnly() const noexcept {
 				return Exists() && (attr & READ_ONLY) != 0U;
 			}
 
-			// ÊÇ·ñÒş²Ø
+			// æ˜¯å¦éšè—
 			[[nodiscard]] bool Hidden() const noexcept {
 				return Exists() && (attr & HIDDEN) != 0U;
 			}
 
-			// ÊÇ·ñËùÊôÏµÍ³
+			// æ˜¯å¦æ‰€å±ç³»ç»Ÿ
 			[[nodiscard]] bool System() const noexcept {
 				return Exists() && (attr & SYSTEM) != 0U;
 			}
 
-			// ÊÇ·ñÊÇÄ¿Â¼
+			// æ˜¯å¦æ˜¯ç›®å½•
 			[[nodiscard]] bool Folder() const noexcept {
 				return Exists() && (attr & FOLDER) != 0U;
 			}
 
-			// ÊÇ·ñÊÇÎÄ¼ş
+			// æ˜¯å¦æ˜¯æ–‡ä»¶
 			[[nodiscard]] bool File() const noexcept {
 				return Exists() && !Folder();
 			}
@@ -137,9 +133,9 @@ namespace MasterQian::Storage {
 		Path() noexcept = default;
 
 		/// <summary>
-		/// ´Ó×Ö·û´®¹¹Ôì
+		/// ä»å­—ç¬¦ä¸²æ„é€ 
 		/// </summary>
-		/// <param name="path">Â·¾¶</param>
+		/// <param name="path">è·¯å¾„</param>
 		Path(std::wstring_view path) noexcept {
 			auto copy_size{ path.size() };
 			if (copy_size > PATH_MAX_LENGTH) copy_size = PATH_MAX_LENGTH;
@@ -148,13 +144,13 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// ´Ó×Ö·û´®¹¹Ôì
+		/// ä»å­—ç¬¦ä¸²æ„é€ 
 		/// </summary>
-		/// <param name="path">Â·¾¶</param>
+		/// <param name="path">è·¯å¾„</param>
 		Path(mqcstr path) noexcept : Path(std::wstring_view(path)) {}
 
 		/// <summary>
-		/// ×ª×Ö·û´®
+		/// è½¬å­—ç¬¦ä¸²
 		/// </summary>
 		[[nodiscard]] std::wstring ToString() const noexcept {
 			return mData;
@@ -176,10 +172,10 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// ¸½¼Ó×Ó¼¶£¬µÈÍ¬ÓÚ/ÔËËã·û
+		/// é™„åŠ å­çº§ï¼Œç­‰åŒäº/è¿ç®—ç¬¦
 		/// </summary>
-		/// <param name="name">×Ó¼¶Ãû£¬×Ô¶¯Ìí¼Ó·Ö¸ô·û£¬ÎŞĞè°üº¬·Ö¸ô·û</param>
-		/// <returns>ĞÂÂ·¾¶</returns>
+		/// <param name="name">å­çº§åï¼Œè‡ªåŠ¨æ·»åŠ åˆ†éš”ç¬¦ï¼Œæ— éœ€åŒ…å«åˆ†éš”ç¬¦</param>
+		/// <returns>æ–°è·¯å¾„</returns>
 		[[nodiscard]] Path Concat(std::wstring_view name) const noexcept {
 			return *this / name;
 		}
@@ -200,31 +196,31 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// ¸½¼Ó×Ó¼¶µ½×ÔÉí£¬µÈÍ¬ÓÚ/=ÔËËã·û
+		/// é™„åŠ å­çº§åˆ°è‡ªèº«ï¼Œç­‰åŒäº/=è¿ç®—ç¬¦
 		/// </summary>
-		/// <param name="name">×Ó¼¶Ãû£¬×Ô¶¯Ìí¼Ó·Ö¸ô·û£¬ÎŞĞè°üº¬·Ö¸ô·û</param>
+		/// <param name="name">å­çº§åï¼Œè‡ªåŠ¨æ·»åŠ åˆ†éš”ç¬¦ï¼Œæ— éœ€åŒ…å«åˆ†éš”ç¬¦</param>
 		Path& Append(std::wstring_view name) noexcept {
 			return *this /= name;
 		}
 
 		/// <summary>
-		/// ÊÇ·ñÊÇ¾ø¶ÔÂ·¾¶
+		/// æ˜¯å¦æ˜¯ç»å¯¹è·¯å¾„
 		/// </summary>
 		[[nodiscard]] bool IsAbsolutePath() const noexcept {
 			return mData.size() >= 2ULL && mData[1] == L':';
 		}
 
 		/// <summary>
-		/// ÊÇ·ñÊÇÏà¶ÔÂ·¾¶
+		/// æ˜¯å¦æ˜¯ç›¸å¯¹è·¯å¾„
 		/// </summary>
 		[[nodiscard]] bool IsRelativePath() const noexcept {
 			return !IsAbsolutePath();
 		}
 
 		/// <summary>
-		/// È¡Çı¶¯Æ÷Â·¾¶
+		/// å–é©±åŠ¨å™¨è·¯å¾„
 		/// </summary>
-		/// <returns>ĞÎÈçC:ÕâÖÖ°üº¬ÅÌ·ûµÄÇı¶¯Æ÷¸ùÂ·¾¶</returns>
+		/// <returns>å½¢å¦‚C:è¿™ç§åŒ…å«ç›˜ç¬¦çš„é©±åŠ¨å™¨æ ¹è·¯å¾„</returns>
 		[[nodiscard]] Path Driver() const noexcept {
 			if (IsAbsolutePath()) {
 				return Path{ mData.substr(0ULL, 2ULL) };
@@ -233,14 +229,14 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// ÊÇ·ñÓĞ¸¸Â·¾¶
+		/// æ˜¯å¦æœ‰çˆ¶è·¯å¾„
 		/// </summary>
 		[[nodiscard]] bool HasParent() const noexcept {
 			return mData.rfind(PATH_SLASH) != std::wstring::npos;
 		}
 
 		/// <summary>
-		/// È¡¸¸Â·¾¶
+		/// å–çˆ¶è·¯å¾„
 		/// </summary>
 		[[nodiscard]] Path Parent() const noexcept {
 			if (auto slash_pos{ mData.rfind(PATH_SLASH) }; slash_pos != std::wstring::npos) {
@@ -250,7 +246,7 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È¡ÎÄ¼şÃû
+		/// å–æ–‡ä»¶å
 		/// </summary>
 		[[nodiscard]] std::wstring_view Name() const noexcept {
 			std::wstring_view data_view{ mData };
@@ -261,7 +257,7 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È¡²»´øÍØÕ¹ÃûµÄÎÄ¼şÃû
+		/// å–ä¸å¸¦æ‹“å±•åçš„æ–‡ä»¶å
 		/// </summary>
 		[[nodiscard]] std::wstring_view NameWithoutExt() const noexcept {
 			std::wstring_view name_view{ Name() };
@@ -272,7 +268,7 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È¡ÍØÕ¹Ãû
+		/// å–æ‹“å±•å
 		/// </summary>
 		[[nodiscard]] std::wstring_view Extension() const noexcept {
 			std::wstring_view name_view{ Name() };
@@ -283,7 +279,7 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È¡²»´øµãµÄÍØÕ¹Ãû
+		/// å–ä¸å¸¦ç‚¹çš„æ‹“å±•å
 		/// </summary>
 		[[nodiscard]] std::wstring_view ExtensionWithoutDot() const noexcept {
 			std::wstring_view ext_view{ Extension() };
@@ -291,93 +287,93 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È¡ÊôĞÔ
+		/// å–å±æ€§
 		/// </summary>
 		[[nodiscard]] Attributes Attribute() const noexcept {
 			return details::MasterQian_Storage_Path_Attribute(mData.data());
 		}
 
 		/// <summary>
-		/// ÊÇ·ñ´æÔÚ
+		/// æ˜¯å¦å­˜åœ¨
 		/// </summary>
 		[[nodiscard]] bool Exists() const noexcept {
 			return Attribute().Exists();
 		}
 
 		/// <summary>
-		/// ÊÇ·ñÊÇÎÄ¼ş
+		/// æ˜¯å¦æ˜¯æ–‡ä»¶
 		/// </summary>
 		[[nodiscard]] bool IsFile() const noexcept {
 			return Attribute().File();
 		}
 
 		/// <summary>
-		/// ÊÇ·ñÊÇÄ¿Â¼
+		/// æ˜¯å¦æ˜¯ç›®å½•
 		/// </summary>
 		[[nodiscard]] bool IsFolder() const noexcept {
 			return Attribute().Folder();
 		}
 
 		/// <summary>
-		/// ´óĞ¡£¬Ö§³ÖÎÄ¼ş»òÄ¿Â¼µ÷ÓÃ
+		/// å¤§å°ï¼Œæ”¯æŒæ–‡ä»¶æˆ–ç›®å½•è°ƒç”¨
 		/// </summary>
-		/// <returns>64Î»³¤¶ÈµÄ´óĞ¡</returns>
+		/// <returns>64ä½é•¿åº¦çš„å¤§å°</returns>
 		[[nodiscard]] mqui64 Size() const noexcept {
 			return details::MasterQian_Storage_Path_Size(mData.data());
 		}
 
 		/// <summary>
-		/// È¡´´½¨Ê±¼ä£¬Ö§³ÖÎÄ¼ş»òÄ¿Â¼µÄµ÷ÓÃ
+		/// å–åˆ›å»ºæ—¶é—´ï¼Œæ”¯æŒæ–‡ä»¶æˆ–ç›®å½•çš„è°ƒç”¨
 		/// </summary>
 		[[nodiscard]] Timestamp CreateTime() const noexcept {
 			return details::MasterQian_Storage_Path_GetTime(mData.data(), 0U);
 		}
 
 		/// <summary>
-		/// ÖÃ´´½¨Ê±¼ä£¬Ö§³ÖÎÄ¼ş»òÄ¿Â¼µÄµ÷ÓÃ
+		/// ç½®åˆ›å»ºæ—¶é—´ï¼Œæ”¯æŒæ–‡ä»¶æˆ–ç›®å½•çš„è°ƒç”¨
 		/// </summary>
-		/// <param name="ts">Ê±¼ä´Á</param>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <param name="ts">æ—¶é—´æˆ³</param>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		bool CreateTime(Timestamp ts) const noexcept {
 			return details::MasterQian_Storage_Path_SetTime(mData.data(), 0U, ts);
 		}
 
 		/// <summary>
-		/// È¡ĞŞ¸ÄÊ±¼ä£¬Ö§³ÖÎÄ¼ş»òÄ¿Â¼µÄµ÷ÓÃ
+		/// å–ä¿®æ”¹æ—¶é—´ï¼Œæ”¯æŒæ–‡ä»¶æˆ–ç›®å½•çš„è°ƒç”¨
 		/// </summary>
 		[[nodiscard]] Timestamp WriteTime() const noexcept {
 			return details::MasterQian_Storage_Path_GetTime(mData.data(), 1U);
 		}
 
 		/// <summary>
-		/// ÖÃĞŞ¸ÄÊ±¼ä£¬Ö§³ÖÎÄ¼ş»òÄ¿Â¼µÄµ÷ÓÃ
+		/// ç½®ä¿®æ”¹æ—¶é—´ï¼Œæ”¯æŒæ–‡ä»¶æˆ–ç›®å½•çš„è°ƒç”¨
 		/// </summary>
-		/// <param name="ts">Ê±¼ä´Á</param>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <param name="ts">æ—¶é—´æˆ³</param>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		bool WriteTime(Timestamp ts) const noexcept {
 			return details::MasterQian_Storage_Path_SetTime(mData.data(), 1U, ts);
 		}
 
 		/// <summary>
-		/// È¡·ÃÎÊÊ±¼ä£¬Ö§³ÖÎÄ¼ş»òÄ¿Â¼µÄµ÷ÓÃ
+		/// å–è®¿é—®æ—¶é—´ï¼Œæ”¯æŒæ–‡ä»¶æˆ–ç›®å½•çš„è°ƒç”¨
 		/// </summary>
 		[[nodiscard]] Timestamp AccessTime() const noexcept {
 			return details::MasterQian_Storage_Path_GetTime(mData.data(), 2U);
 		}
 
 		/// <summary>
-		/// ÖÃ·ÃÎÊÊ±¼ä£¬Ö§³ÖÎÄ¼ş»òÄ¿Â¼µÄµ÷ÓÃ
+		/// ç½®è®¿é—®æ—¶é—´ï¼Œæ”¯æŒæ–‡ä»¶æˆ–ç›®å½•çš„è°ƒç”¨
 		/// </summary>
-		/// <param name="ts">Ê±¼ä´Á</param>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <param name="ts">æ—¶é—´æˆ³</param>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		bool AccessTime(Timestamp ts) const noexcept {
 			return details::MasterQian_Storage_Path_SetTime(mData.data(), 2U, ts);
 		}
 
 		/// <summary>
-		/// ¶ÁÎÄ¼ş£¬½öÖ§³ÖÎÄ¼şµÄµ÷ÓÃ£¬¿É³¬¹ı4G
+		/// è¯»æ–‡ä»¶ï¼Œä»…æ”¯æŒæ–‡ä»¶çš„è°ƒç”¨ï¼Œå¯è¶…è¿‡4G
 		/// </summary>
-		/// <returns>ÎÄ¼ş×Ö½Ú¼¯</returns>
+		/// <returns>æ–‡ä»¶å­—èŠ‚é›†</returns>
 		[[nodiscard]] Bin Read() const noexcept {
 			Bin tmp(details::MasterQian_Storage_Path_Size(mData.data()));
 			details::MasterQian_Storage_Path_Read(mData.data(), tmp.size(), tmp.data());
@@ -385,48 +381,48 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// Ğ´ÎÄ¼ş£¬½öÖ§³ÖÎÄ¼şµÄµ÷ÓÃ
+		/// å†™æ–‡ä»¶ï¼Œä»…æ”¯æŒæ–‡ä»¶çš„è°ƒç”¨
 		/// </summary>
-		/// <param name="bv">×Ö½Ú¼¯£¬¿É³¬¹ı4G</param>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <param name="bv">å­—èŠ‚é›†ï¼Œå¯è¶…è¿‡4G</param>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		bool Write(BinView bv) const noexcept {
 			return details::MasterQian_Storage_Path_Write(mData.data(), bv.size(), bv.data());
 		}
 
 		/// <summary>
-		/// ¸´ÖÆ£¬Ö§³ÖÎÄ¼ş»òÄ¿Â¼µÄµ÷ÓÃ£¬½«Â·¾¶ÒÔ×ÔÉíÍ¬Ãû¸´ÖÆµ½Ä¿±êÂ·¾¶ÄÚ£¬ÈôĞèĞŞ¸ÄÃû³ÆÊ¹ÓÃCopyRename
+		/// å¤åˆ¶ï¼Œæ”¯æŒæ–‡ä»¶æˆ–ç›®å½•çš„è°ƒç”¨ï¼Œå°†è·¯å¾„ä»¥è‡ªèº«åŒåå¤åˆ¶åˆ°ç›®æ ‡è·¯å¾„å†…ï¼Œè‹¥éœ€ä¿®æ”¹åç§°ä½¿ç”¨CopyRename
 		/// </summary>
-		/// <param name="folder_path">Ä¿±êÂ·¾¶£¬½öÖ§³ÖÄ¿Â¼</param>
-		/// <param name="overridable">ÔÊĞí¸²¸Ç</param>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <param name="folder_path">ç›®æ ‡è·¯å¾„ï¼Œä»…æ”¯æŒç›®å½•</param>
+		/// <param name="overridable">å…è®¸è¦†ç›–</param>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		bool Copy(Path const& folder_path, bool overridable = true) const noexcept {
 			return details::MasterQian_Storage_Path_Copy(Parent().mData.data(), Name().data(), folder_path.mData.data(), overridable);
 		}
 
 		/// <summary>
-		/// ¸´ÖÆ£¬Ö§³ÖÎÄ¼ş»òÄ¿Â¼µÄµ÷ÓÃ£¬¸´ÖÆ²¢ĞŞ¸ÄÆäÎÄ¼şÃû
+		/// å¤åˆ¶ï¼Œæ”¯æŒæ–‡ä»¶æˆ–ç›®å½•çš„è°ƒç”¨ï¼Œå¤åˆ¶å¹¶ä¿®æ”¹å…¶æ–‡ä»¶å
 		/// </summary>
-		/// <param name="des">Ä¿±êÂ·¾¶</param>
-		/// <param name="overridable">ÔÊĞí¸²¸Ç</param>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <param name="des">ç›®æ ‡è·¯å¾„</param>
+		/// <param name="overridable">å…è®¸è¦†ç›–</param>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		bool CopyRename(Path const& des, bool overridable = true) const noexcept {
 			return details::MasterQian_Storage_Path_CopyRename(mData.data(), des.mData.data(), overridable);
 		}
 
 		/// <summary>
-		/// ÒÆ¶¯£¬Ö§³ÖÎÄ¼ş»òÄ¿Â¼µÄµ÷ÓÃ
+		/// ç§»åŠ¨ï¼Œæ”¯æŒæ–‡ä»¶æˆ–ç›®å½•çš„è°ƒç”¨
 		/// </summary>
-		/// <param name="folder_path">Ä¿±êÂ·¾¶£¬½öÖ§³ÖÄ¿Â¼</param>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <param name="folder_path">ç›®æ ‡è·¯å¾„ï¼Œä»…æ”¯æŒç›®å½•</param>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		bool Move(Path const& folder_path) const noexcept {
 			return details::MasterQian_Storage_Path_Move(Parent().mData.data(), Name().data(), folder_path.mData.data());
 		}
 
 		/// <summary>
-		/// ÖØÃüÃû£¬Ö§³ÖÎÄ¼ş»òÄ¿Â¼µÄµ÷ÓÃ
+		/// é‡å‘½åï¼Œæ”¯æŒæ–‡ä»¶æˆ–ç›®å½•çš„è°ƒç”¨
 		/// </summary>
-		/// <param name="name">ĞÂÃû³Æ£¬»á×Ô¶¯²¹³ä¸¸Â·¾¶ÓëÍØÕ¹Ãû£¬ÎŞĞè°üº¬¸¸Â·¾¶ÓëÍØÕ¹Ãû</param>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <param name="name">æ–°åç§°ï¼Œä¼šè‡ªåŠ¨è¡¥å……çˆ¶è·¯å¾„ä¸æ‹“å±•åï¼Œæ— éœ€åŒ…å«çˆ¶è·¯å¾„ä¸æ‹“å±•å</param>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		bool Rename(std::wstring_view name) const noexcept {
 			Path new_path{ Parent() };
 			std::wstring new_name{ name };
@@ -436,26 +432,26 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// É¾³ı£¬Ö§³ÖÎÄ¼ş»òÄ¿Â¼µÄµ÷ÓÃ
+		/// åˆ é™¤ï¼Œæ”¯æŒæ–‡ä»¶æˆ–ç›®å½•çš„è°ƒç”¨
 		/// </summary>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		bool Delete() const noexcept {
 			return details::MasterQian_Storage_Path_Delete(mData.data());
 		}
 
 		/// <summary>
-		/// É¾³ıµ½»ØÊÕÕ¾£¬Ö§³ÖÎÄ¼ş»òÄ¿Â¼µÄµ÷ÓÃ
+		/// åˆ é™¤åˆ°å›æ”¶ç«™ï¼Œæ”¯æŒæ–‡ä»¶æˆ–ç›®å½•çš„è°ƒç”¨
 		/// </summary>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		bool DeleteToRecycleBin() const noexcept {
 			return details::MasterQian_Storage_Path_DeleteToRecycleBin(mData.data());
 		}
 
 		/// <summary>
-		/// Ã¶¾ÙÄ¿Â¼£¬½öÖ§³ÖÄ¿Â¼µÄµ÷ÓÃ£¬½öÃ¶¾ÙÄ¿Â¼ÄÚµÄ×ÓÂ·¾¶
+		/// æšä¸¾ç›®å½•ï¼Œä»…æ”¯æŒç›®å½•çš„è°ƒç”¨ï¼Œä»…æšä¸¾ç›®å½•å†…çš„å­è·¯å¾„
 		/// </summary>
-		/// <param name="ext">ÍØÕ¹Ãû£¬Èç*.jpg±íÊ¾½öÃ¶¾Ùjpg¸ñÊ½µÄÎÄ¼ş£¬*±íÊ¾Æ¥ÅäËùÓĞÎÄ¼ş¼°Ä¿Â¼</param>
-		/// <returns>×ÓÂ·¾¶¼¯ºÏ</returns>
+		/// <param name="ext">æ‹“å±•åï¼Œå¦‚*.jpgè¡¨ç¤ºä»…æšä¸¾jpgæ ¼å¼çš„æ–‡ä»¶ï¼Œ*è¡¨ç¤ºåŒ¹é…æ‰€æœ‰æ–‡ä»¶åŠç›®å½•</param>
+		/// <returns>å­è·¯å¾„é›†åˆ</returns>
 		[[nodiscard]] mqlist<Path> EnumFolder(std::wstring_view ext = L"*") const noexcept {
 			mqlist<Path> subPaths;
 			if (!details::MasterQian_Storage_Path_EnumFolder(mData.data(), [ ] (mqmem arg, mqcstr path) noexcept {
@@ -467,9 +463,9 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// Éî¶ÈÃ¶¾ÙÄ¿Â¼£¬½öÖ§³ÖÄ¿Â¼µÄµ÷ÓÃ£¬µİ¹éÃ¶¾ÙÄ¿Â¼¼°ËùÓĞ×ÓÄ¿Â¼ÖĞËùÓĞÎÄ¼şÓëÄ¿Â¼
+		/// æ·±åº¦æšä¸¾ç›®å½•ï¼Œä»…æ”¯æŒç›®å½•çš„è°ƒç”¨ï¼Œé€’å½’æšä¸¾ç›®å½•åŠæ‰€æœ‰å­ç›®å½•ä¸­æ‰€æœ‰æ–‡ä»¶ä¸ç›®å½•
 		/// </summary>
-		/// <returns>×ÓÂ·¾¶¼¯ºÏ</returns>
+		/// <returns>å­è·¯å¾„é›†åˆ</returns>
 		[[nodiscard]] mqlist<Path> EnumFolderDepth() const noexcept {
 			mqlist<Path> subPaths;
 			if (!details::MasterQian_Storage_Path_EnumFolderDepth(mData.data(), [ ] (mqmem arg, mqcstr path) noexcept {
@@ -481,9 +477,9 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È·±£ÎÄ¼ş´æÔÚ£¬½öÖ§³ÖÎÄ¼şµÄµ÷ÓÃ£¬ÈôÎÄ¼ş²»´æÔÚÔòÊ¹ÓÃÄ¬ÈÏÖµ´´½¨£¬·ñÔòºöÂÔ
+		/// ç¡®ä¿æ–‡ä»¶å­˜åœ¨ï¼Œä»…æ”¯æŒæ–‡ä»¶çš„è°ƒç”¨ï¼Œè‹¥æ–‡ä»¶ä¸å­˜åœ¨åˆ™ä½¿ç”¨é»˜è®¤å€¼åˆ›å»ºï¼Œå¦åˆ™å¿½ç•¥
 		/// </summary>
-		/// <param name="bv">Ä¬ÈÏÖµ</param>
+		/// <param name="bv">é»˜è®¤å€¼</param>
 		void Create(BinView bv) const noexcept {
 			if (!Exists()) {
 				Write(bv);
@@ -491,16 +487,16 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È·±£¶à¼¶Ä¿Â¼´æÔÚ£¬½öÖ§³ÖÄ¿Â¼µÄµ÷ÓÃ£¬ÈôÄ¿Â¼²»´æÔÚÔò´´½¨£¬·ñÔòºöÂÔ£¬ÔÊĞíÖĞÍ¾¶à¼¶£¬½«ÑØ×ÅÂ·¾¶Ë³ĞòÒÀ´Î´´½¨
+		/// ç¡®ä¿å¤šçº§ç›®å½•å­˜åœ¨ï¼Œä»…æ”¯æŒç›®å½•çš„è°ƒç”¨ï¼Œè‹¥ç›®å½•ä¸å­˜åœ¨åˆ™åˆ›å»ºï¼Œå¦åˆ™å¿½ç•¥ï¼Œå…è®¸ä¸­é€”å¤šçº§ï¼Œå°†æ²¿ç€è·¯å¾„é¡ºåºä¾æ¬¡åˆ›å»º
 		/// </summary>
 		void Create() const noexcept {
 			details::MasterQian_Storage_Path_CreateFolder(mData.data());
 		}
 
 		/// <summary>
-		/// È¡¿ì½İ·½Ê½Ä¿±ê£¬½öÖ§³ÖÎÄ¼şµÄµ÷ÓÃ
+		/// å–å¿«æ·æ–¹å¼ç›®æ ‡ï¼Œä»…æ”¯æŒæ–‡ä»¶çš„è°ƒç”¨
 		/// </summary>
-		/// <returns>lnkÎÄ¼ş¶ÔÓ¦µÄÄ¿±ê</returns>
+		/// <returns>lnkæ–‡ä»¶å¯¹åº”çš„ç›®æ ‡</returns>
 		[[nodiscard]] Path ShortCutTarget() const noexcept {
 			mqchar buf[PATH_MAX]{ };
 			details::MasterQian_Storage_Path_ShortCutTarget(mData.data(), buf);
@@ -508,10 +504,10 @@ namespace MasterQian::Storage {
 		}
 
 
-		/*  ¾²Ì¬º¯Êı  */
+		/*  é™æ€å‡½æ•°  */
 
 		/// <summary>
-		/// È¡×ÀÃæÂ·¾¶
+		/// å–æ¡Œé¢è·¯å¾„
 		/// </summary>
 		[[nodiscard]] static Path Desktop() noexcept {
 			mqchar buf[PATH_MAX]{ };
@@ -520,7 +516,7 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È¡ÎÄµµÂ·¾¶
+		/// å–æ–‡æ¡£è·¯å¾„
 		/// </summary>
 		[[nodiscard]] static Path Documents() noexcept {
 			mqchar buf[PATH_MAX]{ };
@@ -529,7 +525,7 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È¡ÒôÀÖÂ·¾¶
+		/// å–éŸ³ä¹è·¯å¾„
 		/// </summary>
 		[[nodiscard]] static Path Music() noexcept {
 			mqchar buf[PATH_MAX]{ };
@@ -538,7 +534,7 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È¡ÊÓÆµÂ·¾¶
+		/// å–è§†é¢‘è·¯å¾„
 		/// </summary>
 		[[nodiscard]] static Path Video() noexcept {
 			mqchar buf[PATH_MAX]{ };
@@ -547,7 +543,7 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È¡×ÖÌåÂ·¾¶
+		/// å–å­—ä½“è·¯å¾„
 		/// </summary>
 		[[nodiscard]] static Path Fonts() noexcept {
 			mqchar buf[PATH_MAX]{ };
@@ -556,7 +552,7 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È¡AppDataÂ·¾¶
+		/// å–AppDataè·¯å¾„
 		/// </summary>
 		[[nodiscard]] static Path AppData() noexcept {
 			mqchar buf[PATH_MAX]{ };
@@ -565,7 +561,7 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È¡WindowsÂ·¾¶
+		/// å–Windowsè·¯å¾„
 		/// </summary>
 		[[nodiscard]] static Path Windows() noexcept {
 			mqchar buf[PATH_MAX]{ };
@@ -574,7 +570,7 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È¡ÏµÍ³Â·¾¶
+		/// å–ç³»ç»Ÿè·¯å¾„
 		/// </summary>
 		[[nodiscard]] static Path System() noexcept {
 			mqchar buf[PATH_MAX]{ };
@@ -583,7 +579,7 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È¡ProgramFilesÂ·¾¶
+		/// å–ProgramFilesè·¯å¾„
 		/// </summary>
 		[[nodiscard]] static Path ProgramFiles() noexcept {
 			mqchar buf[PATH_MAX]{ };
@@ -592,7 +588,7 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È¡ÕÕÆ¬Â·¾¶
+		/// å–ç…§ç‰‡è·¯å¾„
 		/// </summary>
 		[[nodiscard]] static Path Picture() noexcept {
 			mqchar buf[PATH_MAX]{ };
@@ -601,7 +597,7 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È¡µ±Ç°ÔËĞĞµÄ³ÌĞòµÄÂ·¾¶
+		/// å–å½“å‰è¿è¡Œçš„ç¨‹åºçš„è·¯å¾„
 		/// </summary>
 		[[nodiscard]] static Path Running() noexcept {
 			mqchar buf[PATH_MAX]{ };
@@ -610,7 +606,7 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È¡µ±Ç°ÔËĞĞ³ÌĞòµÄÎÄ¼şÃû
+		/// å–å½“å‰è¿è¡Œç¨‹åºçš„æ–‡ä»¶å
 		/// </summary>
 		[[nodiscard]] static Path RunningName() noexcept {
 			mqchar buf[PATH_MAX]{ };
@@ -619,7 +615,7 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// È¡TempÂ·¾¶
+		/// å–Tempè·¯å¾„
 		/// </summary>
 		[[nodiscard]] static Path Temp() noexcept {
 			mqchar buf[PATH_MAX]{ };
@@ -628,25 +624,25 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// ×ÔÊÊÓ¦µ±Ç°Ä¿Â¼£¬½«ÔËĞĞµÄ³ÌĞòµ±Ç°Ä¿Â¼ĞŞ¸ÄÎª³ÌĞòËùÔÚµÄÄ¿Â¼£¬¶øÎŞÊÓ¸¸½ø³ÌµÄµ÷ÓÃ
+		/// è‡ªé€‚åº”å½“å‰ç›®å½•ï¼Œå°†è¿è¡Œçš„ç¨‹åºå½“å‰ç›®å½•ä¿®æ”¹ä¸ºç¨‹åºæ‰€åœ¨çš„ç›®å½•ï¼Œè€Œæ— è§†çˆ¶è¿›ç¨‹çš„è°ƒç”¨
 		/// </summary>
 		static void AutoCurrentFolder() noexcept {
 			details::MasterQian_Storage_Path_AutoCurrentFolder(Running().mData.data());
 		}
 	};
 
-	// Çı¶¯Æ÷
+	// é©±åŠ¨å™¨
 	export struct Driver {
-		Path name; // Ãû³Æ
-		mqf64 totalSpace{ }; // ×Ü¿Õ¼ä(GB)
-		mqf64 freeSpace{ }; // Ê£Óà¿Õ¼ä(GB)
+		Path name; // åç§°
+		mqf64 totalSpace{ }; // æ€»ç©ºé—´(GB)
+		mqf64 freeSpace{ }; // å‰©ä½™ç©ºé—´(GB)
 	};
 
 	export [[nodiscard]] inline mqarray<Driver> Drivers() noexcept {
 		/// <summary>
-		/// È¡Çı¶¯Æ÷×é
+		/// å–é©±åŠ¨å™¨ç»„
 		/// </summary>
-		/// <returns>Çı¶¯Æ÷¼¯ºÏ</returns>
+		/// <returns>é©±åŠ¨å™¨é›†åˆ</returns>
 		mqchar names[27]{ }, name[3]{ };
 		mqui32 count{ details::MasterQian_Storage_Path_GetDriversBitmap(names) };
 		mqarray<Driver> drivers(static_cast<mqui64>(count));
@@ -658,10 +654,10 @@ namespace MasterQian::Storage {
 		return drivers;
 	}
 
-	// »ØÊÕÕ¾²Ù×÷¶ÔÏó
+	// å›æ”¶ç«™æ“ä½œå¯¹è±¡
 	export namespace RecycleBin {
 		/// <summary>
-		/// »ØÊÕÕ¾ÊÇ·ñÎª¿Õ
+		/// å›æ”¶ç«™æ˜¯å¦ä¸ºç©º
 		/// </summary>
 		[[nodiscard]] inline bool Empty() noexcept {
 			mqchar names[27]{ };
@@ -675,9 +671,9 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// Çå¿Õ»ØÊÕÕ¾
+		/// æ¸…ç©ºå›æ”¶ç«™
 		/// </summary>
-		/// <param name="tip">ÊÇ·ñµ¯³öÌáÊ¾´°¿Ú</param>
+		/// <param name="tip">æ˜¯å¦å¼¹å‡ºæç¤ºçª—å£</param>
 		inline void Clear(bool tip = false) noexcept {
 			details::MasterQian_Storage_Path_ClearRecycleBin(tip);
 		}

@@ -3,10 +3,10 @@
                 VerticalAlignment="Center"
                 Background="Transparent"
                 DefaultLabelPosition="Right" IsOpen="False">
-        <AppBarButton x:Name="Button_Import" Icon="Import" Label="{StaticResource ToPDFSubPage.Bar.Import}" />
-        <AppBarButton x:Name="Button_Delete" Icon="Delete" Label="{StaticResource ToPDFSubPage.Bar.Delete}" />
-        <AppBarButton x:Name="Button_Clear" Icon="Clear" Label="{StaticResource ToPDFSubPage.Bar.Clear}" />
-        <AppBarButton x:Name="Button_Save" Icon="Save" Label="{StaticResource ToPDFSubPage.Bar.Save}" />
+        <AppBarButton x:Name="Button_Import" AllowFocusOnInteraction="True" Icon="Import" Label="{StaticResource ToPDFSubPage.Bar.Import}" />
+        <AppBarButton x:Name="Button_Delete" AllowFocusOnInteraction="True" Icon="Delete" Label="{StaticResource ToPDFSubPage.Bar.Delete}" />
+        <AppBarButton x:Name="Button_Clear" AllowFocusOnInteraction="True" Icon="Clear" Label="{StaticResource ToPDFSubPage.Bar.Clear}" />
+        <AppBarButton x:Name="Button_Save" AllowFocusOnInteraction="True" Icon="Save" Label="{StaticResource ToPDFSubPage.Bar.Save}" />
     </CommandBar>
     <GridView x:Name="GV_PDF" Grid.Row="1" AllowDrop="True"
               CanReorderItems="True" IsItemClickEnabled="True"

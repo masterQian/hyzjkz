@@ -6,7 +6,7 @@ export module MasterQian.Media.Color;
 export import MasterQian.freestanding;
 
 namespace MasterQian::Media {
-	// ARGBяуи╚
+	// ARGBИ╒°Х┴╡
 	export struct Color {
 	private:
 		mqui32 color;
@@ -39,45 +39,45 @@ namespace MasterQian::Media {
 		}
 	};
 
-	// яуи╚ц╤╬ы
+	// И╒°Х┴╡Ф· Д╦╬
 	export namespace Colors {
 #define COLOR_ENUM(name, R, G, B, A, comment) constexpr Color name{ R, G, B, A }
 #define COLOR_ENUM_V(name, color, comment) constexpr Color name { color }
-		COLOR_ENUM(Transparency, 0, 0, 0, 0, "м╦цВ");
-		COLOR_ENUM(White, 255, 255, 255, 255, "╟ви╚");
-		COLOR_ENUM(Black, 0, 0, 0, 255, "╨зи╚");
-		COLOR_ENUM(Red, 255, 0, 0, 255, "╨Ли╚");
-		COLOR_ENUM(Orange, 255, 165, 0, 255, "Ёхи╚");
-		COLOR_ENUM(Yellow, 255, 255, 0, 255, "╩фи╚");
-		COLOR_ENUM(Green, 0, 255, 0, 255, "бли╚");
-		COLOR_ENUM(Cyan, 0, 255, 255, 255, "гЮи╚");
-		COLOR_ENUM(Blue, 0, 0, 255, 255, "ю╤и╚");
-		COLOR_ENUM(Purple, 128, 0, 128, 255, "вои╚");
-		COLOR_ENUM(Gray, 128, 128, 128, 255, "╩ри╚");
-		COLOR_ENUM(Brown, 165, 42, 42, 255, "вьи╚");
-		COLOR_ENUM(Pink, 255, 192, 203, 255, "вои╚");
-		COLOR_ENUM_V(AliceBlue, 0xFFF0F8FF, "╟╝юЖк©ю╤");
-		COLOR_ENUM_V(AntiqueWhite, 0xFFFAEBD7, "╧е╤╜╟в");
-		COLOR_ENUM_V(DarkBlue, 0xFF00008B, "иНю╤и╚");
-		COLOR_ENUM_V(DarkCyan, 0xFF008B8B, "иНгЮи╚");
-		COLOR_ENUM_V(DarkGray, 0xFFA9A9A9, "иН╩ри╚");
-		COLOR_ENUM_V(DarkGreen, 0xFF006400, "иНбли╚");
-		COLOR_ENUM_V(DarkOrange, 0xFFFF8C00, "иНЁхи╚");
-		COLOR_ENUM_V(DarkRed, 0xFF8B0000, "иН╨Ли╚");
-		COLOR_ENUM_V(LightBlue, 0xFFADD8E6, "╣╜ю╤и╚");
-		COLOR_ENUM_V(LightCyan, 0xFFE0FFFF, "╣╜гЮи╚");
-		COLOR_ENUM_V(LightGray, 0xFFD3D3D3, "╣╜╩ри╚");
-		COLOR_ENUM_V(LightGreen, 0xFF90EE90, "╣╜бли╚");
-		COLOR_ENUM_V(LightPink, 0xFFFFB5C1, "╣╜╥ши╚");
-		COLOR_ENUM_V(LightYellow, 0xFFFFFFE0, "╣╜╩фи╚");
-		COLOR_ENUM_V(SeaGreen, 0xFF2E8B57, "╨ёбли╚");
-		COLOR_ENUM_V(SkyBlue, 0xFF87CEEB, "лЛю╤и╚");
-		COLOR_ENUM_V(Silver, 0xFFC0C0C0, "рЬи╚");
-		COLOR_ENUM_V(Snow, 0xFFFFFAFA, "я╘╟ви╚");
-		COLOR_ENUM_V(SteelBlue, 0xFF4682B4, "╦жю╤и╚");
-		COLOR_ENUM_V(SpringGreen, 0xFF00FF7F, "╢╨бли╚");
-		COLOR_ENUM_V(YellowGreen, 0xFF9ACD32, "╩фбли╚");
-		COLOR_ENUM_V(Violet, 0xFFEE82EE, "вобчю╪и╚");
+		COLOR_ENUM(Transparency, 0, 0, 0, 0, "И─▐Ф≤▌");
+		COLOR_ENUM(White, 255, 255, 255, 255, "Г≥╫Х┴╡");
+		COLOR_ENUM(Black, 0, 0, 0, 255, "И╩▒Х┴╡");
+		COLOR_ENUM(Red, 255, 0, 0, 255, "Г╨╒Х┴╡");
+		COLOR_ENUM(Orange, 255, 165, 0, 255, "Ф╘≥Х┴╡");
+		COLOR_ENUM(Yellow, 255, 255, 0, 255, "И╩└Х┴╡");
+		COLOR_ENUM(Green, 0, 255, 0, 255, "Г╩©Х┴╡");
+		COLOR_ENUM(Cyan, 0, 255, 255, 255, "И²▓Х┴╡");
+		COLOR_ENUM(Blue, 0, 0, 255, 255, "Х⌠²Х┴╡");
+		COLOR_ENUM(Purple, 128, 0, 128, 255, "Г╢╚Х┴╡");
+		COLOR_ENUM(Gray, 128, 128, 128, 255, "Г│╟Х┴╡");
+		COLOR_ENUM(Brown, 165, 42, 42, 255, "Фё∙Х┴╡");
+		COLOR_ENUM(Pink, 255, 192, 203, 255, "Г╢╚Х┴╡");
+		COLOR_ENUM_V(AliceBlue, 0xFFF0F8FF, "Г┬╠Д╦╫Д╦²Х⌠²");
+		COLOR_ENUM_V(AntiqueWhite, 0xFFFAEBD7, "Е▐╓Х▒ёГ≥╫");
+		COLOR_ENUM_V(DarkBlue, 0xFF00008B, "Ф╥╠Х⌠²Х┴╡");
+		COLOR_ENUM_V(DarkCyan, 0xFF008B8B, "Ф╥╠И²▓Х┴╡");
+		COLOR_ENUM_V(DarkGray, 0xFFA9A9A9, "Ф╥╠Г│╟Х┴╡");
+		COLOR_ENUM_V(DarkGreen, 0xFF006400, "Ф╥╠Г╩©Х┴╡");
+		COLOR_ENUM_V(DarkOrange, 0xFFFF8C00, "Ф╥╠Ф╘≥Х┴╡");
+		COLOR_ENUM_V(DarkRed, 0xFF8B0000, "Ф╥╠Г╨╒Х┴╡");
+		COLOR_ENUM_V(LightBlue, 0xFFADD8E6, "Ф╥║Х⌠²Х┴╡");
+		COLOR_ENUM_V(LightCyan, 0xFFE0FFFF, "Ф╥║И²▓Х┴╡");
+		COLOR_ENUM_V(LightGray, 0xFFD3D3D3, "Ф╥║Г│╟Х┴╡");
+		COLOR_ENUM_V(LightGreen, 0xFF90EE90, "Ф╥║Г╩©Х┴╡");
+		COLOR_ENUM_V(LightPink, 0xFFFFB5C1, "Ф╥║Г╡┴Х┴╡");
+		COLOR_ENUM_V(LightYellow, 0xFFFFFFE0, "Ф╥║И╩└Х┴╡");
+		COLOR_ENUM_V(SeaGreen, 0xFF2E8B57, "Ф╣╥Г╩©Х┴╡");
+		COLOR_ENUM_V(SkyBlue, 0xFF87CEEB, "Е╓╘Х⌠²Х┴╡");
+		COLOR_ENUM_V(Silver, 0xFFC0C0C0, "И⌠╤Х┴╡");
+		COLOR_ENUM_V(Snow, 0xFFFFFAFA, "И⌡╙Г≥╫Х┴╡");
+		COLOR_ENUM_V(SteelBlue, 0xFF4682B4, "И▓╒Х⌠²Х┴╡");
+		COLOR_ENUM_V(SpringGreen, 0xFF00FF7F, "Ф≤╔Г╩©Х┴╡");
+		COLOR_ENUM_V(YellowGreen, 0xFF9ACD32, "И╩└Г╩©Х┴╡");
+		COLOR_ENUM_V(Violet, 0xFFEE82EE, "Г╢╚Г╫≈Е┘╟Х┴╡");
 	};
 }
 

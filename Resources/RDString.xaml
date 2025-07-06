@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="using:hyzjkz">
     <x:String x:Key="App.Name">鸿宇证件快照</x:String>
-    <x:String x:Key="App.Version">2024022300</x:String>
+    <x:String x:Key="App.Version">2024030600</x:String>
 
     <!--  MainWindow  -->
     <x:String x:Key="MainWindow.AttachCamera.Text">连接相机</x:String>

@@ -9,7 +9,7 @@ module;
 #define MasterQianLibString "MasterQian.Tool.Benchmark.dll"
 #endif
 #define MasterQianModuleVersion 20240131ULL
-#pragma message("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª Please copy [" MasterQianLibString "] into your program folder ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª")
+#pragma message("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€” Please copy [" MasterQianLibString "] into your program folder â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”")
 
 export module MasterQian.Tool.Benchmark;
 export import MasterQian.freestanding;
@@ -29,10 +29,10 @@ namespace MasterQian::Tool {
 	}
 
 	/// <summary>
-	/// <para>»ùÓÚGoogle benchmark [ Source: https://github.com/google/benchmark ]</para>
+	/// <para>åŸºäºGoogle benchmark [ Source: https://github.com/google/benchmark ]</para>
 	/// </summary>
 	/// <example>
-	/// <para>[Àı1:²»´ø²ÎÊıµÄBenchmark]</para>
+	/// <para>[ä¾‹1:ä¸å¸¦å‚æ•°çš„Benchmark]</para>
 	/// <code>
 	/// int main() {
 	///		Benchmark().Add([ ] (auto arg) noexcept {
@@ -43,14 +43,14 @@ namespace MasterQian::Tool {
 	///		}).Run();
 	/// }
 	/// </code>
-	/// <para>BenchmarkÁÙÊ±¶ÔÏóÖ»ĞèÒªÇÒÖ»ÄÜ³õÊ¼»¯Ò»´Î</para>
-	/// <para>Í¨¹ıAdd·½·¨Ìí¼ÓÒ»´ÎÈÎÎñ, Add¿ÉÒÔÁ´Ê½µ÷ÓÃ</para>
-	/// <para>ÔÙÍ¨¹ıRun·½·¨ÔËĞĞËùÓĞÈÎÎñ</para>
-	/// <para>µÚÒ»¸ö²ÎÊıÊÇÒ»¸öº¯ÊıÖ¸Õë, Äã¿ÉÒÔºÜ·½±ãµØÊ¹ÓÃlambda±í´ïÊ½</para>
-	/// <para>Õâ¸ö³ÌĞò½«¶ÔÉú³É10000ÒÔÄÚÕûÊı¶ÔÓ¦×Ö·û´®µÄÈÎÎñ×÷benchmark</para>
+	/// <para>Benchmarkä¸´æ—¶å¯¹è±¡åªéœ€è¦ä¸”åªèƒ½åˆå§‹åŒ–ä¸€æ¬¡</para>
+	/// <para>é€šè¿‡Addæ–¹æ³•æ·»åŠ ä¸€æ¬¡ä»»åŠ¡, Addå¯ä»¥é“¾å¼è°ƒç”¨</para>
+	/// <para>å†é€šè¿‡Runæ–¹æ³•è¿è¡Œæ‰€æœ‰ä»»åŠ¡</para>
+	/// <para>ç¬¬ä¸€ä¸ªå‚æ•°æ˜¯ä¸€ä¸ªå‡½æ•°æŒ‡é’ˆ, ä½ å¯ä»¥å¾ˆæ–¹ä¾¿åœ°ä½¿ç”¨lambdaè¡¨è¾¾å¼</para>
+	/// <para>è¿™ä¸ªç¨‹åºå°†å¯¹ç”Ÿæˆ10000ä»¥å†…æ•´æ•°å¯¹åº”å­—ç¬¦ä¸²çš„ä»»åŠ¡ä½œbenchmark</para>
 	/// </example>
 	/// <example>
-	/// <para>[Àı2:´ø²ÎÊıµÄBenchmark]</para>
+	/// <para>[ä¾‹2:å¸¦å‚æ•°çš„Benchmark]</para>
 	/// <code>
 	/// int main() {
 	///		Benchmark().Add<int>([ ] (auto arg) noexcept {
@@ -61,16 +61,16 @@ namespace MasterQian::Tool {
 	///		}, { 100, 1000, 10000, 100000 }, 10, L"test").Run();
 	/// }
 	/// </code>
-	/// <para>Ğ¯´ø²ÎÊıÊ±ÔÚº¯ÊıÖ¸Õëºó²¹³äÁË²ÎÊıÁĞ±í, AddµÄºóÁ½¸ö²ÎÊıÊÇµü´ú´ÎÊıÓëÈÎÎñÃû³Æ, ¾ù¿ÉÊ¡ÂÔ, Ä¬ÈÏÖµ·Ö±ğÎª1ºÍ¿Õ,</para>
-	/// <para>²ÎÊıÖ§³ÖÈÎºÎÀàĞÍ(°üÀ¨Àà), ÄãĞèÒªÔÚAddÄ£°å´¦ÏÔÊ½±í´ï, ´ËÀıÖĞÊÇint</para>
-	/// <para>²ÎÊıÁĞ±íÄã¿ÉÒÔ·½±ãµØÊ¹ÓÃ³õÊ¼»¯ÁĞ±í{ }¹¹Ôì</para>
-	/// <para>ÔÚº¯Êı»Øµ÷ÖĞ, ÒÔauto argĞÎÊ½·½±ãµØ»ñµÃ²ÎÊıµÄÖ¸Õë, ±¾ÀıÖĞautoÖ¸´úint*</para>
-	/// <para>Õâ¸ö³ÌĞò½«·Ö±ğ¶ÔÉú³É100, 1000, 10000, 100000ÒÔÄÚÕûÊı¶ÔÓ¦×Ö·û´®µÄËÄ´ÎÈÎÎñ×÷benchmark</para>
+	/// <para>æºå¸¦å‚æ•°æ—¶åœ¨å‡½æ•°æŒ‡é’ˆåè¡¥å……äº†å‚æ•°åˆ—è¡¨, Addçš„åä¸¤ä¸ªå‚æ•°æ˜¯è¿­ä»£æ¬¡æ•°ä¸ä»»åŠ¡åç§°, å‡å¯çœç•¥, é»˜è®¤å€¼åˆ†åˆ«ä¸º1å’Œç©º,</para>
+	/// <para>å‚æ•°æ”¯æŒä»»ä½•ç±»å‹(åŒ…æ‹¬ç±»), ä½ éœ€è¦åœ¨Addæ¨¡æ¿å¤„æ˜¾å¼è¡¨è¾¾, æ­¤ä¾‹ä¸­æ˜¯int</para>
+	/// <para>å‚æ•°åˆ—è¡¨ä½ å¯ä»¥æ–¹ä¾¿åœ°ä½¿ç”¨åˆå§‹åŒ–åˆ—è¡¨{ }æ„é€ </para>
+	/// <para>åœ¨å‡½æ•°å›è°ƒä¸­, ä»¥auto argå½¢å¼æ–¹ä¾¿åœ°è·å¾—å‚æ•°çš„æŒ‡é’ˆ, æœ¬ä¾‹ä¸­autoæŒ‡ä»£int*</para>
+	/// <para>è¿™ä¸ªç¨‹åºå°†åˆ†åˆ«å¯¹ç”Ÿæˆ100, 1000, 10000, 100000ä»¥å†…æ•´æ•°å¯¹åº”å­—ç¬¦ä¸²çš„å››æ¬¡ä»»åŠ¡ä½œbenchmark</para>
 	/// </example>
 	
 
 	/// <summary>
-	/// benchmark¶ÔÏó
+	/// benchmarkå¯¹è±¡
 	/// </summary>
 	export struct Benchmark {
 		template<typename Arg>
@@ -92,13 +92,13 @@ namespace MasterQian::Tool {
 		}
 
 		/// <summary>
-		/// Ìí¼ÓÓĞ²ÎÈÎÎñ
+		/// æ·»åŠ æœ‰å‚ä»»åŠ¡
 		/// </summary>
-		/// <param name="func">²âÊÔº¯Êı</param>
-		/// <param name="args">²ÎÊı¼¯ºÏ</param>
-		/// <param name="count">µü´ú´ÎÊı£¬Ä¬ÈÏÎª1</param>
-		/// <param name="name">ÈÎÎñÃû£¬Ä¬ÈÏÎª¿Õ</param>
-		/// <typeparam name="Arg">²ÎÊıÀàĞÍ</typeparam>
+		/// <param name="func">æµ‹è¯•å‡½æ•°</param>
+		/// <param name="args">å‚æ•°é›†åˆ</param>
+		/// <param name="count">è¿­ä»£æ¬¡æ•°ï¼Œé»˜è®¤ä¸º1</param>
+		/// <param name="name">ä»»åŠ¡åï¼Œé»˜è®¤ä¸ºç©º</param>
+		/// <typeparam name="Arg">å‚æ•°ç±»å‹</typeparam>
 		template<typename Arg>
 		Benchmark& Add(Function<Arg> func, mqlist<Arg> const& args, mqui64 count = 1ULL, std::wstring_view name = L"") noexcept {
 			details::MasterQian_Tool_Benchmark_BenchmarkAdd(func, args.begin(), args.size(), sizeof(Arg), count, name.data());
@@ -106,17 +106,17 @@ namespace MasterQian::Tool {
 		}
 
 		/// <summary>
-		/// Ìí¼ÓÎŞ²ÎÈÎÎñ
+		/// æ·»åŠ æ— å‚ä»»åŠ¡
 		/// </summary>
-		/// <param name="func">²âÊÔº¯Êı</param>
-		/// <param name="count">µü´ú´ÎÊı£¬Ä¬ÈÏÎª1</param>
-		/// <param name="name">ÈÎÎñÃû£¬Ä¬ÈÏÎª¿Õ</param>
+		/// <param name="func">æµ‹è¯•å‡½æ•°</param>
+		/// <param name="count">è¿­ä»£æ¬¡æ•°ï¼Œé»˜è®¤ä¸º1</param>
+		/// <param name="name">ä»»åŠ¡åï¼Œé»˜è®¤ä¸ºç©º</param>
 		Benchmark& Add(Function<nullarg> func, mqui64 count = 1ULL, std::wstring_view name = L"") noexcept {
 			return Add(func, { { } }, count, name);
 		}
 
 		/// <summary>
-		/// ÔËĞĞ
+		/// è¿è¡Œ
 		/// </summary>
 		void Run() noexcept {
 			details::MasterQian_Tool_Benchmark_BenchmarkRun();

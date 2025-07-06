@@ -9,27 +9,27 @@ module;
 #define MasterQianLibString "MasterQian.Storage.Zip.dll"
 #endif
 #define MasterQianModuleVersion 20240131ULL
-#pragma message("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª Please copy [" MasterQianLibString "] into your program folder ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª")
+#pragma message("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€” Please copy [" MasterQianLibString "] into your program folder â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”")
 
 export module MasterQian.Storage.Zip;
 export import MasterQian.Bin;
 
 namespace MasterQian::Storage {
 	/// <summary>
-	/// Ñ¹Ëõ»Øµ÷
+	/// å‹ç¼©å›è°ƒ
 	/// </summary>
-	/// <param name="arg">¿ÉĞ¯´ø²ÎÊı</param>
-	/// <param name="result">½âÑ¹ÖĞÍ¾ÊÇ·ñÕı³£</param>
-	/// <param name="new_name">Ñ¹Ëõ°üÖĞÎÄ¼şÃû</param>
-	/// <param name="old_name">Ô´ÎÄ¼şÃû</param>
+	/// <param name="arg">å¯æºå¸¦å‚æ•°</param>
+	/// <param name="result">è§£å‹ä¸­é€”æ˜¯å¦æ­£å¸¸</param>
+	/// <param name="new_name">å‹ç¼©åŒ…ä¸­æ–‡ä»¶å</param>
+	/// <param name="old_name">æºæ–‡ä»¶å</param>
 	export using ZipCallBack = void(__stdcall*)(mqmem, bool, mqcstr, mqcstr);
 
 	/// <summary>
-	/// ½âÑ¹»Øµ÷
+	/// è§£å‹å›è°ƒ
 	/// </summary>
-	/// <param name="arg">¿ÉĞ¯´ø²ÎÊı</param>
-	/// <param name="new_name">Ñ¹Ëõ°üÖĞÎÄ¼şÃû</param>
-	/// <param name="old_name">Ô´ÎÄ¼şÃû</param>
+	/// <param name="arg">å¯æºå¸¦å‚æ•°</param>
+	/// <param name="new_name">å‹ç¼©åŒ…ä¸­æ–‡ä»¶å</param>
+	/// <param name="old_name">æºæ–‡ä»¶å</param>
 	export using UnZipCallBack = void(__stdcall*)(mqmem, mqcstr, mqcstr);
 
 	namespace details {
@@ -74,7 +74,7 @@ namespace MasterQian::Storage {
 		META_MODULE_END
 	}
 
-	// Ñ¹Ëõ·ÖÖ§
+	// å‹ç¼©åˆ†æ”¯
 	export struct ZipBranch {
 	protected:
 		mqhandle handle{ };
@@ -104,11 +104,11 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// Ìí¼ÓÎÄ¼ş
+		/// æ·»åŠ æ–‡ä»¶
 		/// </summary>
-		/// <param name="name">Ãû³Æ</param>
-		/// <param name="fn">ÎÄ¼şÂ·¾¶</param>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <param name="name">åç§°</param>
+		/// <param name="fn">æ–‡ä»¶è·¯å¾„</param>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		bool AddFile(std::wstring_view name, std::wstring_view fn) const noexcept {
 			if (handle) {
 				if (details::MasterQian_Storage_Zip_ZipIsFile(fn.data())) {
@@ -121,11 +121,11 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// Ìí¼Ó×Ö½Ú¼¯
+		/// æ·»åŠ å­—èŠ‚é›†
 		/// </summary>
-		/// <param name="name">Ãû³Æ</param>
-		/// <param name="bv">×Ö½Ú¼¯</param>
-		/// <returns>ÊÇ·ñ³É¹¦</returns>
+		/// <param name="name">åç§°</param>
+		/// <param name="bv">å­—èŠ‚é›†</param>
+		/// <returns>æ˜¯å¦æˆåŠŸ</returns>
 		bool AddBin(std::wstring_view name, BinView bv) const noexcept {
 			if (handle) {
 				std::wstring fullname{ branch };
@@ -136,12 +136,12 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// Ìí¼ÓÎÄ¼ş¼Ğ
+		/// æ·»åŠ æ–‡ä»¶å¤¹
 		/// </summary>
-		/// <param name="fn">Ãû³Æ</param>
-		/// <param name="createSelf">ÈôÎªtrueÔò½«ÎÄ¼ş¼Ğ×ÔÉí×÷Îª¸ùÑ¹Ëõ½øÈ¥£¬·ñÔòÖ»½«ÄÚ²¿ÎÄ¼şÑ¹Ëõ½øÈ¥</param>
-		/// <param name="callback">Ñ¹Ëõ»Øµ÷</param>
-		/// <param name="arg">¿ÉĞ¯´ø²ÎÊı</param>
+		/// <param name="fn">åç§°</param>
+		/// <param name="createSelf">è‹¥ä¸ºtrueåˆ™å°†æ–‡ä»¶å¤¹è‡ªèº«ä½œä¸ºæ ¹å‹ç¼©è¿›å»ï¼Œå¦åˆ™åªå°†å†…éƒ¨æ–‡ä»¶å‹ç¼©è¿›å»</param>
+		/// <param name="callback">å‹ç¼©å›è°ƒ</param>
+		/// <param name="arg">å¯æºå¸¦å‚æ•°</param>
 		/// <returns></returns>
 		bool AddFolder(std::wstring_view fn, bool createSelf = true, ZipCallBack callback = nullptr, mqmem arg = nullptr) const noexcept {
 			if (details::MasterQian_Storage_Zip_ZipIsFolder(fn.data())) {
@@ -167,22 +167,22 @@ namespace MasterQian::Storage {
 		}
 	};
 
-	// ZipÑ¹Ëõ
+	// Zipå‹ç¼©
 	export struct Zip : public ZipBranch {
 	public:
-		// ´ò¿ªÄ£Ê½
+		// æ‰“å¼€æ¨¡å¼
 		enum class OpenMode : mqenum {
-			CREATE, // ²»´æÔÚ´´½¨, ´æÔÚÊ§°Ü
-			CREATE_OPEN, // ²»´æÔÚ´´½¨, ´æÔÚ´ò¿ª
-			CREATE_OVERRIDE, // ²»´æÔÚ´´½¨, ´æÔÚ¸²¸Ç
-			OPEN_EXIST, // ²»´æÔÚÊ§°Ü, ´æÔÚ´ò¿ª
+			CREATE, // ä¸å­˜åœ¨åˆ›å»º, å­˜åœ¨å¤±è´¥
+			CREATE_OPEN, // ä¸å­˜åœ¨åˆ›å»º, å­˜åœ¨æ‰“å¼€
+			CREATE_OVERRIDE, // ä¸å­˜åœ¨åˆ›å»º, å­˜åœ¨è¦†ç›–
+			OPEN_EXIST, // ä¸å­˜åœ¨å¤±è´¥, å­˜åœ¨æ‰“å¼€
 		};
 
 		/// <summary>
-		/// ´ò¿ª
+		/// æ‰“å¼€
 		/// </summary>
-		/// <param name="fn">ÎÄ¼şÃû</param>
-		/// <param name="mode">´ò¿ªÄ£Ê½</param>
+		/// <param name="fn">æ–‡ä»¶å</param>
+		/// <param name="mode">æ‰“å¼€æ¨¡å¼</param>
 		Zip(std::wstring_view fn, OpenMode mode) noexcept :
 			ZipBranch(details::MasterQian_Storage_Zip_ZipStart(fn.data(), static_cast<mqui32>(mode)), L"") {}
 
@@ -207,10 +207,10 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// ÖØ¶¨Ïò
+		/// é‡å®šå‘
 		/// </summary>
-		/// <param name="fn">ÎÄ¼şÃû</param>
-		/// <param name="mode">´ò¿ªÄ£Ê½</param>
+		/// <param name="fn">æ–‡ä»¶å</param>
+		/// <param name="mode">æ‰“å¼€æ¨¡å¼</param>
 		void Reset(std::wstring_view fn, OpenMode mode) noexcept {
 			if (handle) {
 				Close();
@@ -219,7 +219,7 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// ¹Ø±Õ
+		/// å…³é—­
 		/// </summary>
 		void Close() noexcept {
 			if (handle) {
@@ -233,11 +233,11 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// Ñ¹ËõÊı¾İ
+		/// å‹ç¼©æ•°æ®
 		/// </summary>
-		/// <param name="src">Ñ¹ËõÇ°Êı¾İ</param>
-		/// <param name="speedFirstly">ÈôÎªtrueËÙ¶ÈÓÅÏÈ£¬·ñÔòÑ¹ËõÂÊÓÅÏÈ</param>
-		/// <returns>Ñ¹ËõºóÊı¾İ</returns>
+		/// <param name="src">å‹ç¼©å‰æ•°æ®</param>
+		/// <param name="speedFirstly">è‹¥ä¸ºtrueé€Ÿåº¦ä¼˜å…ˆï¼Œå¦åˆ™å‹ç¼©ç‡ä¼˜å…ˆ</param>
+		/// <returns>å‹ç¼©åæ•°æ®</returns>
 		[[nodiscard]] static Bin Compress(BinView src, bool speedFirstly = true) noexcept {
 			auto des_size{ details::MasterQian_Storage_Zip_CompressBound(src.size32()) };
 			Bin des(des_size);
@@ -247,15 +247,15 @@ namespace MasterQian::Storage {
 		}
 	};
 
-	// Zip½âÑ¹
+	// Zipè§£å‹
 	export struct UnZip {
 	private:
 		mqhandle handle{ };
 	public:
 		/// <summary>
-		/// ´ò¿ª
+		/// æ‰“å¼€
 		/// </summary>
-		/// <param name="fn">ÎÄ¼şÃû</param>
+		/// <param name="fn">æ–‡ä»¶å</param>
 		UnZip(std::wstring_view fn) noexcept {
 			handle = details::MasterQian_Storage_Zip_UnZipStart(fn.data());
 		}
@@ -279,9 +279,9 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// ÖØ¶¨Ïò
+		/// é‡å®šå‘
 		/// </summary>
-		/// <param name="fn">ÎÄ¼şÃû</param>
+		/// <param name="fn">æ–‡ä»¶å</param>
 		void Reset(std::wstring_view fn) noexcept {
 			if (handle) {
 				Close();
@@ -290,7 +290,7 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// ¹Ø±Õ
+		/// å…³é—­
 		/// </summary>
 		/// <returns></returns>
 		void Close() noexcept {
@@ -305,11 +305,11 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// ½âÑ¹
+		/// è§£å‹
 		/// </summary>
-		/// <param name="path">Ä¿±êÂ·¾¶</param>
-		/// <param name="callback">»Øµ÷</param>
-		/// <param name="arg">¿ÉĞ¯´ø²ÎÊı</param>
+		/// <param name="path">ç›®æ ‡è·¯å¾„</param>
+		/// <param name="callback">å›è°ƒ</param>
+		/// <param name="arg">å¯æºå¸¦å‚æ•°</param>
 		bool Save(std::wstring_view path, UnZipCallBack callback = nullptr, mqmem arg = nullptr) const noexcept {
 			if (callback) {
 				return details::MasterQian_Storage_Zip_UnZipSaveWithCallback(handle, path.data(), callback, arg);
@@ -318,10 +318,10 @@ namespace MasterQian::Storage {
 		}
 
 		/// <summary>
-		/// ½âÑ¹Êı¾İ
+		/// è§£å‹æ•°æ®
 		/// </summary>
-		/// <param name="src">Ñ¹ËõºóÊı¾İ</param>
-		/// <returns>Ñ¹ËõÇ°Êı¾İ</returns>
+		/// <param name="src">å‹ç¼©åæ•°æ®</param>
+		/// <returns>å‹ç¼©å‰æ•°æ®</returns>
 		[[nodiscard]] static Bin Uncompress(BinView src) noexcept {
 			Bin des;
 			auto des_size{ details::MasterQian_Storage_Zip_UncompressBound(src.data(), src.size32()) };

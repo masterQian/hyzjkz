@@ -1,10 +1,10 @@
 #pragma once
 #include <winrt/windows.foundation.h>
 
-/*  --------------------  ×ÓÒ³Ãæ  --------------------*/
+/*  --------------------  å­é¡µé¢  --------------------*/
 
 namespace winrt::MQControls {
-    // ×ÓÒ³Ãæ
+    // å­é¡µé¢
     template<std::derived_from<winrt::Windows::Foundation::IInspectable> T, typename U>
     struct SubPage : T {
         SubPage() = default;

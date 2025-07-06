@@ -5,33 +5,33 @@
 #include "RecordPage.g.cpp"
 #endif
 
-struct RecordYearStatistics { // ÄêÍ³¼Æ
-	mqui32 photo_year_num; // ÕÕÏàÄêÊıÁ¿
-	mqui32 photo_year_value; // ÕÕÏàÄê×ÜÖµ
-	mqui32 photo_month_nums[12]; // ÕÕÏàÔÂÊıÁ¿
-	mqui32 photo_month_values[12]; // ÕÕÏàÔÂ×ÜÖµ
-	mqui32 copy_year_value; // ¸´Ó¡Äê×ÜÖµ
-	mqui32 copy_month_values[12]; // ¸´Ó¡ÔÂ×ÜÖµ
-	mqui32 max_month_value; // ÔÂ×î´ó×ÜÖµ
-	mqui32 avg_month_value; // ÔÂ¾ùÖµ
+struct RecordYearStatistics { // å¹´ç»Ÿè®¡
+	mqui32 photo_year_num; // ç…§ç›¸å¹´æ•°é‡
+	mqui32 photo_year_value; // ç…§ç›¸å¹´æ€»å€¼
+	mqui32 photo_month_nums[12]; // ç…§ç›¸æœˆæ•°é‡
+	mqui32 photo_month_values[12]; // ç…§ç›¸æœˆæ€»å€¼
+	mqui32 copy_year_value; // å¤å°å¹´æ€»å€¼
+	mqui32 copy_month_values[12]; // å¤å°æœˆæ€»å€¼
+	mqui32 max_month_value; // æœˆæœ€å¤§æ€»å€¼
+	mqui32 avg_month_value; // æœˆå‡å€¼
 };
 
-struct RecordMonthStatistics { // ÔÂÍ³¼Æ
-	mqui32 photo_month_num; // ÕÕÏàÔÂÊıÁ¿
-	mqui32 photo_month_value; // ÕÕÏàÔÂ×ÜÖµ
-	mqui32 photo_day_nums[31]; // ÕÕÏàÈÕÊıÁ¿
-	mqui32 photo_day_values[31]; // ÕÕÏàÈÕ×ÜÖµ
-	mqui32 copy_month_value; // ¸´Ó¡ÔÂ×ÜÖµ
-	mqui32 copy_day_values[31]; // ¸´Ó¡ÈÕ×ÜÖµ
-	mqui32 max_day_value; // ÈÕ×î´óÖµ
-	mqui32 avg_day_value; // ÈÕ¾ùÖµ
+struct RecordMonthStatistics { // æœˆç»Ÿè®¡
+	mqui32 photo_month_num; // ç…§ç›¸æœˆæ•°é‡
+	mqui32 photo_month_value; // ç…§ç›¸æœˆæ€»å€¼
+	mqui32 photo_day_nums[31]; // ç…§ç›¸æ—¥æ•°é‡
+	mqui32 photo_day_values[31]; // ç…§ç›¸æ—¥æ€»å€¼
+	mqui32 copy_month_value; // å¤å°æœˆæ€»å€¼
+	mqui32 copy_day_values[31]; // å¤å°æ—¥æ€»å€¼
+	mqui32 max_day_value; // æ—¥æœ€å¤§å€¼
+	mqui32 avg_day_value; // æ—¥å‡å€¼
 };
 
 namespace winrt::hyzjkz::implementation {
 	static void UpdateDay(RecordPage* page) noexcept;
 	static void UpdateMonth(RecordPage* page) noexcept;
 
-	// ¸üĞÂÄê±¨±í
+	// æ›´æ–°å¹´æŠ¥è¡¨
 	static void UpdateYear(RecordPage* page) noexcept {
 		auto drop_button{ page->SelectYear() };
 		auto items{ page->SelectYearFlyout().Items() };
@@ -63,11 +63,11 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ¸üĞÂÔÂ±¨±í
+	// æ›´æ–°æœˆæŠ¥è¡¨
 	static void UpdateMonth(RecordPage* page) noexcept {
 		auto bin{ Global.c_dataPath.Concat(page->curYear + L".bin").Read() };
 		if (RecordData::CheckSize(bin)) {
-			// ¸üĞÂÊı¾İ
+			// æ›´æ–°æ•°æ®
 			RecordYearStatistics stat{ };
 			auto& data{ RecordData::From(bin) };
 			for (mqui32 month{ }; month < 12U; ++month) {
@@ -85,7 +85,7 @@ namespace winrt::hyzjkz::implementation {
 			}
 			stat.avg_month_value = (stat.photo_year_value + stat.copy_year_value) / 12U;
 
-			// ¸üĞÂUI
+			// æ›´æ–°UI
 			auto grid_year{ page->Grid_Year() };
 			auto grid_month{ page->Grid_Month() };
 			auto items{ grid_year.Children() };
@@ -95,11 +95,11 @@ namespace winrt::hyzjkz::implementation {
 				auto text2{ grid.FindName(L"TB2").as<Controls::TextBlock>() };
 				auto text3{ grid.FindName(L"TB3").as<Controls::TextBlock>() };
 				auto text4{ grid.FindName(L"TB4").as<Controls::TextBlock>() };
-				text1.Text(winrt::format(L"{}ÔÂ", i + 1U));
-				text2.Text(winrt::format(L"ÕÕÏà {} ÕÅ  {} Ôª", stat.photo_month_nums[i], stat.photo_month_values[i]));
-				text3.Text(winrt::format(L"¸´Ó¡    {} Ôª", stat.copy_month_values[i]));
+				text1.Text(winrt::format(L"{}æœˆ", i + 1U));
+				text2.Text(winrt::format(L"ç…§ç›¸ {} å¼   {} å…ƒ", stat.photo_month_nums[i], stat.photo_month_values[i]));
+				text3.Text(winrt::format(L"å¤å°    {} å…ƒ", stat.copy_month_values[i]));
 				auto total_month_value{ stat.photo_month_values[i] + stat.copy_month_values[i] };
-				text4.Text(winrt::format(L"×Ü¼Æ    {} Ôª", total_month_value));
+				text4.Text(winrt::format(L"æ€»è®¡    {} å…ƒ", total_month_value));
 				if (total_month_value == stat.max_month_value) {
 					grid.Background(page->MaxBrush());
 				}
@@ -110,7 +110,7 @@ namespace winrt::hyzjkz::implementation {
 					grid.Background(page->NormalBrush());
 				}
 			}
-			page->TotalText().Text(winrt::format(L"{}Äê    [ÕÕÏà {} ÕÅ  {} Ôª] [¸´Ó¡ {} Ôª] [×Ü¼Æ {} Ôª]",
+			page->TotalText().Text(winrt::format(L"{}å¹´    [ç…§ç›¸ {} å¼   {} å…ƒ] [å¤å° {} å…ƒ] [æ€»è®¡ {} å…ƒ]",
 				page->curYear.data(), stat.photo_year_num, stat.photo_year_value,
 				stat.copy_year_value, stat.photo_year_value + stat.copy_year_value));
 
@@ -119,11 +119,11 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// ¸üĞÂÈÕ±¨±í
+	// æ›´æ–°æ—¥æŠ¥è¡¨
 	static void UpdateDay(RecordPage* page) noexcept {
 		auto bin{ Global.c_dataPath.Concat(page->curYear + L".bin").Read() };
 		if (RecordData::CheckSize(bin)) {
-			// ¸üĞÂÊı¾İ
+			// æ›´æ–°æ•°æ®
 			RecordMonthStatistics stat{ };
 			auto& data{ RecordData::From(bin) };
 			auto& photo_data{ data.photoData[page->curMonth - 1U] };
@@ -141,7 +141,7 @@ namespace winrt::hyzjkz::implementation {
 			}
 			stat.avg_day_value = (stat.photo_month_value + stat.copy_month_value) / 31U;
 
-			// ¸üĞÂUI
+			// æ›´æ–°UI
 			auto grid_year{ page->Grid_Year() }, grid_month{ page->Grid_Month() };
 			auto items{ grid_month.Children() };
 			for (mqui32 i{ }; i < 31U; ++i) {
@@ -150,11 +150,11 @@ namespace winrt::hyzjkz::implementation {
 				auto text2{ grid.FindName(L"TB2").as<Controls::TextBlock>() };
 				auto text3{ grid.FindName(L"TB3").as<Controls::TextBlock>() };
 				auto text4{ grid.FindName(L"TB4").as<Controls::TextBlock>() };
-				text1.Text(winrt::format(L"{}ÈÕ", i + 1U));
-				text2.Text(winrt::format(L"ÕÕÏà {} ÕÅ  {} Ôª", stat.photo_day_nums[i], stat.photo_day_values[i]));
-				text3.Text(winrt::format(L"¸´Ó¡    {} Ôª", stat.copy_day_values[i]));
+				text1.Text(winrt::format(L"{}æ—¥", i + 1U));
+				text2.Text(winrt::format(L"ç…§ç›¸ {} å¼   {} å…ƒ", stat.photo_day_nums[i], stat.photo_day_values[i]));
+				text3.Text(winrt::format(L"å¤å°    {} å…ƒ", stat.copy_day_values[i]));
 				auto total_day_value{ stat.photo_day_values[i] + stat.copy_day_values[i] };
-				text4.Text(winrt::format(L"×Ü¼Æ    {} Ôª", total_day_value));
+				text4.Text(winrt::format(L"æ€»è®¡    {} å…ƒ", total_day_value));
 				if (total_day_value == stat.max_day_value) {
 					grid.Background(page->MaxBrush());
 				}
@@ -165,7 +165,7 @@ namespace winrt::hyzjkz::implementation {
 					grid.Background(page->NormalBrush());
 				}
 			}
-			page->TotalText().Text(winrt::format(L"{}Äê{}ÔÂ    [ÕÕÏà {} ÕÅ  {} Ôª] [¸´Ó¡ {} Ôª] [×Ü¼Æ {} Ôª]",
+			page->TotalText().Text(winrt::format(L"{}å¹´{}æœˆ    [ç…§ç›¸ {} å¼   {} å…ƒ] [å¤å° {} å…ƒ] [æ€»è®¡ {} å…ƒ]",
 				page->curYear.data(), page->curMonth, stat.photo_month_num, stat.photo_month_value,
 				stat.copy_month_value, stat.photo_month_value + stat.copy_month_value));
 
@@ -210,20 +210,20 @@ namespace winrt::hyzjkz::implementation {
 			});
 	}
 
-	// µã»÷Äê
+	// ç‚¹å‡»å¹´
 	F_EVENT void RecordPage::Year_Clicked(IInspectable const& sender, RoutedEventArgs const&) {
 		curYear = sender.as<Controls::MenuFlyoutItem>().Text();
 		SelectYear().Content(box_value(curYear));
 		UpdateMonth(this);
 	}
 
-	// µã»÷ÔÂ
+	// ç‚¹å‡»æœˆ
 	F_EVENT void RecordPage::Month_Clicked(IInspectable const& sender, RoutedEventArgs const&) {
 		curMonth = sender.as<FrameworkElement>().Tag().as<mqui32>();
 		UpdateDay(this);
 	}
 
-	// µã»÷ÈÕ
+	// ç‚¹å‡»æ—¥
 	F_EVENT void RecordPage::Day_Clicked(IInspectable const&, RoutedEventArgs const&) {
 		UpdateMonth(this);
 	}

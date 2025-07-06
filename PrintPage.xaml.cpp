@@ -7,33 +7,33 @@
 #include <queue>
 
 namespace winrt::hyzjkz::implementation {
-	// ËùÓĞÍ¬¿íÍ¬¸ßµÄÏî¹éÎªÒ»Àà, ÓÉÆäÎ»ÖÃÊı×é¼°¶ÔÓ¦ËõÂÔÍ¼¹¹³É
+	// æ‰€æœ‰åŒå®½åŒé«˜çš„é¡¹å½’ä¸ºä¸€ç±», ç”±å…¶ä½ç½®æ•°ç»„åŠå¯¹åº”ç¼©ç•¥å›¾æ„æˆ
 	struct ImageItem {
 		std::vector<mqpoint> points;
 		Media::GDI::Image img;
 
 		static Media::GDI::Image MakeImage(bool isResample, Media::GDI::Image const& src,
 			mqsize actual, bool isRotate, bool isAutoCut) noexcept {
-			mqrect crop_rect{ }; // ²Ã¼ô²ÎÊı
-			if (isRotate) { // ÈôÒªĞı×ªÏÈ½«¿í¸ß»¥»»
+			mqrect crop_rect{ }; // è£å‰ªå‚æ•°
+			if (isRotate) { // è‹¥è¦æ—‹è½¬å…ˆå°†å®½é«˜äº’æ¢
 				std::swap(actual.width, actual.height);
 			}
 			if (isAutoCut) {
-				auto src_width{ src.Width() }; // Ô´¿í¶È
-				auto src_height{ src.Height() }; // Ô´¸ß¶È
-				auto src_scale{ static_cast<mqf64>(src_height) / src_width }; // Ô´¸ß¿í±È
-				auto actual_scale{ static_cast<mqf64>(actual.height) / actual.width }; // Êµ¼Ê¸ß¿í±È
-				auto eps{ Global.cfg.Get<GlobalConfig::AUTOCUT_EPS>() }; // ÈİÈÌ·¶Î§
-				if (src_scale + eps < actual_scale) { // ËµÃ÷Ô´Ì«¿í, Ñ¡Ôñ×óÓÒ²Ã¼ô
-					auto correct_width{ static_cast<mqui32>(src_height / actual_scale) }; // ¼ÆËãĞŞÕı¿í¶È
-					crop_rect = { (src_width - correct_width) / 2U, 0U, correct_width, src_height }; // Á½²àËéÆ¬³¤¶È¾ù·Ö
+				auto src_width{ src.Width() }; // æºå®½åº¦
+				auto src_height{ src.Height() }; // æºé«˜åº¦
+				auto src_scale{ static_cast<mqf64>(src_height) / src_width }; // æºé«˜å®½æ¯”
+				auto actual_scale{ static_cast<mqf64>(actual.height) / actual.width }; // å®é™…é«˜å®½æ¯”
+				auto eps{ Global.cfg.Get<GlobalConfig::AUTOCUT_EPS>() }; // å®¹å¿èŒƒå›´
+				if (src_scale + eps < actual_scale) { // è¯´æ˜æºå¤ªå®½, é€‰æ‹©å·¦å³è£å‰ª
+					auto correct_width{ static_cast<mqui32>(src_height / actual_scale) }; // è®¡ç®—ä¿®æ­£å®½åº¦
+					crop_rect = { (src_width - correct_width) / 2U, 0U, correct_width, src_height }; // ä¸¤ä¾§ç¢ç‰‡é•¿åº¦å‡åˆ†
 				}
-				else if (src_scale - eps > actual_scale) { // ËµÃ÷Ô´Ì«¸ß, Ñ¡ÔñÉÏÏÂ²Ã¼ô
-					auto correct_height{ static_cast<mqui32>(src_width * actual_scale) }; // ¼ÆËãĞŞÕı¸ß¶È
-					// Ò»°ãÉÏÃæ¿ÕÏ¶Ğ¡ÏÂÃæ´ó, È¡ÉÏÃæÈı·ÖÖ®Ò»µÄËéÆ¬³¤¶È
+				else if (src_scale - eps > actual_scale) { // è¯´æ˜æºå¤ªé«˜, é€‰æ‹©ä¸Šä¸‹è£å‰ª
+					auto correct_height{ static_cast<mqui32>(src_width * actual_scale) }; // è®¡ç®—ä¿®æ­£é«˜åº¦
+					// ä¸€èˆ¬ä¸Šé¢ç©ºéš™å°ä¸‹é¢å¤§, å–ä¸Šé¢ä¸‰åˆ†ä¹‹ä¸€çš„ç¢ç‰‡é•¿åº¦
 					crop_rect = { 0, (src_height - correct_height) / 3U, src_width, correct_height };
 				}
-				else { // ÎŞĞè²Ã¼ô
+				else { // æ— éœ€è£å‰ª
 					isAutoCut = false;
 				}
 			}
@@ -46,7 +46,7 @@ namespace winrt::hyzjkz::implementation {
 				(isAutoCut ?
 					src.Crop(crop_rect).Thumbnail({ actual.width, actual.height })
 					: src.Thumbnail({ actual.width, actual.height })) };
-			if (isRotate) { // ĞèÒªĞı×ª
+			if (isRotate) { // éœ€è¦æ—‹è½¬
 				image.RotateLeft();
 			}
 			return image;
@@ -61,10 +61,10 @@ namespace winrt::hyzjkz::implementation {
 		}
 	};
 
-	// ³ß´çÓ³Éä
+	// å°ºå¯¸æ˜ å°„
 	using ImageItems = std::unordered_map<mqsize, ImageItem, freestanding::isomerism_hash>;
 
-	// Ô¤ÀÀÄ£°å
+	// é¢„è§ˆæ¨¡æ¿
 	static void PreviewTemplate(PrintPage* page, std::wstring_view template_name) noexcept {
 		auto& pt{ Global.templateList[template_name] };
 		auto border{ page->Border_Main() };
@@ -72,13 +72,13 @@ namespace winrt::hyzjkz::implementation {
 		auto canvas_height{ border.ActualHeight() };
 		auto canvas_scale{ Global.c_printCanvasSize.height / canvas_height };
 
-		// ÕÕÆ¬
+		// ç…§ç‰‡
 		Media::GDI::Image photo{ page->photo_path };
-		// »­²¼
+		// ç”»å¸ƒ
 		Media::GDI::Image canvas({ static_cast<mqui32>(canvas_width), static_cast<mqui32>(canvas_height) }, Media::Colors::Pink);
 		canvas.DPI(photo.DPI());
 
-		// Í¬¿í¸ßÏî·ÖÀà
+		// åŒå®½é«˜é¡¹åˆ†ç±»
 		ImageItems photoItems;
 		for (mqui32 i{ }; i < pt.count; ++i) {
 			auto actual{ pt.data[i] / canvas_scale };
@@ -90,7 +90,7 @@ namespace winrt::hyzjkz::implementation {
 			iter->second.Add({ actual.left, actual.top });
 		}
 
-		// »­ÕÕÆ¬
+		// ç”»ç…§ç‰‡
 		for (auto& [size, pre] : photoItems) {
 			for (auto& [left, top] : pre.points) {
 				canvas.DrawImage(pre.img, { left, top }, { }, Media::GDI::FAST_MODE);
@@ -99,7 +99,7 @@ namespace winrt::hyzjkz::implementation {
 		page->CanvasImage().Source(util::StreamToBMP(canvas.SaveToUnsafeStream(Media::GDI::ImageFormat::BMP)));
 	}
 
-	// Ë¢ĞÂÄ£°åÁĞ±í
+	// åˆ·æ–°æ¨¡æ¿åˆ—è¡¨
 	static void RefreshTemplates(PrintPage* page) noexcept {
 		auto lv_templates{ page->LV_Templates() };
 		auto items{ lv_templates.Items() };
@@ -129,16 +129,16 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// Éú³É±£´æÄ£°å
+	// ç”Ÿæˆä¿å­˜æ¨¡æ¿
 	static Media::GDI::Image MakeSaveImage(PrintTemplate& pt, hstring const& photo_path, mqsize canvas_size) noexcept {
-		// ÕÕÆ¬
+		// ç…§ç‰‡
 		Media::GDI::Image photo{ photo_path };
 		photo.DPI({ 300U, 300U });
-		// »­²¼
+		// ç”»å¸ƒ
 		Media::GDI::Image canvas(canvas_size, Media::Colors::White);
 		canvas.DPI({ 300U, 300U });
 
-		// Í¬¿í¸ßÏî·ÖÀà
+		// åŒå®½é«˜é¡¹åˆ†ç±»
 		ImageItems photoItems;
 		for (mqui32 i{ }; i < pt.count; ++i) {
 			auto& data{ pt.data[i] };
@@ -150,7 +150,7 @@ namespace winrt::hyzjkz::implementation {
 			iter->second.Add({ data.left, data.top });
 		}
 
-		// »­ÕÕÆ¬
+		// ç”»ç…§ç‰‡
 		for (auto& [size, pre] : photoItems) {
 			for (auto& [left, top] : pre.points) {
 				canvas.DrawImage(pre.img, { left, top }, { }, Media::GDI::QUALITY_MODE);
@@ -159,7 +159,7 @@ namespace winrt::hyzjkz::implementation {
 		return canvas;
 	}
 
-	// ´òÓ¡ÕÕÆ¬
+	// æ‰“å°ç…§ç‰‡
 	static IAsyncAction PrintPhoto(PrintPage* page, hstring template_name, hstring photo_path) noexcept {
 		auto printer_name{ Global.cfg.Get<GlobalConfig::PRINTER_NAME>() };
 		bool failed{ true };
@@ -182,12 +182,12 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// µ¼³öÕÕÆ¬
+	// å¯¼å‡ºç…§ç‰‡
 	static IAsyncAction ExportPhoto(hstring template_name, hstring photo_path) noexcept {
 		Windows::Storage::Pickers::FileSavePicker savePicker;
 		savePicker.SuggestedStartLocation(Windows::Storage::Pickers::PickerLocationId::Desktop);
 		auto filters{ savePicker.FileTypeChoices() };
-		filters.Insert(L"JPGÍ¼Æ¬", single_threaded_observable_vector<hstring>({ L".jpg" }));
+		filters.Insert(L"JPGå›¾ç‰‡", single_threaded_observable_vector<hstring>({ L".jpg" }));
 		savePicker.SuggestedFileName(template_name);
 		util::InitializeDialog(savePicker, Global.ui_hwnd);
 
@@ -208,23 +208,23 @@ namespace winrt::hyzjkz::implementation {
 		InitializeComponent();
 
 		Loaded([this] (auto...) {
-			// ÒòÎª»­²¼³ß´çÔÚÇĞ»»µ¼º½Ç°Î´È·¶¨, ±ØĞëµÈµ½Íê³É¼ÓÔØºó²ÅÄÜÔ¤ÀÀÄ£°å
+			// å› ä¸ºç”»å¸ƒå°ºå¯¸åœ¨åˆ‡æ¢å¯¼èˆªå‰æœªç¡®å®š, å¿…é¡»ç­‰åˆ°å®ŒæˆåŠ è½½åæ‰èƒ½é¢„è§ˆæ¨¡æ¿
 			RefreshTemplates(this);
 			});
 	}
 
-	// ÇĞ»»Ò³Ãæ
+	// åˆ‡æ¢é¡µé¢
 	F_EVENT void PrintPage::OnNavigatedTo(Microsoft::UI::Xaml::Navigation::NavigationEventArgs const& args) {
 		photo_path = unbox_value<hstring>(args.Parameter());
 	}
 
-	// »­²¼µ÷Õû´óĞ¡
+	// ç”»å¸ƒè°ƒæ•´å¤§å°
 	F_EVENT void PrintPage::Canvas_SizeChanged(IInspectable const& sender, Microsoft::UI::Xaml::SizeChangedEventArgs const&) {
 		auto canvas{ sender.as<FrameworkElement>() };
 		canvas.Width(canvas.ActualHeight() * util::RDValue<mqf64>(L"CanvasWidth") / util::RDValue<mqf64>(L"CanvasHeight"));
 	}
 
-	// Ä£°åÁĞ±íÑ¡Ôñ
+	// æ¨¡æ¿åˆ—è¡¨é€‰æ‹©
 	F_EVENT void PrintPage::LV_Templates_SelectionChanged(IInspectable const&, Controls::SelectionChangedEventArgs const& args) {
 		auto items{ args.AddedItems() };
 		if (items.Size() == 1U) {
@@ -232,7 +232,7 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
-	// °´Å¥×éµ¥»÷
+	// æŒ‰é’®ç»„å•å‡»
 	F_EVENT IAsyncAction PrintPage::AppBarButton_Click(IInspectable const& sender, RoutedEventArgs const&) {
 		auto label{ sender.as<Controls::AppBarButton>().Label() };
 		auto template_name{ LV_Templates().SelectedItem().as<hstring>() };

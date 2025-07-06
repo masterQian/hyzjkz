@@ -9,7 +9,7 @@ module;
 #define MasterQianLibString "MasterQian.Media.Graph.dll"
 #endif
 #define MasterQianModuleVersion 20240205ULL
-#pragma message("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª Please copy [" MasterQianLibString "] into your program folder ¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª")
+#pragma message("â€”â€”â€”â€”â€”â€”â€”â€”â€”â€” Please copy [" MasterQianLibString "] into your program folder â€”â€”â€”â€”â€”â€”â€”â€”â€”â€”")
 
 export module MasterQian.Media.Graph;
 export import MasterQian.Bin;
@@ -46,18 +46,18 @@ namespace MasterQian::Media::Graph {
 		TrilineChart,
 	};
 
-	// ¶ÔÏó»ùÀà
+	// å¯¹è±¡åŸºç±»
 	struct ObjectBase {
 		using FlatShimCall = void(__stdcall*)(mqmem, ObjectBase const*) noexcept;
 		using FlatShimFreeCall = void(__stdcall*)(mqmem) noexcept;
 
-		Type mType; // ¶ÔÏóÀàĞÍ
-		mqui32 mShimSize; // ¶ÔÏó´óĞ¡
-		FlatShimCall mShimCall; // ÊµÏÖ»Øµ÷
-		FlatShimFreeCall mShimFreeCall; // ÊµÏÖÊÍ·Å»Øµ÷
+		Type mType; // å¯¹è±¡ç±»å‹
+		mqui32 mShimSize; // å¯¹è±¡å¤§å°
+		FlatShimCall mShimCall; // å®ç°å›è°ƒ
+		FlatShimFreeCall mShimFreeCall; // å®ç°é‡Šæ”¾å›è°ƒ
 	};
 
-	// ¶ÔÏó
+	// å¯¹è±¡
 	template<Type type, typename ObjectType, bool hasFreeCall = false>
 	struct Object : ObjectBase {
 		Object() noexcept : ObjectBase{ type,
@@ -70,20 +70,20 @@ namespace MasterQian::Media::Graph {
 		}
 	};
 
-	// ÎÄ±¾¸ñÊ½
+	// æ–‡æœ¬æ ¼å¼
 	export struct TextFormat {
-		mqui32 mSize; // ×ÖÌå´óĞ¡
-		Media::Color mColor; // ×ÖÌåÑÕÉ«
-		std::wstring mFont; // ×ÖÌåÃû³Æ
+		mqui32 mSize; // å­—ä½“å¤§å°
+		Media::Color mColor; // å­—ä½“é¢œè‰²
+		std::wstring mFont; // å­—ä½“åç§°
 
-		TextFormat(mqui32 size = 16U, Media::Color color = Media::Colors::Black, std::wstring_view font = L"ºÚÌå") noexcept
+		TextFormat(mqui32 size = 16U, Media::Color color = Media::Colors::Black, std::wstring_view font = L"é»‘ä½“") noexcept
 			: mSize{ size }, mColor{ color }, mFont{ font } { }
 	};
 
-	// »­±Ê¸ñÊ½
+	// ç”»ç¬”æ ¼å¼
 	export struct PenFormat {
-		Media::Color mColor; // »­±ÊÑÕÉ«
-		mqui32 mSize; // »­±Ê´óĞ¡
+		Media::Color mColor; // ç”»ç¬”é¢œè‰²
+		mqui32 mSize; // ç”»ç¬”å¤§å°
 
 		PenFormat(Media::Color color = Media::Colors::Black, mqui32 size = 1U) noexcept
 			: mColor{ color }, mSize{ size } { }
@@ -113,37 +113,37 @@ namespace MasterQian::Media::Graph {
 }
 
 export namespace MasterQian::Media::Graph {
-	// ÏßÌõ
+	// çº¿æ¡
 	struct Line : Object<Type::Line, Line> {
 		using Shim = PenFormatShim;
 		static void __stdcall ShimCall(Shim* shim, Line const* obj) noexcept {
 			shim->Set(obj->mFormat);
 		}
-		PenFormat mFormat; // »­±Ê¸ñÊ½
+		PenFormat mFormat; // ç”»ç¬”æ ¼å¼
 		Line(PenFormat format = { }) noexcept : mFormat{ format } { }
 	};
 
-	// ¾ØĞÎ
+	// çŸ©å½¢
 	struct Rectangle : Object<Type::Rectangle, Rectangle> {
 		using Shim = PenFormatShim;
 		static void __stdcall ShimCall(Shim* shim, Rectangle const* obj) noexcept {
 			shim->Set(obj->mFormat);
 		}
-		PenFormat mFormat; // »­±Ê¸ñÊ½  [±ß½ç¿í¶È(·Ç0Îª¿ÕĞÄ)]
+		PenFormat mFormat; // ç”»ç¬”æ ¼å¼  [è¾¹ç•Œå®½åº¦(é0ä¸ºç©ºå¿ƒ)]
 		Rectangle(PenFormat format = { Media::Colors::Black, 0U }) noexcept : mFormat{ format } { }
 	};
 
-	// Ô²
+	// åœ†
 	struct Circle : Object<Type::Circle, Circle> {
 		using Shim = PenFormatShim;
 		static void __stdcall ShimCall(Shim* shim, Circle const* obj) noexcept {
 			shim->Set(obj->mFormat);
 		}
-		PenFormat mFormat; // »­±Ê¸ñÊ½  [±ß½ç¿í¶È(·Ç0Îª¿ÕĞÄ)]
+		PenFormat mFormat; // ç”»ç¬”æ ¼å¼  [è¾¹ç•Œå®½åº¦(é0ä¸ºç©ºå¿ƒ)]
 		Circle(PenFormat format = { Media::Colors::Black, 0U }) noexcept : mFormat{ format } { }
 	};
 
-	// ÎÄ±¾
+	// æ–‡æœ¬
 	struct Text : Object<Type::Text, Text> {
 		struct Shim {
 			mqcstr mContent;
@@ -153,23 +153,23 @@ export namespace MasterQian::Media::Graph {
 			shim->mContent = obj->mContent.data();
 			shim->mFormat.Set(obj->mFormat);
 		}
-		std::wstring mContent; // ÄÚÈİ
-		TextFormat mFormat; // ÎÄ±¾¸ñÊ½
+		std::wstring mContent; // å†…å®¹
+		TextFormat mFormat; // æ–‡æœ¬æ ¼å¼
 		Text(std::wstring_view content, TextFormat const& format) noexcept : mContent{ content }, mFormat{ format } {}
 	};
 
-	// Í¼Æ¬
+	// å›¾ç‰‡
 	struct Picture : Object<Type::Picture, Picture> {
 		using Shim = mqhandle;
 		static void __stdcall ShimCall(Shim* shim, Picture const* obj) noexcept {
 			*shim = obj->mImage.unsafe_handle();
 		}
-		GDI::Image mImage; // Í¼Ïñ
+		GDI::Image mImage; // å›¾åƒ
 		Picture(GDI::Image const& image) noexcept : mImage{ image } {}
 		Picture(GDI::Image&& image) noexcept : mImage{ freestanding::move(image) } {}
 	};
 
-	// ÈıÏßÍ¼
+	// ä¸‰çº¿å›¾
 	struct TrilineChart : Object<Type::TrilineChart, TrilineChart, true> {
 		struct Shim {
 			mqarray<mqcstr> mTitles;
@@ -199,20 +199,20 @@ export namespace MasterQian::Media::Graph {
 			shim->mTitles.~decltype(shim->mTitles)();
 			shim->mContents.~decltype(shim->mContents)();
 		}
-		mqarray<std::wstring> mTitles; // ±êÌâ
-		mqlist<mqarray<std::wstring>> mContents; // ÄÚÈİ
-		TextFormat mTitleFormat; // ±êÌâ¸ñÊ½
-		TextFormat mContentFormat; // ÄÚÈİ¸ñÊ½
+		mqarray<std::wstring> mTitles; // æ ‡é¢˜
+		mqlist<mqarray<std::wstring>> mContents; // å†…å®¹
+		TextFormat mTitleFormat; // æ ‡é¢˜æ ¼å¼
+		TextFormat mContentFormat; // å†…å®¹æ ¼å¼
 		TrilineChart(mqarray<std::wstring> const& titles, mqlist<mqarray<std::wstring>> const& contents,
 			TextFormat title_format = { }, TextFormat content_format = { }) noexcept
 			: mTitles{ titles }, mContents{ contents }, mTitleFormat{ title_format }, mContentFormat{ content_format } { }
 	};
 
-	// »­²¼
+	// ç”»å¸ƒ
 	struct Canvas {
 	private:
 		mqhandle context{ };
-		mqlist<std::pair<mqrect, ObjectBase*>> objects; // ¶ÔÏó¼¯ºÏ
+		mqlist<std::pair<mqrect, ObjectBase*>> objects; // å¯¹è±¡é›†åˆ
 	public:
 		Canvas(mqsize size, Color color = Colors::Transparency) noexcept {
 			context = details::MasterQian_Media_Graph_Canvas_Create(size, color);

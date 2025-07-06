@@ -11,34 +11,34 @@ namespace MasterQian::Parser {
 	namespace details {
 		mqcstr IniScanLine(mqcstr pData, mqcstr* p1, mqcstr* p2, mqcstr* p3, mqcstr* p4) {
 			mqcstr pStart{ pData };
-			while (*pData && *pData != L'\r' && *pData != L'\n') ++pData; // Ñ°ÕÒµ½ĞĞÎ²
+			while (*pData && *pData != L'\r' && *pData != L'\n') ++pData; // å¯»æ‰¾åˆ°è¡Œå°¾
 			mqcstr pEnd{ pData };
-			while (*pStart == L' ' || *pStart == L'\t') ++pStart; // Ìø¹ıĞĞÊ×µÄ¿Õ°×
-			while (*pEnd == L'\r' || *pEnd == L'\n') --pEnd; // Ìø¹ıĞĞÎ²µÄ»»ĞĞ
-			while (*pEnd == L'\0' || *pEnd == L' ' || *pEnd == L'\t') --pEnd; // Ìø¹ıĞĞÎ²µÄ¿Õ°×
+			while (*pStart == L' ' || *pStart == L'\t') ++pStart; // è·³è¿‡è¡Œé¦–çš„ç©ºç™½
+			while (*pEnd == L'\r' || *pEnd == L'\n') --pEnd; // è·³è¿‡è¡Œå°¾çš„æ¢è¡Œ
+			while (*pEnd == L'\0' || *pEnd == L' ' || *pEnd == L'\t') --pEnd; // è·³è¿‡è¡Œå°¾çš„ç©ºç™½
 			std::wstring_view line{ pStart, pEnd + 1ULL };
-			while (*pData == L'\r' || *pData == L'\n') ++pData; // Ìø¹ıĞĞÎ²µÄ»»ĞĞ
+			while (*pData == L'\r' || *pData == L'\n') ++pData; // è·³è¿‡è¡Œå°¾çš„æ¢è¡Œ
 			*p1 = *p2 = *p3 = *p4 = nullptr;
-			if (line.front() == L'[' && line.back() == L']') { // ½Ú
+			if (line.front() == L'[' && line.back() == L']') { // èŠ‚
 				pStart = &line.front() + 1;
 				pEnd = &line.back() - 1;
-				while (*pStart == L' ' || *pStart == L'\t') ++pStart; // Ìø¹ı[ºóµÄ¿Õ°×
-				while (*pEnd == L' ' || *pEnd == L'\t') --pEnd; // Ìø¹ı]Ç°µÄ¿Õ°×
-				// ½ÚÃû(Èôp1 == p2ÊÇ¿Õ½ÚÃû)
+				while (*pStart == L' ' || *pStart == L'\t') ++pStart; // è·³è¿‡[åçš„ç©ºç™½
+				while (*pEnd == L' ' || *pEnd == L'\t') --pEnd; // è·³è¿‡]å‰çš„ç©ºç™½
+				// èŠ‚å(è‹¥p1 == p2æ˜¯ç©ºèŠ‚å)
 				*p1 = pStart;
 				*p2 = pEnd + 1;
 			}
-			else if (line.front() == L';') { } // ×¢ÊÍ
-			else if (auto pos{ line.rfind(L'=') }; pos != std::wstring_view::npos) { // Ïî
+			else if (line.front() == L';') { } // æ³¨é‡Š
+			else if (auto pos{ line.rfind(L'=') }; pos != std::wstring_view::npos) { // é¡¹
 				auto left{ line.substr(0, pos) };
 				auto right{ line.substr(pos + 1) };
 				pEnd = &left.back();
 				pStart = &right.front();
-				while (*pEnd == L' ' || *pEnd == L'\t') --pEnd; // Ìø¹ı=Ç°µÄ¿Õ°×
-				while (*pStart == L' ' || *pStart == L'\t') ++pStart; // Ìø¹ı=ºóµÄ¿Õ°×
-				*p1 = &left.front(); // ¼ü
+				while (*pEnd == L' ' || *pEnd == L'\t') --pEnd; // è·³è¿‡=å‰çš„ç©ºç™½
+				while (*pStart == L' ' || *pStart == L'\t') ++pStart; // è·³è¿‡=åçš„ç©ºç™½
+				*p1 = &left.front(); // é”®
 				*p2 = pEnd + 1;
-				*p3 = pStart; // Öµ
+				*p3 = pStart; // å€¼
 				*p4 = &right.back() + 1;
 			}
 			else {
@@ -48,18 +48,18 @@ namespace MasterQian::Parser {
 		}
 	}
 
-	// ini½âÎö½á¹û
+	// iniè§£æç»“æœ
 	export enum class IniError {
-		OK, // ³É¹¦
-		INVALID_LINE, // ·Ç·¨ĞĞ
-		EMPTY_SECTION_NAME, // ¿Õ½ÚÃû
-		EMPTY_KEY, // ¿Õ¼üÃû
-		ISOLATED_ITEM // ¹ÂÁ¢Ïî
+		OK, // æˆåŠŸ
+		INVALID_LINE, // éæ³•è¡Œ
+		EMPTY_SECTION_NAME, // ç©ºèŠ‚å
+		EMPTY_KEY, // ç©ºé”®å
+		ISOLATED_ITEM // å­¤ç«‹é¡¹
 	};
 
 	struct IniView;
 
-	// ½ÚÊÓÍ¼
+	// èŠ‚è§†å›¾
 	export struct SectionView : protected std::unordered_map<std::wstring_view, std::wstring_view> {
 		friend struct IniView;
 		using BaseT = std::unordered_map<std::wstring_view, std::wstring_view>;
@@ -83,7 +83,7 @@ namespace MasterQian::Parser {
 		}
 	};
 
-	// iniÊÓÍ¼
+	// iniè§†å›¾
 	export struct IniView : protected std::unordered_map<std::wstring_view, SectionView> {
 	protected:
 		using BaseT = std::unordered_map<std::wstring_view, SectionView>;
@@ -126,9 +126,9 @@ namespace MasterQian::Parser {
 		}
 
 		/// <summary>
-		/// ÔØÈë
+		/// è½½å…¥
 		/// </summary>
-		/// <param name="data">iniÎÄ±¾</param>
+		/// <param name="data">iniæ–‡æœ¬</param>
 		IniError Load(std::wstring_view data) noexcept {
 			clear();
 			content = data;
@@ -137,8 +137,8 @@ namespace MasterQian::Parser {
 			while (pData && *pData) {
 				pData = details::IniScanLine(pData, &p1, &p2, &p3, &p4);
 				if (pData) {
-					if (p3 && p4) { // Ïî
-						if (curSection) { // µ±Ç°½Ú´æÔÚ
+					if (p3 && p4) { // é¡¹
+						if (curSection) { // å½“å‰èŠ‚å­˜åœ¨
 							std::wstring_view key{ p1, p2 }, value{ p3, p4 };
 							if (key.empty()) {
 								_clear();
@@ -146,10 +146,10 @@ namespace MasterQian::Parser {
 							}
 							else {
 								if (auto iter{ curSection->find(key) }; iter != curSection->cend()) {
-									iter->second = value; // ¸üĞÂµ±Ç°Ïî
+									iter->second = value; // æ›´æ–°å½“å‰é¡¹
 								}
 								else {
-									curSection->emplace(key, value); // ´´½¨ĞÂÏî
+									curSection->emplace(key, value); // åˆ›å»ºæ–°é¡¹
 								}
 							}
 						}
@@ -158,13 +158,13 @@ namespace MasterQian::Parser {
 							return IniError::ISOLATED_ITEM;
 						}
 					}
-					else if (p1 && p2) { // ½Ú
+					else if (p1 && p2) { // èŠ‚
 						if (std::wstring_view name{ p1, p2 }; !name.empty()) {
-							if (auto iter{ find(name) }; iter != cend()) { // ¸üĞÂµ±Ç°½Ú
+							if (auto iter{ find(name) }; iter != cend()) { // æ›´æ–°å½“å‰èŠ‚
 								curSection = &iter->second;
 							}
 							else {
-								curSection = &emplace(name, SectionView{ }).first->second; // ´´½¨ĞÂ½Ú
+								curSection = &emplace(name, SectionView{ }).first->second; // åˆ›å»ºæ–°èŠ‚
 							}
 						}
 						else {
@@ -172,7 +172,7 @@ namespace MasterQian::Parser {
 							return IniError::EMPTY_SECTION_NAME;
 						}
 					}
-					else { } // ×¢ÊÍ
+					else { } // æ³¨é‡Š
 				}
 				else {
 					_clear();
@@ -183,10 +183,10 @@ namespace MasterQian::Parser {
 		}
 	};
 
-	// ½Ú
+	// èŠ‚
 	export using Section = std::unordered_map<std::wstring, std::wstring, freestanding::isomerism_hash, freestanding::isomerism_equal>;
 
-	// iniÅäÖÃÎÄ¼ş
+	// inié…ç½®æ–‡ä»¶
 	export struct Ini : public std::unordered_map<std::wstring, Section, freestanding::isomerism_hash, freestanding::isomerism_equal> {
 		Ini() = default;
 
@@ -195,9 +195,9 @@ namespace MasterQian::Parser {
 		}
 
 		/// <summary>
-		/// ÔØÈë
+		/// è½½å…¥
 		/// </summary>
-		/// <param name="data">iniÎÄ±¾</param>
+		/// <param name="data">iniæ–‡æœ¬</param>
 		IniError Load(std::wstring_view data) noexcept {
 			clear();
 			Section* curSection{ };
@@ -205,8 +205,8 @@ namespace MasterQian::Parser {
 			while (pData && *pData) {
 				pData = details::IniScanLine(pData, &p1, &p2, &p3, &p4);
 				if (pData) {
-					if (p3 && p4) { // Ïî
-						if (curSection) { // µ±Ç°½Ú´æÔÚ
+					if (p3 && p4) { // é¡¹
+						if (curSection) { // å½“å‰èŠ‚å­˜åœ¨
 							std::wstring key{ p1, p2 }, value{ p3, p4 };
 							if (key.empty()) {
 								clear();
@@ -214,10 +214,10 @@ namespace MasterQian::Parser {
 							}
 							else {
 								if (auto iter{ curSection->find(key) }; iter != curSection->cend()) {
-									iter->second = value; // ¸üĞÂµ±Ç°Ïî
+									iter->second = value; // æ›´æ–°å½“å‰é¡¹
 								}
 								else {
-									curSection->emplace(std::move(key), std::move(value)); // ´´½¨ĞÂÏî
+									curSection->emplace(std::move(key), std::move(value)); // åˆ›å»ºæ–°é¡¹
 								}
 							}
 						}
@@ -226,13 +226,13 @@ namespace MasterQian::Parser {
 							return IniError::ISOLATED_ITEM;
 						}
 					}
-					else if (p1 && p2) { // ½Ú
+					else if (p1 && p2) { // èŠ‚
 						if (std::wstring name{ p1, p2 }; !name.empty()) {
-							if (auto iter{ find(name) }; iter != cend()) { // ¸üĞÂµ±Ç°½Ú
+							if (auto iter{ find(name) }; iter != cend()) { // æ›´æ–°å½“å‰èŠ‚
 								curSection = &iter->second;
 							}
 							else {
-								curSection = &emplace(std::move(name), Section{ }).first->second; // ´´½¨ĞÂ½Ú
+								curSection = &emplace(std::move(name), Section{ }).first->second; // åˆ›å»ºæ–°èŠ‚
 							}
 						}
 						else {
@@ -240,7 +240,7 @@ namespace MasterQian::Parser {
 							return IniError::EMPTY_SECTION_NAME;
 						}
 					}
-					else { } // ×¢ÊÍ
+					else { } // æ³¨é‡Š
 				}
 				else {
 					clear();
@@ -251,9 +251,9 @@ namespace MasterQian::Parser {
 		}
 
 		/// <summary>
-		/// ±£´æ
+		/// ä¿å­˜
 		/// </summary>
-		/// <returns>iniÎÄ±¾</returns>
+		/// <returns>iniæ–‡æœ¬</returns>
 		std::wstring Save() const noexcept {
 			mqui64 totalSize{ };
 			for (auto& [name, sec] : *this) {
@@ -261,9 +261,9 @@ namespace MasterQian::Parser {
 				for (auto& [key, value] : sec) {
 					totalSize += key.size() + value.size();
 				}
-				totalSize += sec.size() * 2ULL; // ¶îÍâµÄ=Óë\n
+				totalSize += sec.size() * 2ULL; // é¢å¤–çš„=ä¸\n
 			}
-			totalSize += size() * 3ULL; // ¶îÍâµÄ[]Óë\n
+			totalSize += size() * 3ULL; // é¢å¤–çš„[]ä¸\n
 
 			std::wstring buf;
 			buf.reserve(totalSize);

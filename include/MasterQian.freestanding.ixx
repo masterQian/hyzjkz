@@ -5,57 +5,57 @@ module;
 
 export module MasterQian.freestanding;
 
-/*    ÀàĞÍ¶¨Òå    */
+/*    ç±»å‹å®šä¹‰    */
 
-// Windows DLL extern C 4×Ö½Ú BooleanÀàĞÍ
+// Windows DLL extern C 4å­—èŠ‚ Booleanç±»å‹
 export using mqbool = int;
-// 8Î»ÓĞ·ûºÅÕûÊı
+// 8ä½æœ‰ç¬¦å·æ•´æ•°
 export using mqi8 = signed char;
-// 16Î»ÓĞ·ûºÅÕûÊı
+// 16ä½æœ‰ç¬¦å·æ•´æ•°
 export using mqi16 = short;
-// 32Î»ÓĞ·ûºÅÕûÊı
+// 32ä½æœ‰ç¬¦å·æ•´æ•°
 export using mqi32 = int;
-// 64Î»ÓĞ·ûºÅÕûÊı
+// 64ä½æœ‰ç¬¦å·æ•´æ•°
 export using mqi64 = long long;
-// 8Î»ÎŞ·ûºÅÕûÊı
+// 8ä½æ— ç¬¦å·æ•´æ•°
 export using mqui8 = unsigned char;
-// 16Î»ÎŞ·ûºÅÕûÊı
+// 16ä½æ— ç¬¦å·æ•´æ•°
 export using mqui16 = unsigned short;
-// 32Î»ÎŞ·ûºÅÕûÊı
+// 32ä½æ— ç¬¦å·æ•´æ•°
 export using mqui32 = unsigned int;
-// 64Î»ÎŞ·ûºÅÕûÊı
+// 64ä½æ— ç¬¦å·æ•´æ•°
 export using mqui64 = unsigned long long;
-// 32Î»¸¡µãÊı
+// 32ä½æµ®ç‚¹æ•°
 export using mqf32 = float;
-// 64Î»¸¡µãÊı
+// 64ä½æµ®ç‚¹æ•°
 export using mqf64 = double;
-// Ã¶¾Ù»ùÀàĞÍ
+// æšä¸¾åŸºç±»å‹
 export using mqenum = mqui32;
-// ÄÚ´æµØÖ·
+// å†…å­˜åœ°å€
 export using mqmem = void*;
-// Ö»¶ÁÄÚ´æµØÖ·
+// åªè¯»å†…å­˜åœ°å€
 export using mqcmem = void const*;
-// ¾ä±ú
+// å¥æŸ„
 export using mqhandle = void*;
-// ×Ö½Ú
+// å­—èŠ‚
 export using mqbyte = unsigned char;
-// ×Ö½ÚÁ÷
+// å­—èŠ‚æµ
 export using mqbytes = unsigned char*;
-// Ö»¶Á×Ö½ÚÁ÷
+// åªè¯»å­—èŠ‚æµ
 export using mqcbytes = unsigned char const*;
-// ASCII×Ö·û
+// ASCIIå­—ç¬¦
 export using mqchara = char;
-// ASCII×Ö·û´®
+// ASCIIå­—ç¬¦ä¸²
 export using mqstra = char*;
-// Ö»¶ÁASCII×Ö·û´®
+// åªè¯»ASCIIå­—ç¬¦ä¸²
 export using mqcstra = char const*;
-// ¿í×Ö·û
+// å®½å­—ç¬¦
 export using mqchar = wchar_t;
-// ¿í×Ö·û´®
+// å®½å­—ç¬¦ä¸²
 export using mqstr = wchar_t*;
-// Ö»¶Á¿í×Ö·û´®
+// åªè¯»å®½å­—ç¬¦ä¸²
 export using mqcstr = wchar_t const*;
-// º¯Êıµ÷ÓÃ
+// å‡½æ•°è°ƒç”¨
 export using mqproc = long long(__stdcall*)() noexcept;
 // GUID
 export struct mqguid {
@@ -64,7 +64,7 @@ export struct mqguid {
 	mqui16 Data3;
 	mqui8 Data4[8];
 };
-// ÏµÍ³Ê±¼ä
+// ç³»ç»Ÿæ—¶é—´
 export struct mqsystemtime {
 	mqui16 year;
 	mqui16 month;
@@ -75,24 +75,24 @@ export struct mqsystemtime {
 	mqui16 second;
 	mqui16 millisecond;
 };
-// Î»ÖÃ
+// ä½ç½®
 export struct mqpoint {
 	mqui32 x;
 	mqui32 y;
 };
-// ³ß´ç
+// å°ºå¯¸
 export struct mqsize {
 	mqui32 width;
 	mqui32 height;
 };
-// ¾ØĞÎ
+// çŸ©å½¢
 export struct mqrect {
 	mqui32 left;
 	mqui32 top;
 	mqui32 width;
 	mqui32 height;
 };
-// ·¶Î§
+// èŒƒå›´
 export struct mqrange {
 	mqui32 left;
 	mqui32 top;
@@ -855,7 +855,7 @@ export template<MasterQian::freestanding::numeric T>
 
 /*    freestanding struct    */
 
-// ³õÊ¼»¯Æ÷
+// åˆå§‹åŒ–å™¨
 export template<MasterQian::freestanding::copyable_memory T> struct mqinit {
 	T value;
 	explicit mqinit(T(*func)() noexcept) noexcept : value{ func() } {}
@@ -866,7 +866,7 @@ export template<MasterQian::freestanding::copyable_memory T> struct mqinit {
 	}
 };
 
-// ¹Ì¶¨´óĞ¡Êı×é
+// å›ºå®šå¤§å°æ•°ç»„
 export template<typename T> struct mqarray {
 protected:
 	T* mData;
@@ -1014,7 +1014,7 @@ public:
 	}
 };
 
-// ¶¯Ì¬Êı×é
+// åŠ¨æ€æ•°ç»„
 export template<typename T> struct mqlist {
 protected:
 	T* mData;
@@ -1231,7 +1231,7 @@ public:
 	}
 };
 
-// ¿ÉÀ©Èİ»º³åÇø
+// å¯æ‰©å®¹ç¼“å†²åŒº
 export struct mqbuffer {
 protected:
 	mqbytes mData;
@@ -1353,7 +1353,7 @@ export namespace MasterQian::api {
 	META_WINAPI(mqbool, SystemTimeToFileTime, mqsystemtime const*, mqui64*);
 }
 
-// µ¼³öÃûÖØÁ´½Ó
+// å¯¼å‡ºåé‡é“¾æ¥
 #pragma comment(linker,"/alternatename:__imp_?LoadLibraryW@api@MasterQian@@YAPEAXPEB_W@Z::<!MasterQian.freestanding>=__imp_LoadLibraryW")
 #pragma comment(linker,"/alternatename:__imp_?GetProcAddress@api@MasterQian@@YAP6A_JX_EPEAXPEBD@Z::<!MasterQian.freestanding>=__imp_GetProcAddress")
 #pragma comment(linker,"/alternatename:__imp_?FreeLibrary@api@MasterQian@@YAHPEAX@Z::<!MasterQian.freestanding>=__imp_FreeLibrary")

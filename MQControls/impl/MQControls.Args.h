@@ -1,20 +1,20 @@
 #pragma once
 #include <winrt/windows.foundation.h>
 
-/*  --------------------  ²ÎÊý°ü  --------------------  */
+/*  --------------------  å‚æ•°åŒ…  --------------------  */
 /// <summary>
-/// <para>Args - ²ÎÊý°ü</para>
-/// <para>½«¶à¸ö²»Í¬winrtÔËÐÐÊ±ÀàÐÍ´ò°ü³ÉÒ»¸ö·½±ã²ÎÊý´«µÝ, ÇÒÊ¹ÓÃ½á¹¹»¯°ó¶¨¸ü·½±ã½â°ü</para>
+/// <para>Args - å‚æ•°åŒ…</para>
+/// <para>å°†å¤šä¸ªä¸åŒwinrtè¿è¡Œæ—¶ç±»åž‹æ‰“åŒ…æˆä¸€ä¸ªæ–¹ä¾¿å‚æ•°ä¼ é€’, ä¸”ä½¿ç”¨ç»“æž„åŒ–ç»‘å®šæ›´æ–¹ä¾¿è§£åŒ…</para>
 /// <example>
 /// <code>
 /// <para>auto args { Args::box(1, 2.5, L"Something", winrt::Windows::UI::Xaml::Controls::Button{}) };</para>
 /// <para>auto [arg1, _, arg3] = args.unbox&lt;int, void, winrt::hstring&gt;(); </para>
 /// </code>
 /// <para>
-/// ÔÚ´ËÀýÖÐ½«ÕûÊý, ¸¡µãÊý, ×Ö·û´®, °´Å¥Õâ¶à¸ö²»Í¬ÀàÐÍ×Ô¶¯°ü×°²¢´ò°ü³ÉÒ»¸öÔËÐÐÊ±ÀàÐÍ, 
-/// ¿ÉÒÔ½«´ËÀàÐÍ´«µÝµ½ÖîÈçÊÂ¼þº¯ÊýÖÐµÄ²ÎÊý¡¢¿Ø¼þµÄTagÖÐµÈµÈ, 
-/// Í¨¹ýÏÔÊ¾Ö¸¶¨unboxµÄÄ£°åÀàÐÍÀ´½â°ü, ÊýÁ¿²¢²»Ò»¶¨ÐèÒªÍêÈ«ÏàÍ¬, Ö»Òª²»³¬¹ýÔ­²ÎÊý°üµÄ´óÐ¡,
-/// ÇÒ¿ÉÒÔÍ¨¹ývoidÀàÐÍÀ´Ö¸¶¨Ä³¸ö²»¹ØÐÄµÄ²ÎÊýºöÂÔµô
+/// åœ¨æ­¤ä¾‹ä¸­å°†æ•´æ•°, æµ®ç‚¹æ•°, å­—ç¬¦ä¸², æŒ‰é’®è¿™å¤šä¸ªä¸åŒç±»åž‹è‡ªåŠ¨åŒ…è£…å¹¶æ‰“åŒ…æˆä¸€ä¸ªè¿è¡Œæ—¶ç±»åž‹, 
+/// å¯ä»¥å°†æ­¤ç±»åž‹ä¼ é€’åˆ°è¯¸å¦‚äº‹ä»¶å‡½æ•°ä¸­çš„å‚æ•°ã€æŽ§ä»¶çš„Tagä¸­ç­‰ç­‰, 
+/// é€šè¿‡æ˜¾ç¤ºæŒ‡å®šunboxçš„æ¨¡æ¿ç±»åž‹æ¥è§£åŒ…, æ•°é‡å¹¶ä¸ä¸€å®šéœ€è¦å®Œå…¨ç›¸åŒ, åªè¦ä¸è¶…è¿‡åŽŸå‚æ•°åŒ…çš„å¤§å°,
+/// ä¸”å¯ä»¥é€šè¿‡voidç±»åž‹æ¥æŒ‡å®šæŸä¸ªä¸å…³å¿ƒçš„å‚æ•°å¿½ç•¥æŽ‰
 /// </para>
 /// </example>
 /// </summary>
@@ -35,7 +35,7 @@ namespace winrt {
     }
 
     namespace MQControls {
-        // ²ÎÊý°ü
+        // å‚æ•°åŒ…
         struct __declspec(uuid("2ED4939F-D013-56FD-ACB4-87F2B13A06DC"))
             Args : Windows::Foundation::IInspectable {
         private:
@@ -105,10 +105,10 @@ namespace winrt {
 }
 
 
-/*  --------------------  ²ÎÊý¶Ô  --------------------  */
+/*  --------------------  å‚æ•°å¯¹  --------------------  */
 /// <summary>
-/// <para>Pair - ²ÎÊý¶Ô</para>
-/// <para>½öº¬2¸ö²ÎÊýµÄÌØ¶¨°æ²ÎÊý°ü</para>
+/// <para>Pair - å‚æ•°å¯¹</para>
+/// <para>ä»…å«2ä¸ªå‚æ•°çš„ç‰¹å®šç‰ˆå‚æ•°åŒ…</para>
 /// </summary>
 
 namespace winrt {
@@ -128,7 +128,7 @@ namespace winrt {
     }
 
     namespace MQControls {
-        // ²ÎÊý°ü
+        // å‚æ•°åŒ…
         struct __declspec(uuid("7AD3670B-7784-4B77-A5B1-21735139667B"))
             Pair : Windows::Foundation::IInspectable {
         private:

@@ -12,7 +12,7 @@ namespace MasterQian {
 		constexpr mqui64 BASE10POW[]{ 1ULL, 10ULL, 100ULL, 1000ULL, 10000ULL, 100000ULL, 1000000ULL, 10000000ULL };
 	}
 
-	// ÇøÓòÊ±¼ä
+	// åŒºåŸŸæ—¶é—´
 	export struct Time {
 		mqui16 year;
 		mqui8 month;
@@ -28,13 +28,13 @@ namespace MasterQian {
 			mqui16 milli = 0U, mqui16 micro = 0U, mqui8 week = 0U) noexcept : year{ YY }, month{ MM }, day{ DD },
 			hour{ hh }, minute{ mm }, second{ ss }, week{ week }, millisecond{ milli }, microsecond{ micro } {}
 
-		/// <summary>½ö±È½ÏÈÕÆÚ²»±È½ÏÊ±¼ä</summary>
+		/// <summary>ä»…æ¯”è¾ƒæ—¥æœŸä¸æ¯”è¾ƒæ—¶é—´</summary>
 		[[nodiscard]] constexpr bool compare_date(Time const& t) const noexcept {
 			return year == t.year && month == t.month && day == t.day;
 		}
 
 		/// <summary>
-		/// ¸ñÊ½»¯£¬Èç2024-01-23 22:38:49.0123 2
+		/// æ ¼å¼åŒ–ï¼Œå¦‚2024-01-23 22:38:49.0123 2
 		/// </summary>
 		[[nodiscard]] std::wstring format() const noexcept {
 			mqchar str[32ULL];
@@ -44,7 +44,7 @@ namespace MasterQian {
 		}
 
 		/// <summary>
-		/// ¸ñÊ½»¯£¬Èç20240123
+		/// æ ¼å¼åŒ–ï¼Œå¦‚20240123
 		/// </summary>
 		[[nodiscard]] std::wstring formatDate() const noexcept {
 			mqchar str[16ULL];
@@ -53,7 +53,7 @@ namespace MasterQian {
 		}
 
 		/// <summary>
-		/// ¸ñÊ½»¯£¬Èç223849
+		/// æ ¼å¼åŒ–ï¼Œå¦‚223849
 		/// </summary>
 		[[nodiscard]] std::wstring formatTime() const noexcept {
 			mqchar str[8ULL];
@@ -62,7 +62,7 @@ namespace MasterQian {
 		}
 
 		/// <summary>
-		/// ¸ñÊ½»¯£¬Èç20240123223849
+		/// æ ¼å¼åŒ–ï¼Œå¦‚20240123223849
 		/// </summary>
 		[[nodiscard]] std::wstring formatDateTime() const noexcept {
 			mqchar str[32ULL];
@@ -71,29 +71,29 @@ namespace MasterQian {
 		}
 	};
 
-	// Ê±¼ä´Á
+	// æ—¶é—´æˆ³
 	export struct Timestamp {
 	private:
 		mqui64 value{ };
 	public:
-		// Ê±¼äµ¥Î»
+		// æ—¶é—´å•ä½
 		enum Type : mqui64 {
-			// Ãë
+			// ç§’
 			second = 10ULL,
-			// ºÁÃë
+			// æ¯«ç§’
 			millisecond = 13ULL,
-			// Î¢Ãë
+			// å¾®ç§’
 			microsecond = 17ULL,
 		};
 
-		// Ê±Çø
+		// æ—¶åŒº
 		enum Zone : mqui64 {
-			// ±±¾©Ê±¼ä
+			// åŒ—äº¬æ—¶é—´
 			CN_BEIJING = 288000000000ULL,
 		};
 
 		/// <summary>
-		/// ÒÔµ±Ç°ÏµÍ³Ê±¼ä¹¹Ôì
+		/// ä»¥å½“å‰ç³»ç»Ÿæ—¶é—´æ„é€ 
 		/// </summary>
 		Timestamp() noexcept {
 			api::GetSystemTimeAsFileTime(&value);
@@ -101,20 +101,20 @@ namespace MasterQian {
 		}
 
 		/// <summary>
-		/// ÒÔÊ±¼ä´Á¹¹Ôì
+		/// ä»¥æ—¶é—´æˆ³æ„é€ 
 		/// </summary>
-		/// <param name="v">Ê±¼ä´Á</param>
-		/// <param name="type">Ê±¼äµ¥Î»£¬Ä¬ÈÏÎªÎ¢Ãë£¬¼´17Î»Ê±¼ä´Á</param>
+		/// <param name="v">æ—¶é—´æˆ³</param>
+		/// <param name="type">æ—¶é—´å•ä½ï¼Œé»˜è®¤ä¸ºå¾®ç§’ï¼Œå³17ä½æ—¶é—´æˆ³</param>
 		constexpr Timestamp(mqui64 v, Type type = Type::microsecond, bool isFileTime = false) noexcept : value{ v } {
 			value *= details::BASE10POW[static_cast<mqui64>(Type::microsecond) - static_cast<mqui64>(type)];
 			if (isFileTime) value -= details::UnixDST;
 		}
 
 		/// <summary>
-		/// ÒÔÇøÓòÊ±¼ä¹¹Ôì
+		/// ä»¥åŒºåŸŸæ—¶é—´æ„é€ 
 		/// </summary>
-		/// <param name="t">ÇøÓòÊ±¼ä</param>
-		/// <param name="zone">Ê±Çø£¬Ä¬ÈÏÎª±±¾©</param>
+		/// <param name="t">åŒºåŸŸæ—¶é—´</param>
+		/// <param name="zone">æ—¶åŒºï¼Œé»˜è®¤ä¸ºåŒ—äº¬</param>
 		Timestamp(Time const& t, Zone zone = Zone::CN_BEIJING) noexcept {
 			mqsystemtime st{
 				.year = t.year,
@@ -131,7 +131,7 @@ namespace MasterQian {
 		}
 
 		/// <summary>
-		/// È¡Ê±¼ä´ÁÊıÖµ
+		/// å–æ—¶é—´æˆ³æ•°å€¼
 		/// </summary>
 		template<Type type = Type::microsecond>
 		[[nodiscard]] constexpr mqui64 stamp() const noexcept {
@@ -143,10 +143,10 @@ namespace MasterQian {
 		}
 
 		/// <summary>
-		/// È¡ÇøÓòÊ±¼ä
+		/// å–åŒºåŸŸæ—¶é—´
 		/// </summary>
-		/// <param name="zone">Ê±Çø</param>
-		/// <returns>·µ»ØÊ±¼ä´Á¶ÔÓ¦Ê±ÇøµÄÊ±¼ä</returns>
+		/// <param name="zone">æ—¶åŒº</param>
+		/// <returns>è¿”å›æ—¶é—´æˆ³å¯¹åº”æ—¶åŒºçš„æ—¶é—´</returns>
 		Time local(Zone zone = Zone::CN_BEIJING) const noexcept {
 			mqui64 zone_value = value + details::UnixDST + zone;
 			mqsystemtime st{ };
@@ -158,9 +158,9 @@ namespace MasterQian {
 		}
 
 		/// <summary>
-		/// Ìí¼ÓÈÕ
+		/// æ·»åŠ æ—¥
 		/// </summary>
-		/// <param name="count">ÌìÊı</param>
+		/// <param name="count">å¤©æ•°</param>
 		constexpr void add_day(mqi64 count) noexcept {
 			value += count * 24ULL * 3600ULL * 1000ULL * 10000ULL;
 		}

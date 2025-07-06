@@ -27,21 +27,21 @@ using IAsyncAction = winrt::Windows::Foundation::IAsyncAction;
 template<typename T>
 using IAsyncOperation = winrt::Windows::Foundation::IAsyncOperation<T>;
 
-// ÔËĞĞÊ±º¯Êı
+// è¿è¡Œæ—¶å‡½æ•°
 #define F_RT
-// ÊÂ¼şº¯Êı
+// äº‹ä»¶å‡½æ•°
 #define F_EVENT
 
-// ±¨±íÊı¾İ½á¹¹
+// æŠ¥è¡¨æ•°æ®ç»“æ„
 struct RecordData {
-	// ÕÕÏàÊı¾İ
+	// ç…§ç›¸æ•°æ®
 	struct PhotoDayData {
 		mqui16 num;
 		mqui16 value;
 	};
 	using PhotoMonthData = PhotoDayData[31];
 	using PhotoYearData = PhotoMonthData[12];
-	// ¸´Ó¡Êı¾İ
+	// å¤å°æ•°æ®
 	using CopyDayData = mqui16;
 	using CopyMonthData = CopyDayData[31];
 	using CopyYearData = CopyMonthData[12];
@@ -68,24 +68,24 @@ struct RecordData {
 	}
 };
 
-// ´òÓ¡Ä£°å
+// æ‰“å°æ¨¡æ¿
 struct PrintTemplate {
-	mqui32 size; // ¶ş½øÖÆ´óĞ¡
-	mqui32 count; // ÕÕÆ¬ÊıÁ¿
-	mqchar name[32]; // Ä£°åÃû³Æ
+	mqui32 size; // äºŒè¿›åˆ¶å¤§å°
+	mqui32 count; // ç…§ç‰‡æ•°é‡
+	mqchar name[32]; // æ¨¡æ¿åç§°
 	struct FLAG {
-		bool canDelete; // ÊÇ·ñÔÊĞíÉ¾³ı
-		bool unused2; // Î´ÓÃ
-		bool unused3; // Î´ÓÃ
-		bool unused4; // Î´ÓÃ
-		bool isRotate; // ÊÇ·ñĞı×ª
-		bool isAutoCut; // ÊÇ·ñ×Ô¶¯²Ã¼ô
-		bool unused7; // Î´ÓÃ
-		bool unused8; // Î´ÓÃ
+		bool canDelete; // æ˜¯å¦å…è®¸åˆ é™¤
+		bool unused2; // æœªç”¨
+		bool unused3; // æœªç”¨
+		bool unused4; // æœªç”¨
+		bool isRotate; // æ˜¯å¦æ—‹è½¬
+		bool isAutoCut; // æ˜¯å¦è‡ªåŠ¨è£å‰ª
+		bool unused7; // æœªç”¨
+		bool unused8; // æœªç”¨
 	}flag;
-	mqui32 order; // Ä£°åĞò
-	mqbyte unused[28]; // Î´ÓÃ
-	mqrect data[1]; // ³ß´ç
+	mqui32 order; // æ¨¡æ¿åº
+	mqbyte unused[28]; // æœªç”¨
+	mqrect data[1]; // å°ºå¯¸
 
 	static constexpr mqui32 CalcSize(mqui32 count) noexcept {
 		if (count < 2U) {
@@ -103,7 +103,7 @@ struct PrintTemplate {
 	}
 };
 
-// Ä£°åÁĞ±í
+// æ¨¡æ¿åˆ—è¡¨
 struct TemplateList : private std::unordered_map<std::wstring, Bin, freestanding::isomerism_hash, freestanding::isomerism_equal> {
 	using BaseT = std::unordered_map<std::wstring, Bin, freestanding::isomerism_hash, freestanding::isomerism_equal>;
 	
@@ -142,36 +142,36 @@ struct TemplateList : private std::unordered_map<std::wstring, Bin, freestanding
 	}
 };
 
-// ±êÖ¾×ª»»Æ÷
+// æ ‡å¿—è½¬æ¢å™¨
 union FlagConverter {
 	mqui64 value;
 	bool flags[8ULL]{ };
 };
 
-// ¸üĞÂ±êÖ¾
+// æ›´æ–°æ ‡å¿—
 struct UpdateFlag {
-	// Ë½ÓĞÒ³
-	static constexpr auto PRIVATE_PRINT{ static_cast<mqui64>(-1) }; // ´òÓ¡
+	// ç§æœ‰é¡µ
+	static constexpr auto PRIVATE_PRINT{ static_cast<mqui64>(-1) }; // æ‰“å°
 
-	// ¹«¹²Ò³
-	static constexpr auto SETTINGS{ 0ULL }; // ÉèÖÃ
+	// å…¬å…±é¡µ
+	static constexpr auto SETTINGS{ 0ULL }; // è®¾ç½®
 
 
-	static constexpr auto HISTORY{ 1ULL }; // ÀúÊ·¼ÇÂ¼
+	static constexpr auto HISTORY{ 1ULL }; // å†å²è®°å½•
 	static constexpr auto SHOW_TURNOVER{ 0ULL };
 	static constexpr auto LINK_MENU{ 1ULL };
 
 
 
-	static constexpr auto TEMPLATE{ 2ULL }; // Ä£°å
+	static constexpr auto TEMPLATE{ 2ULL }; // æ¨¡æ¿
 
 
 
-	static constexpr auto TOOLS{ 3ULL }; // ¹¤¾ß
+	static constexpr auto TOOLS{ 3ULL }; // å·¥å…·
 
 
 
-	static constexpr auto RECORD{ 4ULL }; // ±¨±í
+	static constexpr auto RECORD{ 4ULL }; // æŠ¥è¡¨
 
 
 	FlagConverter flags[8ULL]{ };
@@ -184,7 +184,7 @@ concept ConfigItem = requires() {
 	{ std::remove_cvref_t<decltype(T::def_value)>{} } -> std::same_as<typename T::Type>;
 };
 
-// È«¾ÖÅäÖÃ½á¹¹
+// å…¨å±€é…ç½®ç»“æ„
 struct GlobalConfig : private Parser::Config {
 	template<ConfigItem T>
 	auto Get() const noexcept { return get(T::name, T::def_value); }
@@ -209,7 +209,7 @@ struct GlobalConfig : private Parser::Config {
 	struct PRINTER_NAME {
 		using Type = std::wstring_view;
 		static constexpr std::wstring_view name{ L"printer_name" };
-		static constexpr Type def_value{ L"ÕÕÏà´òÓ¡»ú" };
+		static constexpr Type def_value{ L"ç…§ç›¸æ‰“å°æœº" };
 	};
 
 	struct AUTOCUT_EPS {
@@ -251,64 +251,64 @@ struct GlobalConfig : private Parser::Config {
 	static constexpr std::wstring_view TOOLS{ L"tools" };
 };
 
-// È«¾ÖÊı¾İ½á¹¹
+// å…¨å±€æ•°æ®ç»“æ„
 inline struct GlobalStruct {
-	GlobalConfig cfg; // È«¾ÖÅäÖÃ
-	TemplateList templateList; // Ä£°åÁĞ±í
+	GlobalConfig cfg; // å…¨å±€é…ç½®
+	TemplateList templateList; // æ¨¡æ¿åˆ—è¡¨
 
-	// È«¾Ö³£Á¿
-	Storage::Path c_runPath; // ÔËĞĞÂ·¾¶
-	Storage::Path c_photoPath; // ÕÕÆ¬Â·¾¶
-	Storage::Path c_thumbPath; // »º´æÂ·¾¶
-	Storage::Path c_templatePath; // Ä£°åÂ·¾¶
-	Storage::Path c_dataPath; // Êı¾İÂ·¾¶
-	Storage::Path c_configFilePath; // ÅäÖÃÂ·¾¶
-	Storage::Path c_tempPhotoPath; // ÁÙÊ±ÕÕÆ¬Â·¾¶
-	Storage::Path c_cameraPhotoPath; // Ïà»úÕÕÆ¬Â·¾¶
+	// å…¨å±€å¸¸é‡
+	Storage::Path c_runPath; // è¿è¡Œè·¯å¾„
+	Storage::Path c_photoPath; // ç…§ç‰‡è·¯å¾„
+	Storage::Path c_thumbPath; // ç¼“å­˜è·¯å¾„
+	Storage::Path c_templatePath; // æ¨¡æ¿è·¯å¾„
+	Storage::Path c_dataPath; // æ•°æ®è·¯å¾„
+	Storage::Path c_configFilePath; // é…ç½®è·¯å¾„
+	Storage::Path c_tempPhotoPath; // ä¸´æ—¶ç…§ç‰‡è·¯å¾„
+	Storage::Path c_cameraPhotoPath; // ç›¸æœºç…§ç‰‡è·¯å¾„
 
-	mqsize c_photoThumbSize; // ËõÂÔÍ¼³ß´ç
-	mqsize c_photoPreviewSize; // Ô¤ÀÀÍ¼³ß´ç
-	mqsize c_printCanvasSize; // ´òÓ¡»­²¼³ß´ç
-	mqsize c_IDCardPreviewSize; // Éí·İÖ¤Æ´½ÓÔ¤ÀÀ³ß´ç
-	mqsize c_A4Size; // A4³ß´ç
-	mqsize c_ToPDFImageSize; // µ¼³öPDFµ¼ÈëÍ¼Ïñ³ß´ç
+	mqsize c_photoThumbSize; // ç¼©ç•¥å›¾å°ºå¯¸
+	mqsize c_photoPreviewSize; // é¢„è§ˆå›¾å°ºå¯¸
+	mqsize c_printCanvasSize; // æ‰“å°ç”»å¸ƒå°ºå¯¸
+	mqsize c_IDCardPreviewSize; // èº«ä»½è¯æ‹¼æ¥é¢„è§ˆå°ºå¯¸
+	mqsize c_A4Size; // A4å°ºå¯¸
+	mqsize c_ToPDFImageSize; // å¯¼å‡ºPDFå¯¼å…¥å›¾åƒå°ºå¯¸
 
-	// È«¾Ö×ÊÔ´
-	BinView res_icon; // Í¼±ê
-	BinView res_default_img; // Ä¬ÈÏÕÕÆ¬
+	// å…¨å±€èµ„æº
+	BinView res_icon; // å›¾æ ‡
+	BinView res_default_img; // é»˜è®¤ç…§ç‰‡
 
 	// UI
-	HWND ui_hwnd{ }; // ´°¿Ú¾ä±ú
-	winrt::hyzjkz::MainWindow ui_window{ nullptr }; // Ö÷´°¿Ú
+	HWND ui_hwnd{ }; // çª—å£å¥æŸ„
+	winrt::hyzjkz::MainWindow ui_window{ nullptr }; // ä¸»çª—å£
 
-	HANDLE file_spy_event; // ÎÄ¼ş¼à¿ØÊÂ¼ş
+	HANDLE file_spy_event; // æ–‡ä»¶ç›‘æ§äº‹ä»¶
 }Global;
 
 namespace util {
-	// ×Ö½Ú¼¯×ªÍ¼Ïñ
+	// å­—èŠ‚é›†è½¬å›¾åƒ
 	winrt::Microsoft::UI::Xaml::Media::Imaging::BitmapImage
 		BinToBMP(BinView, mqsize size = { }, bool hasCache = false) noexcept;
 
-	// ÎÄ¼ş×ªÍ¼Ïñ
+	// æ–‡ä»¶è½¬å›¾åƒ
 	winrt::Microsoft::UI::Xaml::Media::Imaging::BitmapImage
 		FileToBMP(std::wstring_view, mqsize size = { }, bool hasCache = false) noexcept;
 
-	// Á÷×ªÍ¼Ïñ
+	// æµè½¬å›¾åƒ
 	winrt::Microsoft::UI::Xaml::Media::Imaging::BitmapImage
 		StreamToBMP(mqhandle, mqsize size = { }, bool hasCache = false) noexcept;
 
-	// ³õÊ¼»¯¶Ô»°¿ò´°¿Ú
+	// åˆå§‹åŒ–å¯¹è¯æ¡†çª—å£
 	void InitializeDialog(winrt::Windows::Foundation::IInspectable const&, HWND) noexcept;
 
-	// DateTime×ªLocalTime
+	// DateTimeè½¬LocalTime
 	inline Time DateTimeToLocal(winrt::Windows::Foundation::DateTime dt) noexcept {
 		return Timestamp{ static_cast<mqui64>(dt.time_since_epoch().count()), Timestamp::Type::microsecond, true }.local();
 	}
 
-	// ×¢²áÍÏ·Å¹³×Ó
+	// æ³¨å†Œæ‹–æ”¾é’©å­
 	void SetDropHook(void (*callback)(mqhandle, std::vector<std::wstring> const&) noexcept, mqhandle) noexcept;
 
-	// ¶ÁÈ¡×ÊÔ´×Öµä
+	// è¯»å–èµ„æºå­—å…¸
 	template<typename T, mqui32 N>
 	inline T RD(winrt::hstring const& key) noexcept {
 		auto rd{ Application::Current().Resources().MergedDictionaries().GetAt(N) };
