@@ -152,7 +152,7 @@ namespace winrt::hyzjkz::implementation {
         pt.data[2] = { 205, 585, 673, 437 };
         pt.data[3] = { 895, 585, 673, 437 };
         return bin;
-}
+    }
 
     App::App() {
         InitializeComponent();
