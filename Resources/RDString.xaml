@@ -4,8 +4,10 @@
     <x:String x:Key="App.Version">2025070600</x:String>
 
     <!--  MainWindow  -->
-    <x:String x:Key="MainWindow.AttachCamera.Text">连接相机</x:String>
-    <x:String x:Key="MainWindow.CheckUpdate.Text">检查更新</x:String>
+    <x:String x:Key="MainWindow.AttachCamera.Text">相机</x:String>
+    <x:String x:Key="MainWindow.Scan.Text">扫描</x:String>
+    <x:String x:Key="MainWindow.Transfer.Text">传输助手</x:String>
+    <x:String x:Key="MainWindow.CheckUpdate.Text">更新</x:String>
 
     <x:String x:Key="MainWindow.NVI_History.Text">历史记录</x:String>
     <x:String x:Key="MainWindow.NVI_Template.Text">模板</x:String>

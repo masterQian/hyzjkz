@@ -69,6 +69,16 @@ namespace winrt::hyzjkz::implementation {
         }
     }
 
+    // 扫描
+    F_EVENT void MainWindow::Scan_Click(IInspectable const&, RoutedEventArgs const&) {
+        MasterQian::System::Process::Execute(L"wiaacmgr");
+    }
+
+    // 传输助手
+    F_EVENT void MainWindow::Transfer_Click(IInspectable const&, RoutedEventArgs const&) {
+        MasterQian::System::Process::Execute(L"https://filehelper.weixin.qq.com");
+    }
+
     // 检查更新
     F_EVENT void MainWindow::CheckUpdate_Click(IInspectable const&, RoutedEventArgs const&) {
         auto CurrentVersion{ util::RDString<hstring>(L"App.Version") };
@@ -147,9 +157,10 @@ namespace winrt::hyzjkz::implementation {
     F_RT void MainWindow::NavigateToPrivatePage(mqui64 flagID, IInspectable const& args) {
         Windows::UI::Xaml::Interop::TypeName name;
         switch (flagID) {
-        case UpdateFlag::PRIVATE_PRINT:
+        case UpdateFlag::PRIVATE_PRINT: {
             name = xaml_typename<hyzjkz::PrintPage>();
             break;
+        }
         default:
             return;
         }

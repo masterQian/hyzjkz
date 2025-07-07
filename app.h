@@ -285,6 +285,28 @@ inline struct GlobalStruct {
 }Global;
 
 namespace util {
+	// 读取资源字典
+	template<typename T, mqui32 N>
+	inline T RD(winrt::hstring const& key) noexcept {
+		auto rd{ Application::Current().Resources().MergedDictionaries().GetAt(N) };
+		return rd.Lookup(winrt::box_value(key)).as<T>();
+	}
+
+	template<typename T>
+	inline T RDString(winrt::hstring const& key) noexcept {
+		return RD<T, 2U>(key);
+	}
+
+	template<typename T>
+	inline T RDValue(winrt::hstring const& key) noexcept {
+		return RD<T, 3U>(key);
+	}
+
+	template<typename T>
+	inline T RDStyle(winrt::hstring const& key) noexcept {
+		return RD<T, 4U>(key);
+	}
+
 	// 字节集转图像
 	winrt::Microsoft::UI::Xaml::Media::Imaging::BitmapImage
 		BinToBMP(BinView, mqsize size = { }, bool hasCache = false) noexcept;
@@ -307,26 +329,4 @@ namespace util {
 
 	// 注册拖放钩子
 	void SetDropHook(void (*callback)(mqhandle, std::vector<std::wstring> const&) noexcept, mqhandle) noexcept;
-
-	// 读取资源字典
-	template<typename T, mqui32 N>
-	inline T RD(winrt::hstring const& key) noexcept {
-		auto rd{ Application::Current().Resources().MergedDictionaries().GetAt(N) };
-		return rd.Lookup(winrt::box_value(key)).as<T>();
-	}
-
-	template<typename T>
-	inline T RDString(winrt::hstring const& key) noexcept {
-		return RD<T, 2U>(key);
-	}
-
-	template<typename T>
-	inline T RDValue(winrt::hstring const& key) noexcept {
-		return RD<T, 3U>(key);
-	}
-
-	template<typename T>
-	inline T RDStyle(winrt::hstring const& key) noexcept {
-		return RD<T, 4U>(key);
-	}
 }

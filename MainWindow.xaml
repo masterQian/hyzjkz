@@ -33,6 +33,14 @@
                                    Foreground="MediumPurple"
                                    Icon="{StaticResource Glyph_AttachCamera}"
                                    Label="{StaticResource MainWindow.AttachCamera.Text}" />
+                    <mq:IconButton Padding="10,0,10,0" Click="Scan_Click"
+                                   Foreground="MediumPurple"
+                                   Icon="{StaticResource Glyph_Scan}"
+                                   Label="{StaticResource MainWindow.Scan.Text}" />
+                    <mq:IconButton Padding="10,0,10,0" Click="Transfer_Click"
+                                   Foreground="MediumPurple"
+                                   Icon="{StaticResource Glyph_FileExplorer}"
+                                   Label="{StaticResource MainWindow.Transfer.Text}" />
                     <mq:IconButton Padding="10,0,10,0" Click="CheckUpdate_Click"
                                    Foreground="MediumPurple"
                                    Icon="{StaticResource Glyph_LEDLight}"
