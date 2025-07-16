@@ -14,19 +14,19 @@
     <x:Double x:Key="IDCardPreviewWidth">280</x:Double>
     <x:Double x:Key="IDCardPreviewHeight">350</x:Double>
 
-    <x:Double x:Key="PrinterLeftPadding">28</x:Double>
-    <x:Double x:Key="PrinterTopPadding">31</x:Double>
-    <x:Double x:Key="PrinterRightPadding">28</x:Double>
-    <x:Double x:Key="PrinterBottomPadding">36</x:Double>
-    <x:Double x:Key="PrinterCanvasWidth">1795</x:Double>
+    <x:Double x:Key="PrinterLeftPadding">0</x:Double>
+    <x:Double x:Key="PrinterTopPadding">0</x:Double>
+    <x:Double x:Key="PrinterRightPadding">0</x:Double>
+    <x:Double x:Key="PrinterBottomPadding">0</x:Double>
+    <x:Double x:Key="PrinterCanvasWidth">1783</x:Double>
     <x:Double x:Key="PrinterCanvasHeight">1205</x:Double>
     <!--  CanvasWidth = PrinterCanvasWidth - PrinterLeftPadding - PrinterRightPadding  -->
-    <x:Double x:Key="CanvasWidth">1739</x:Double>
+    <x:Double x:Key="CanvasWidth">1783</x:Double>
     <!--  CanvasHeight = PrinterCanvasHeight - PrinterTopPadding - PrinterBottomPadding  -->
-    <x:Double x:Key="CanvasHeight">1138</x:Double>
+    <x:Double x:Key="CanvasHeight">1205</x:Double>
     <!--  CanvasWidth / CanvasPreviewWidth = CanvasHeight / CanvasPreviewHeight = 2.3  -->
-    <x:Double x:Key="CanvasPreviewWidth">756</x:Double>
-    <x:Double x:Key="CanvasPreviewHeight">495</x:Double>
+    <x:Double x:Key="CanvasPreviewWidth">775.217391</x:Double>
+    <x:Double x:Key="CanvasPreviewHeight">523.913043</x:Double>
 
     <x:Double x:Key="A4PrinterCanvasWidth">2479</x:Double>
     <x:Double x:Key="A4PrinterCanvasHeight">3508</x:Double>

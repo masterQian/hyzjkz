@@ -139,7 +139,9 @@
     <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis">
       <Filter>Others</Filter>
     </Natvis>
-    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natstepfilter" />
+    <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natstepfilter">
+      <Filter>Others</Filter>
+    </Natvis>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">

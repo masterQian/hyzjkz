@@ -86,16 +86,16 @@ namespace winrt::hyzjkz::implementation {
         pt.flag.isRotate = false;
         pt.flag.isAutoCut = true;
         lstrcpyW(pt.name, L"一寸");
-        pt.data[0] = { 100, 160, 295, 413 };
-        pt.data[1] = { 415, 160, 295, 413 };
-        pt.data[2] = { 730, 160, 295, 413 };
-        pt.data[3] = { 1045, 160, 295, 413 };
-        pt.data[4] = { 1360, 160, 295, 413 };
-        pt.data[5] = { 100, 590, 295, 413 };
-        pt.data[6] = { 415, 590, 295, 413 };
-        pt.data[7] = { 730, 590, 295, 413 };
-        pt.data[8] = { 1045, 590, 295, 413 };
-        pt.data[9] = { 1360, 590, 295, 413 };
+        pt.data[0] = { 120, 180, 295, 413 };
+        pt.data[1] = { 435, 180, 295, 413 };
+        pt.data[2] = { 750, 180, 295, 413 };
+        pt.data[3] = { 1065, 180, 295, 413 };
+        pt.data[4] = { 1380, 180, 295, 413 };
+        pt.data[5] = { 120, 610, 295, 413 };
+        pt.data[6] = { 435, 610, 295, 413 };
+        pt.data[7] = { 750, 610, 295, 413 };
+        pt.data[8] = { 1065, 610, 295, 413 };
+        pt.data[9] = { 1380, 610, 295, 413 };
         return bin;
     }
 
@@ -110,14 +110,14 @@ namespace winrt::hyzjkz::implementation {
         pt.flag.isRotate = false;
         pt.flag.isAutoCut = true;
         lstrcpyW(pt.name, L"二寸");
-        pt.data[0] = { 90, 0, 390, 567 };
-        pt.data[1] = { 500, 0, 390, 567 };
-        pt.data[2] = { 910, 0, 390, 567 };
-        pt.data[3] = { 1320, 0, 390, 567 };
-        pt.data[4] = { 90, 570, 390, 567 };
-        pt.data[5] = { 500, 570, 390, 567 };
-        pt.data[6] = { 910, 570, 390, 567 };
-        pt.data[7] = { 1320, 570, 390, 567 };
+        pt.data[0] = { 90, 30, 390, 567 };
+        pt.data[1] = { 500, 30, 390, 567 };
+        pt.data[2] = { 910, 30, 390, 567 };
+        pt.data[3] = { 1320, 30, 390, 567 };
+        pt.data[4] = { 90, 602, 390, 567 };
+        pt.data[5] = { 500, 602, 390, 567 };
+        pt.data[6] = { 910, 602, 390, 567 };
+        pt.data[7] = { 1320, 602, 390, 567 };
         return bin;
     }
 
@@ -132,7 +132,7 @@ namespace winrt::hyzjkz::implementation {
         pt.flag.isRotate = true;
         pt.flag.isAutoCut = false;
         lstrcpyW(pt.name, L"五寸");
-        pt.data[0] = { 120, 50, 1500, 1050 };
+        pt.data[0] = { 150, 85, 1500, 1050 };
         return bin;
     }
 
@@ -147,10 +147,10 @@ namespace winrt::hyzjkz::implementation {
         pt.flag.isRotate = false;
         pt.flag.isAutoCut = false;
         lstrcpyW(pt.name, L"结婚照");
-        pt.data[0] = { 205, 125, 673, 437 };
-        pt.data[1] = { 895, 125, 673, 437 };
-        pt.data[2] = { 205, 585, 673, 437 };
-        pt.data[3] = { 895, 585, 673, 437 };
+        pt.data[0] = { 215, 155, 673, 437 };
+        pt.data[1] = { 905, 155, 673, 437 };
+        pt.data[2] = { 215, 615, 673, 437 };
+        pt.data[3] = { 905, 615, 673, 437 };
         return bin;
     }
 
