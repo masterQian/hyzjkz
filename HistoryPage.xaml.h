@@ -27,10 +27,11 @@ namespace winrt::hyzjkz::implementation {
         F_EVENT void AddCopyData_Plus_Click(IInspectable const&, RoutedEventArgs const&);
         F_EVENT void AddCopyData_Set_Click(IInspectable const&, RoutedEventArgs const&);
 
-        F_EVENT IAsyncAction GV_Photos_DoubleClick(IInspectable const&, Input::DoubleTappedRoutedEventArgs const&);
-        F_EVENT void ModelPhoto_RightClick(IInspectable const&, Input::RightTappedRoutedEventArgs const&);
+        F_EVENT void GV_Photos_Click(IInspectable const&, Input::TappedRoutedEventArgs const&);
 
         F_EVENT IAsyncAction MenuItem_Click(IInspectable const&, RoutedEventArgs const&);
+
+        F_RT bool HasExternalLink() const;
 
         F_RT bool NotAtExternalLink() const {
             return mNotAtExternalLink;

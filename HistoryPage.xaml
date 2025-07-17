@@ -10,7 +10,7 @@
     <Page.Resources>
         <!--  菜单  -->
         <MenuFlyout x:Name="GV_Photos_Menu" AreOpenCloseAnimationsEnabled="True">
-            <MenuFlyoutSeparator x:Name="GV_Photos_Menu_Links" />
+            <MenuFlyoutSeparator x:Name="GV_Photos_Menu_Links" Visibility="{x:Bind HasExternalLink}" />
             <MenuFlyoutSubItem Icon="Edit" IsEnabled="{x:Bind NotAtExternalLink, Mode=OneWay}" Text="{StaticResource HistoryPage.Menu.AIEdit}">
                 <MenuFlyoutSubItem Icon="Rotate" Text="旋转">
                     <MenuFlyoutItem Click="MenuItem_Click" Icon="Rotate" Tag="Auto|RotateLeft" Text="{StaticResource HistoryPage.Menu.RotateLeft}" />
@@ -34,7 +34,7 @@
                             IsEnabled="{x:Bind NotAtExternalLink, Mode=OneWay}"
                             Tag="Main|Delete"
                             Text="{StaticResource HistoryPage.Menu.Delete}" />
-            <MenuFlyoutSeparator />
+            <MenuFlyoutItem Click="MenuItem_Click" Icon="Tag" Tag="Main|Details" Text="{StaticResource HistoryPage.Menu.Details}" />
         </MenuFlyout>
     </Page.Resources>
     <Grid RowDefinitions="Auto, *">
@@ -99,11 +99,9 @@
                 <DataTemplate x:DataType="local:ModelPhoto">
                     <Image Width="{StaticResource PhotoThumbWidth}"
                            Height="{StaticResource PhotoThumbHeight}"
-                           DoubleTapped="GV_Photos_DoubleClick"
-                           RightTapped="ModelPhoto_RightClick"
+                           Tapped="GV_Photos_Click"
                            Source="{x:Bind PhotoSource}"
-                           Stretch="Fill"
-                           Tag="{x:Bind PhotoPath}" />
+                           Stretch="Fill" />
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>

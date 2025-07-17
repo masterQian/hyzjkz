@@ -90,6 +90,11 @@ namespace winrt::hyzjkz::implementation {
 		}
 	}
 
+	// 打印照片
+	static void Menu_Print(hyzjkz::ModelPhoto item) noexcept {
+		Global.ui_window.NavigateToPrivatePage(UpdateFlag::PRIVATE_PRINT, box_value(item.PhotoPath()));
+	}
+
 	// 另存为照片
 	static IAsyncAction Menu_Save(hyzjkz::ModelPhoto item) noexcept {
 		Windows::Storage::Pickers::FileSavePicker savePicker;
@@ -149,9 +154,19 @@ namespace winrt::hyzjkz::implementation {
 		Refresh(page, true);
 	}
 
-	// 打印照片
-	static void Menu_Print(hyzjkz::ModelPhoto item) noexcept {
-		Global.ui_window.NavigateToPrivatePage(UpdateFlag::PRIVATE_PRINT, box_value(item.PhotoPath()));
+	// 查看照片详情
+	static IAsyncAction Menu_Details(HistoryPage* page, hyzjkz::ModelPhoto item) noexcept {
+		auto dialog{ page->ShowPictureDialog() };
+		Storage::Path photo_path{ item.PhotoPath() };
+		Media::GDI::Image image(photo_path);
+		auto size{ image.Size() };
+		auto dpi{ image.DPI() };
+		page->SPD_Text1().Text(winrt::format(L"尺寸: {} × {} 像素", size.width, size.height));
+		page->SPD_Text2().Text(winrt::format(L"分辨率: {} × {} dpi", dpi.width, dpi.height));
+		page->SPD_Text3().Text(winrt::format(L"位深度: {}", image.BitDepth()));
+		page->SPD_Text4().Text(winrt::format(L"大小: {} KB", static_cast<mqui32>(photo_path.Size()) / 1024U));
+		page->SPD_Image().Source(util::StreamToBMP(image.SaveToUnsafeStream(Media::GDI::ImageFormat::BMP)));
+		co_await dialog.ShowAsync();
 	}
 
 	// 旋转
@@ -623,36 +638,13 @@ namespace winrt::hyzjkz::implementation {
 		AddCopyDataDialog().Hide();
 	}
 
-	// 双击查看大图
-	F_EVENT IAsyncAction HistoryPage::GV_Photos_DoubleClick(IInspectable const&, Input::DoubleTappedRoutedEventArgs const&) {
-		auto dialog{ ShowPictureDialog() };
-		Storage::Path photo_path{ GV_Photos().SelectedItem().as<hyzjkz::ModelPhoto>().PhotoPath() };
-		Media::GDI::Image image(photo_path);
-		auto size{ image.Size() };
-		auto dpi{ image.DPI() };
-		SPD_Text1().Text(winrt::format(L"尺寸: {} × {} 像素", size.width, size.height));
-		SPD_Text2().Text(winrt::format(L"分辨率: {} × {} dpi", dpi.width, dpi.height));
-		SPD_Text3().Text(winrt::format(L"位深度: {}", image.BitDepth()));
-		SPD_Text4().Text(winrt::format(L"大小: {} KB", static_cast<mqui32>(photo_path.Size()) / 1024U));
-		SPD_Image().Source(util::StreamToBMP(image.SaveToUnsafeStream(Media::GDI::ImageFormat::BMP)));
-		co_await dialog.ShowAsync();
-	}
-
-	// 右键打开菜单
-	F_EVENT void HistoryPage::ModelPhoto_RightClick(IInspectable const&, Input::RightTappedRoutedEventArgs const& args) {
-		auto photo_view{ GV_Photos() };
+	// 左键打开菜单
+	F_EVENT void HistoryPage::GV_Photos_Click(IInspectable const&, Input::TappedRoutedEventArgs const& args) {
 		auto image{ args.OriginalSource().as<Controls::Image>() };
-		auto tag{ image.Tag().as<hstring>() };
-		for (auto record : photo_view.ItemsSource().as<Windows::Foundation::Collections::IVector<hyzjkz::ModelPhoto>>()) {
-			if (record.PhotoPath() == tag) {
-				photo_view.SelectedItem(record);
-				GV_Photos_Menu().ShowAt(image, args.GetPosition(image));
-				break;
-			}
-		}
+		GV_Photos_Menu().ShowAt(image, args.GetPosition(image));
 	}
 
-	// 右键菜单
+	// 菜单
 	F_EVENT IAsyncAction HistoryPage::MenuItem_Click(IInspectable const&, RoutedEventArgs const& args) {
 		std::wstring tag{ args.OriginalSource().as<FrameworkElement>().Tag().as<hstring>() };
 		auto dom{ std::wstring_view{ tag }.substr(0ULL, 4ULL) };
@@ -661,10 +653,11 @@ namespace winrt::hyzjkz::implementation {
 		auto item{ GV_Photos().SelectedItem().as<hyzjkz::ModelPhoto>() };
 
 		if (dom == L"Main") {
-			if (name == L"Save") co_await Menu_Save(item);
+			if (name == L"Print") Menu_Print(item);
+			else if (name == L"Save") co_await Menu_Save(item);
 			else if (name == L"Copy") co_await Menu_Copy(this, item);
 			else if (name == L"Delete") co_await Menu_Delete(this, item);
-			else if (name == L"Print") Menu_Print(item);
+			else if (name == L"Details") co_await Menu_Details(this, item);
 		}
 		else if (dom == L"Auto") {
 			if (name.starts_with(L"Rotate")) co_await Menu_Rotate(this, item, name);
@@ -679,6 +672,12 @@ namespace winrt::hyzjkz::implementation {
 				co_await Menu_Link(this, item, tools.get(name));
 			}
 		}
+	}
+
+	// 是否有外链菜单
+	F_RT bool HistoryPage::HasExternalLink() const {
+		auto tools{ Global.cfg.Get(GlobalConfig::TOOLS) };
+		return !tools.empty();
 	}
 }
 

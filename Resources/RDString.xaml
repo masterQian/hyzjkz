@@ -30,6 +30,7 @@
     <x:String x:Key="HistoryPage.Menu.Save">另存为</x:String>
     <x:String x:Key="HistoryPage.Menu.Copy">复制副本</x:String>
     <x:String x:Key="HistoryPage.Menu.Delete">删除</x:String>
+    <x:String x:Key="HistoryPage.Menu.Details">详情</x:String>
     <x:String x:Key="HistoryPage.Menu.Print">打印</x:String>
     <x:String x:Key="HistoryPage.Bar.Refresh">刷新</x:String>
     <x:String x:Key="HistoryPage.Bar.AddDefault">补差</x:String>

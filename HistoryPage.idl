@@ -3,6 +3,7 @@ namespace hyzjkz {
     runtimeclass HistoryPage : Microsoft.UI.Xaml.Controls.Page, Microsoft.UI.Xaml.Data.INotifyPropertyChanged {
         HistoryPage();
 
+        Boolean HasExternalLink{ get; };
         Boolean NotAtExternalLink { get; set; };
         Boolean CoverTurnover { get; set; };
         UInt32 PhotoNum { get; set; };
